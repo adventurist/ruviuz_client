@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="stronglogic.ruviuz.MainActivity"
+    android:background="@color/material_grey_800">
+
+
+    <RelativeLayout
+        android:id="@+id/form"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView android:text="RUVIUZ"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/appTitle"
+            android:textColor="@color/material_deep_teal_500"
+            android:textSize="42dp"
+            android:textIsSelectable="false"
+            android:layout_centerHorizontal="true"
+            android:textStyle="bold"
+            android:typeface="normal" />
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_centerInParent="true"
+            android:id="@+id/switchLayout"
+            android:layout_below="@id/appTitle"
+            android:padding="16dp">
+            <Switch
+                android:layout_width="128dp"
+                android:layout_height="44dp"
+                android:layout_alignParentStart="true"
+                android:id="@+id/roofFlat"
+                android:text="@string/flatAsk"
+                android:checked="false"
+                android:textColor="@color/material_deep_teal_200" />
+
+            <Switch
+                android:layout_width="128dp"
+                android:layout_height="44dp"
+                android:layout_alignParentEnd="true"
+                android:id="@+id/premiumMaterial"
+                android:text="@string/matAsk"
+                android:textColor="@color/material_deep_teal_200" />
+        </RelativeLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:id="@+id/numberContainer"
+            android:layout_below="@id/switchLayout"
+            android:padding="16dp">
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:id="@+id/numberText"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/rfLgText"
+                    android:text="Roof Length"
+                    android:layout_marginBottom="18dp"
+                    android:layout_marginTop="18dp"
+                    android:textColor="@color/material_deep_teal_200" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/rfWdText"
+                    android:text="Roof Width"
+                    android:layout_marginTop="22dp"
+                    android:layout_marginBottom="22dp"
+                    android:textColor="@color/material_deep_teal_200" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/rfSlText"
+                    android:text="Roof Slope"
+                    android:layout_marginTop="20dp"
+                    android:textColor="@color/material_deep_teal_200" />
+
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:id="@+id/numberLayout"
+                android:padding="16dp">
+
+                <NumberPicker
+                    android:id="@+id/roofLength"
+                    android:layout_width="168dp"
+                    android:layout_height="56dp"
+                    android:background="@color/material_grey_300" />
+
+                <NumberPicker
+                    android:id="@+id/roofWidth"
+                    android:layout_width="168dp"
+                    android:layout_height="56dp"
+                    android:background="@color/material_grey_300" />
+                <NumberPicker
+                    android:id="@+id/roofSlope"
+                    android:layout_width="168dp"
+                    android:layout_height="56dp"
+                    android:background="@color/material_grey_300" />
+            </LinearLayout>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/numberContainer">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/orientationText"
+                android:text="0.00000"
+                android:textAlignment="center"
+                android:textColor="@color/colorAccent"
+                android:textSize="72dp" />
+        </LinearLayout>
+    </RelativeLayout>
+</RelativeLayout>
