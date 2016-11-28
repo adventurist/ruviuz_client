@@ -1,5 +1,6 @@
 package stronglogic.ruviuz;
 
+import android.app.FragmentManager;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -8,8 +9,11 @@ import android.view.OrientationEventListener;
 import android.widget.NumberPicker;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
-public class MainActivity extends AppCompatActivity {
+import stronglogic.ruviuz.fragments.LoginFragment;
+
+public class MainActivity extends AppCompatActivity implements LoginFragment.LoginFragListener {
 
     private OrientationEventListener mListener;
 
@@ -29,7 +33,7 @@ public class MainActivity extends AppCompatActivity {
         roofWidth = (NumberPicker) findViewById(R.id.roofWidth);
         roofSlope = (NumberPicker) findViewById(R.id.roofSlope);
 
-        //set Picker ranges
+        //set Picker ranges22
 
         roofLength.setMinValue(0); roofLength.setMaxValue(500); roofLength.setWrapSelectorWheel(true);
         roofLength.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
@@ -53,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
                 orientationText.setText(String.valueOf(orientation));
             }
         };
-
+        loginDialog();
     }
 
     @Override
@@ -66,5 +70,16 @@ public class MainActivity extends AppCompatActivity {
     public void onPause() {
         super.onPause();
         mListener.disable();
+    }
+
+    public void loginDialog() {
+        FragmentManager fm = getFragmentManager();
+        LoginFragment loginFragment = new LoginFragment();
+        loginFragment.show(fm, "Please Login");
+    }
+
+    @Override
+    public void loginFragInteraction(String output) {
+        Toast.makeText(this, output, Toast.LENGTH_SHORT).show();
     }
 }

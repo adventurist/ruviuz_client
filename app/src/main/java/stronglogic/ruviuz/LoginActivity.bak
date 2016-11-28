@@ -1,0 +1,41 @@
+package stronglogic.ruviuz;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.os.Handler;
+import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+
+import stronglogic.ruviuz.tasks.LoginTask;
+
+public class LoginActivity extends AppCompatActivity {
+
+    private static final String TAG = "RuviuzLogin";
+
+    private String baseUrl = "http://10.0.2.2:5000";
+    private String[] login;
+    private String authToken;
+
+    private Handler mHandler;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        if (null != getIntent()) {
+            Intent intent = getIntent();
+            this.login = intent.getStringArrayExtra("loginArray");
+        }
+    }
+
+    public void do_login() {
+        if (this.login != null && this.login.length > 1) {
+            LoginTask loginTask = new LoginTask(login[0], login[1], new LoginTask.AsyncResponse() {
+                @Override
+                public void processFinish(String[] output) {
+                    Log.d(TAG, output[0]);
+                }
+            });
+        }
+    }
+}
