@@ -4,6 +4,8 @@ import android.app.FragmentManager;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.OrientationEventListener;
@@ -37,7 +39,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
 
     private String authToken;
 
-    private mHandler;
+    private Handler mHandler;
 
     float width, length, slope;
     BigDecimal price;
@@ -78,6 +80,13 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
             }
         };
 
+        mHandler = new Handler(Looper.getMainLooper()) {
+            @Override
+            public void handleMessage(Message inputMessage) {
+                super.handleMessage(inputMessage);
+            }
+        };
+
         if (authToken == null) {
             loginDialog();
         }
@@ -101,7 +110,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
                     Bundle mBundle = new Bundle();
                     mBundle.putString("address", address);
                     mBundle.putString("price", price.toString());
-                    Thread submitThread = new Thread(new RuuvThread(this, mHandler, baseUrl, mBundle));
+                    Thread submitThread = new Thread(new RuuvThread((MainActivity)getParent(), mHandler, baseUrl, authToken, mBundle));
                 }
             }
         });
@@ -200,6 +209,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
                     e.printStackTrace();
                 }
             }
+            return false;
         }
     }
 }
