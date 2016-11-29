@@ -1,0 +1,50 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/loginFragment"
+    android:orientation="vertical"
+    tools:context=".LoginFragment">
+
+    <!-- TODO: Update blank fragment layout -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="212dp"
+        android:id="@+id/loginUI"
+        android:orientation="vertical"
+        android:background="@color/material_blue_grey_800">
+        <EditText
+            android:layout_width="320dp"
+            android:layout_height="114dp"
+            android:id="@+id/addressText"
+            android:inputType="textPostalAddress|textMultiLine"
+            android:layout_gravity="center_vertical"
+            android:text="@string/address"
+            android:gravity="center"
+            android:background="#46ffcb"
+            android:layout_marginTop="1.5dp"
+            android:layout_marginBottom="1dp"/>
+        <EditText
+            android:layout_width="320dp"
+            android:layout_height="38dp"
+            android:id="@+id/postalCode"
+            android:inputType="textPostalAddress"
+            android:layout_gravity="center_vertical"
+            android:text="@string/postal_code"
+            android:gravity="center"
+            android:background="#46ffcb"
+            android:layout_marginBottom="1dp"/>
+
+        <Button
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="320dp"
+            android:layout_height="56dp"
+            android:text="@string/login"
+            android:id="@+id/addressBtn"
+            android:layout_gravity="center_horizontal"
+            android:background="@color/material_blue_grey_950"
+            android:textColor="@color/material_grey_100"
+            android:layout_marginBottom="1.5dp"/>
+    </LinearLayout>
+
+</LinearLayout>

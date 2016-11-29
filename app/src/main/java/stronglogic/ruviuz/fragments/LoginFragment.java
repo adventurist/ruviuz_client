@@ -26,7 +26,8 @@ public class LoginFragment extends DialogFragment {
 
     private LoginFragListener loginFragListener;
 
-    String[] login = new String[2];
+    private String[] login = new String[2];
+    private String baseUrl;
 
     public static LoginFragment newInstance(String param1, String param2) {
         LoginFragment fragment = new LoginFragment();
@@ -45,8 +46,7 @@ public class LoginFragment extends DialogFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-//            mParam1 = getArguments().getString(ARG_PARAM1);
-//            mParam2 = getArguments().getString(ARG_PARAM2);
+            this.baseUrl = getArguments().getString("baseUrl", "http://10.0.2.2:5000");
         }
     }
 
@@ -106,7 +106,7 @@ public class LoginFragment extends DialogFragment {
 
     public void buttonClicked(View view)    {
         if (this.login[0] != null && this.login.length > 1) {
-            LoginTask loginTask = new LoginTask(login[0], login[1], new LoginTask.AsyncResponse() {
+            LoginTask loginTask = new LoginTask(login[0], login[1], baseUrl, new LoginTask.AsyncResponse() {
                 @Override
                 public void processFinish(String[] output) {
                     Log.d(TAG, output[0]);

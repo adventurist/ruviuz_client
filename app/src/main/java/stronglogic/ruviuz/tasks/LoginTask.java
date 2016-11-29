@@ -24,15 +24,15 @@ import java.net.URL;
 public class LoginTask extends AsyncTask<String[], String, String[]> {
 
     private static final String TAG = "RuviuzLOGINTASK";
-    private static final String baseUrl = "http://10.0.2.2:5000";
 
-    private String email, password, authToken;
+    private String email, password, authToken, baseUrl;
 
     private AsyncResponse delegate;
 
-    public LoginTask(String email, String password, AsyncResponse delegate) {
+    public LoginTask(String email, String password, String baseUrl, AsyncResponse delegate) {
         this.email = email;
         this.password = password;
+        this.baseUrl = baseUrl;
         this.delegate = delegate;
     }
 
