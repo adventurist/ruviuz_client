@@ -2,6 +2,8 @@ package stronglogic.ruviuz.fragments;
 
 import android.app.Activity;
 import android.app.DialogFragment;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -29,14 +31,14 @@ public class LoginFragment extends DialogFragment {
     private String[] login = new String[2];
     private String baseUrl;
 
-    public static LoginFragment newInstance(String param1, String param2) {
-        LoginFragment fragment = new LoginFragment();
-//        Bundle args = new Bundle();
-//        args.putString(ARG_PARAM1, param1);
-//        args.putString(ARG_PARAM2, param2);
-//        fragment.setArguments(args);
-        return fragment;
-    }
+//    public static LoginFragment newInstance(String param1, String param2) {
+//        LoginFragment fragment = new LoginFragment();
+////        Bundle args = new Bundle();
+////        args.putString(ARG_PARAM1, param1);
+////        args.putString(ARG_PARAM2, param2);
+////        fragment.setArguments(args);
+//        return fragment;
+//    }
 
     public LoginFragment() {
 
@@ -47,6 +49,10 @@ public class LoginFragment extends DialogFragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             this.baseUrl = getArguments().getString("baseUrl", "http://10.0.2.2:5000");
+            if (getArguments().getString("email") != null) {
+                login[0] = getArguments().getString("email");
+                login[1] = getArguments().getString("password");
+            }
         }
     }
 
@@ -57,6 +63,9 @@ public class LoginFragment extends DialogFragment {
         View view = inflater.inflate(R.layout.loginfragment, parent, false);
 
         email = (EditText)view.findViewById(R.id.email);
+        if (login[0] != null) {
+            email.setText(login[0]);
+        }
         email.setOnClickListener(new View.OnClickListener()    {
             @Override
             public void onClick(View v) {
@@ -65,6 +74,9 @@ public class LoginFragment extends DialogFragment {
         });
 
         password = (EditText)view.findViewById(R.id.password);
+        if (login[1] != null) {
+            password.setText(login[1]);
+        }
         password.setOnClickListener(new View.OnClickListener()    {
             @Override
             public void onClick(View v) {
@@ -80,6 +92,7 @@ public class LoginFragment extends DialogFragment {
                         password.getText().toString().length() > 0) {
                     login[0] = email.getText().toString();
                     login[1] = password.getText().toString();
+                    savePrefCreds();
                     buttonClicked(v);
                 } else {
                     Toast.makeText(getActivity(), "You must enter your email and password!", Toast.LENGTH_SHORT).show();
@@ -108,9 +121,9 @@ public class LoginFragment extends DialogFragment {
         if (this.login[0] != null && this.login.length > 1) {
             LoginTask loginTask = new LoginTask(login[0], login[1], baseUrl, new LoginTask.AsyncResponse() {
                 @Override
-                public void processFinish(String[] output) {
-                    Log.d(TAG, output[0]);
-                    loginFragListener.loginFragInteraction(output[0]);
+                public void processFinish(String output) {
+                    Log.d(TAG, output);
+                    loginFragListener.loginFragInteraction(output);
                 }
             });
             loginTask.execute();
@@ -121,5 +134,12 @@ public class LoginFragment extends DialogFragment {
         void loginFragInteraction(String output);
     }
 
+    public void savePrefCreds()  {
+        SharedPreferences prefs = getActivity().getSharedPreferences("RuviuzApp", Context.MODE_PRIVATE);
+        SharedPreferences.Editor prefEdit = prefs.edit();
+        prefEdit.putString("email", login[0]);
+        prefEdit.putString("pass", login[1]);
+        prefEdit.apply();
+    }
 
 }

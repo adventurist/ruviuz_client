@@ -39,7 +39,7 @@
             style="?android:attr/buttonStyleSmall"
             android:layout_width="320dp"
             android:layout_height="56dp"
-            android:text="@string/login"
+            android:text="@string/set_address"
             android:id="@+id/addressBtn"
             android:layout_gravity="center_horizontal"
             android:background="@color/material_blue_grey_950"

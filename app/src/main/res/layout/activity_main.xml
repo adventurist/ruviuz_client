@@ -10,11 +10,14 @@
     tools:context="stronglogic.ruviuz.MainActivity"
     android:background="@color/material_grey_800">
 
+    <include
+        layout="@layout/app_bar"/>
 
     <RelativeLayout
         android:id="@+id/form"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent">
+
         <TextView android:text="RUVIUZ"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -68,52 +71,85 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:id="@+id/rfLgText"
-                    android:text="Roof Length"
-                    android:layout_marginBottom="18dp"
-                    android:layout_marginTop="18dp"
+                    android:text="Length"
+                    android:layout_marginBottom="17dp"
+                    android:layout_marginTop="4dp"
                     android:textColor="@color/material_deep_teal_200" />
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:id="@+id/rfWdText"
-                    android:text="Roof Width"
+                    android:text="Width"
                     android:layout_marginTop="22dp"
-                    android:layout_marginBottom="22dp"
+                    android:layout_marginBottom="20dp"
                     android:textColor="@color/material_deep_teal_200" />
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:id="@+id/rfSlText"
-                    android:text="Roof Slope"
+                    android:text="Slope"
                     android:layout_marginTop="20dp"
                     android:textColor="@color/material_deep_teal_200" />
 
             </LinearLayout>
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:id="@+id/numberLayout"
-                android:padding="16dp">
+                android:id="@+id/numberLayout">
 
-                <NumberPicker
-                    android:id="@+id/roofLength"
-                    android:layout_width="168dp"
-                    android:layout_height="56dp"
-                    android:background="@color/material_grey_300" />
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:id="@+id/uiRow1"
+                    android:weightSum="1">
+                    <NumberPicker
+                        android:id="@+id/roofLength"
+                        android:layout_width="84dp"
+                        android:layout_height="56dp"
+                        android:background="@color/material_grey_300" />
+                    <Button
+                        android:layout_height="36dp"
+                        android:id="@+id/addressGetDialog"
+                        android:text="Address"
+                        android:layout_gravity="end"
+                        android:layout_alignWithParentIfMissing="true"
+                        android:background="@android:color/holo_green_light"
+                        android:alpha="0.2"
+                        android:layout_marginTop="10dp"
+                        android:textAlignment="center"
+                        android:textAllCaps="false"
+                        android:elevation="0dp"
+                        android:drawableEnd="@drawable/address"
+                        android:layout_width="108dp"
+                        android:layout_alignParentEnd="true" />
 
-                <NumberPicker
-                    android:id="@+id/roofWidth"
-                    android:layout_width="168dp"
-                    android:layout_height="56dp"
-                    android:background="@color/material_grey_300" />
-                <NumberPicker
-                    android:id="@+id/roofSlope"
-                    android:layout_width="168dp"
-                    android:layout_height="56dp"
-                    android:background="@color/material_grey_300" />
+                </RelativeLayout>
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:id="@+id/uiRow2">
+                    <NumberPicker
+                        android:id="@+id/roofWidth"
+                        android:layout_width="84dp"
+                        android:layout_height="56dp"
+                        android:background="@color/material_grey_300" />
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:id="@+id/uiRow3">
+                    <NumberPicker
+                        android:id="@+id/roofSlope"
+                        android:layout_width="84dp"
+                        android:layout_height="56dp"
+                        android:background="@color/material_grey_300" />
+                </LinearLayout>
             </LinearLayout>
         </LinearLayout>
         <LinearLayout
@@ -139,14 +175,38 @@
             android:layout_below="@id/angleContainer"
             android:layout_marginTop="8dp"
             android:layout_centerHorizontal="true"
-            android:text="Ruuuv"
+            android:text="Send"
             android:textColorLink="?android:attr/colorFocusedHighlight"
             android:textColor="@android:color/holo_green_light"
             android:textColorHint="@android:color/holo_green_light"
             android:textColorHighlight="@color/colorAccent"
             android:backgroundTint="@android:color/black"
             android:elevation="0dp"
-            style="@android:style/Widget.Material.Button.Colored"
             android:textSize="18sp" />
+
+        <Button
+            android:layout_height="36dp"
+            android:id="@+id/quoteStatus"
+            android:text="Draft"
+            android:layout_alignBottom="@id/ruuvSubmitBtn"
+            android:background="@android:color/holo_green_light"
+            android:alpha="0.2"
+            android:layout_marginTop="36dp"
+            android:textAlignment="center"
+            android:textAllCaps="false"
+            android:elevation="0dp"
+            android:drawableEnd="@drawable/checked"
+            android:layout_width="108dp"
+            android:layout_alignParentEnd="false"
+            android:layout_alignWithParentIfMissing="false"
+            android:layout_centerInParent="false"
+            android:layout_centerHorizontal="false"
+            android:layout_centerVertical="false"
+            android:layout_alignParentStart="false"
+            android:layout_alignParentTop="false"
+            android:layout_alignParentLeft="false"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentBottom="true" />
+
     </RelativeLayout>
 </RelativeLayout>

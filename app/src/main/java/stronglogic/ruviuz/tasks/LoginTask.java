@@ -21,7 +21,7 @@ import java.net.URL;
  * Created by logicp on 11/27/16.
  * Logs into Ruviuz
  */
-public class LoginTask extends AsyncTask<String[], String, String[]> {
+public class LoginTask extends AsyncTask<String[], String, boolean[]> {
 
     private static final String TAG = "RuviuzLOGINTASK";
 
@@ -37,36 +37,31 @@ public class LoginTask extends AsyncTask<String[], String, String[]> {
     }
 
     public interface AsyncResponse {
-        void processFinish(String[] output);
+        void processFinish(String output);
     }
 
     @Override
-    protected String[] doInBackground(String[]... params) {
-        String consequence = loginRuviuz(email, password);
-        if (consequence != null) {
-            String[] mString = new String[1];
-            mString[0] = consequence;
-            return mString;
-        }
-        return null;
+    protected boolean[] doInBackground(String[]... params) {
+        boolean mBool[] = new boolean[1];
+        mBool[0] = loginRuviuz(email, password);
+
+        return mBool;
     }
 
     @Override
-    protected void onPostExecute(String[] result) {
-        if (null == result) {
-            String[] errStr = new String[2];
-            errStr[0] = "Login Failed";
-            delegate.processFinish(errStr);
+    protected void onPostExecute(boolean[] result) {
+        if (!result[0]) {
+            delegate.processFinish("Login Failed");
         } else {
             super.onPostExecute(result);
-            delegate.processFinish(result);
+            delegate.processFinish(this.authToken);
         }
     }
 
     //curl -i -X POSontent-Type: application/json" -d '{"email":"jiggamortis","password":"calcutta"}' http://127.0.0.1:5000/login
 
 
-    public String loginRuviuz(String email, String password) {
+    private boolean loginRuviuz(String email, String password) {
         String loginUrl = baseUrl + "/login";
         HttpURLConnection connection = null;
         BufferedReader reader = null;
@@ -104,16 +99,14 @@ public class LoginTask extends AsyncTask<String[], String, String[]> {
                 buffer.append(line);
             }
 
-            if (setData(buffer.toString())) {
-                return "TRUE!!!";
-            }
+            return setData(buffer.toString());
 
         } catch (MalformedURLException e) {
             e.printStackTrace();
-            return "farlse";
+            return false;
         } catch (IOException e) {
             e.printStackTrace();
-            return "Farlses";
+            return false;
         } finally {
             if (connection != null) {
                 connection.disconnect();
@@ -126,13 +119,13 @@ public class LoginTask extends AsyncTask<String[], String, String[]> {
                 e.printStackTrace();
             }
         }
-        return "Login Attempt Successful!";
     }
 
-    public boolean setData(String result) {
+    private boolean setData(String result) {
         try {
             JSONObject resultJson = new JSONObject(result);
             Log.d(TAG, result);
+            this.authToken = resultJson.getString("authToken");
             return true;
         } catch (JSONException e) {
             e.printStackTrace();
