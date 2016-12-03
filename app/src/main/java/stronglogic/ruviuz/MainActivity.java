@@ -100,7 +100,6 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
             getSupportActionBar().setLogo(R.drawable.rlogo);
             getSupportActionBar().setDisplayShowTitleEnabled(false);
             getSupportActionBar().setElevation(8f);
-
         }
 
         roofLength = (NumberPicker) findViewById(R.id.roofLength);
@@ -320,13 +319,6 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         return creds;
     }
 
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        MenuInflater inflater = getMenuInflater();
-//        inflater.inflate(R.menu.list_activity_actions, menu);
-//        return super.onCreateOptionsMenu(menu);
-//    }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -342,6 +334,8 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         switch (item.getItemId()) {
             case R.id.roofView:
                 Intent rviewIntent = new Intent(this, RviewActivity.class);
+                rviewIntent.putExtra("authToken", authToken);
+                rviewIntent.putExtra("baseUrl", baseUrl);
                 this.startActivity(rviewIntent);
                 break;
             case R.id.loginAction:
@@ -437,7 +431,6 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
             if (mBundle != null) {
 
                 try {
-//                    ruuvJson.put(authToken, ":jigga");
                     ruuvJson.put("address", mBundle.getString("address"));
                     ruuvJson.put("width", mBundle.getFloat("width"));
                     ruuvJson.put("length", mBundle.getFloat("length"));
