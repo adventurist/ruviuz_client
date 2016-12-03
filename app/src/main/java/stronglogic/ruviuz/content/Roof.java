@@ -10,6 +10,7 @@ import java.util.ArrayList;
 
 /**
  * Created by logicp on 12/2/2016.
+ * Yeah
  */
 public class Roof extends LauncherActivity.ListItem implements Serializable  {
 
@@ -79,5 +80,5 @@ public class Roof extends LauncherActivity.ListItem implements Serializable  {
         this.photos = urls;
     }
 
-    public ArrayList<URL> getPhotos() { return this.photos;}
+    public ArrayList<URL> getPhotos() { return new ArrayList<URL>(this.photos);}
 }

@@ -3,6 +3,9 @@ package stronglogic.ruviuz;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -15,20 +18,29 @@ import java.util.ArrayList;
 
 import stronglogic.ruviuz.content.Roof;
 import stronglogic.ruviuz.tasks.RviewTask;
+import stronglogic.ruviuz.views.RuvAdapter;
 
 public class RviewActivity extends AppCompatActivity {
 
     private static final String TAG = "RuviuzRVIEWACTIVITY";
 
+    private android.support.v7.widget.Toolbar mToolbar;
+
     private String authToken;
     private String baseUrl;
 
     ArrayList<Roof> roofArrayList;
+    RecyclerView rv;
+
+    private Bundle mBundle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_rview);
+
+        mToolbar = (Toolbar) findViewById(R.id.app_bar);
+        setSupportActionBar(mToolbar);
 
         Intent mIntent = getIntent();
         this.authToken = mIntent.getStringExtra("authToken");
@@ -43,7 +55,8 @@ public class RviewActivity extends AppCompatActivity {
                 Toast.makeText(getBaseContext(), output, Toast.LENGTH_LONG).show();
 
                 if (parseData(output)) {
-                    Log.d(TAG, "Success!");
+                    updateUi();
+                    Log.d(TAG, "Suckcess!");
                 }
             }
         });
@@ -58,10 +71,10 @@ public class RviewActivity extends AppCompatActivity {
         try {
 
             JSONObject dataJson = new JSONObject(data);
-//            JSONObject rvDataJson = new JSONObject(dataJson.getString("Roofs"));
-            JSONArray rvJsonArray = new JSONArray(dataJson.toString());
+            JSONArray rvJsonArray = new JSONArray(dataJson.getString("Roofs"));
             for (int i = 0; i < rvJsonArray.length(); i++) {
-                JSONObject roofJson = rvJsonArray.getJSONObject(i);
+                JSONObject keyPairJson = rvJsonArray.getJSONObject(i);
+                JSONObject roofJson = new JSONObject(keyPairJson.getString("roof"));
                 Roof roof = new Roof();
                 roof.setId(Integer.valueOf(roofJson.getString("id")));
                 roof.setAddress(roofJson.getString("address"));
@@ -72,11 +85,43 @@ public class RviewActivity extends AppCompatActivity {
 
                 roofArrayList.add(roof);
             }
-
+            return true;
         } catch (JSONException e) {
             e.printStackTrace();
             return false;
         }
-        return false;
     }
+
+    public ArrayList<Roof> getFeed()  {
+        return this.roofArrayList;
+    }
+
+
+    public void updateUi()  {
+        final ArrayList<Roof> feedList = getFeed();
+        if (feedList.size() > 0) {
+            final RuvAdapter ruvAdapter = new RuvAdapter(RviewActivity.this, feedList, mBundle);
+            rv = (RecyclerView) findViewById(R.id.recycView);
+            rv.setAdapter(ruvAdapter);
+            rv.addOnScrollListener(new RecyclerView.OnScrollListener() {
+                @Override
+                public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                    super.onScrollStateChanged(recyclerView, newState);
+//                    scrollChange(recyclerView, newState);
+                }
+                @Override
+                public void onScrolled(RecyclerView recyclerView, int dx, int dy)  {
+//                    scrolled(recyclerView, dx, dy);
+                }        String uid;
+
+            });
+            LinearLayoutManager layoutMgr = new LinearLayoutManager(getBaseContext(),
+                    LinearLayoutManager.VERTICAL, false);
+            layoutMgr.setAutoMeasureEnabled(true);
+            layoutMgr.setRecycleChildrenOnDetach(true);
+            rv.setLayoutManager(layoutMgr);
+//            rv.addItemDecoration(new HorizontalDividerItemDecoration.Builder(this).build());
+        }
+    }
+
 }
