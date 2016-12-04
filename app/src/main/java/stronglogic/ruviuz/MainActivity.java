@@ -68,6 +68,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
 
     private static final String TAG = "Ruviuz";
     private static final String baseUrl = "http://10.0.2.2:5000";
+//        private static final String baseUrl = "http://52.43.250.94:5000";
 
     private String authToken;
 

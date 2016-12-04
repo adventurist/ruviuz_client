@@ -112,10 +112,12 @@ public class RuvAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         if (holder.getItemViewType() == RUV_VIEW) {
             final RuvHolder ruvHolder = (RuvHolder) holder;
 
+            ruvHolder.idTv.setText(String.valueOf(Roof.getId()));
             ruvHolder.addressTv.setText(Roof.getAddress());
             ruvHolder.widthTv.setText(String.valueOf(Roof.getWidth()));
             ruvHolder.lengthTv.setText(String.valueOf(Roof.getLength()));
             ruvHolder.slopeTv.setText(String.valueOf(Roof.getSlope()));
+            ruvHolder.priceTv.setText(String.valueOf(Roof.getPrice()));
 
 
             ruvHolder.roofOptions.setOnClickListener(new View.OnClickListener() {

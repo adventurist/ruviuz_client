@@ -3,209 +3,190 @@
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     android:minHeight="100dp"
-    android:descendantFocusability="blocksDescendants">
+    android:descendantFocusability="blocksDescendants"
+    android:background="#beffea">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:id="@+id/row1"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true">
+    <TextView
+        android:text="ID"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/idLabel"
+
+        android:layout_marginTop="12dp"
+        android:layout_marginStart="8dp" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/addressTv">
+        android:layout_marginStart="8dp"
+        android:id="@+id/idTv"
+        android:layout_alignEnd="@+id/idLabel"
+        android:textColor="@color/colorPrimaryDark">
+
     </TextView>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/row1"
+        android:id="@+id/row2">
+    <TextView
+        android:text="Address"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/addressLabel"
+        android:layout_alignBottom="@+id/idLabel"
+        android:layout_marginStart="8dp"/>
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/priceTv">
-
+        android:layout_marginStart="8dp"
+        android:id="@+id/addressTv"
+        android:layout_alignEnd="@+id/addressLabel"
+        android:textColor="@color/colorPrimaryDark">
     </TextView>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/row2"
+        android:id="@+id/row3">
+    <TextView
+        android:text="Width"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/widthLabel"
+        android:layout_alignBottom="@+id/addressLabel"
+        android:layout_marginStart="8dp"/>
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/idTv">
+        android:layout_marginStart="8dp"
+        android:id="@+id/widthTv"
+        android:layout_alignBottom="@+id/idTv"
+        android:layout_alignEnd="@+id/widthLabel"
+        android:textColor="@color/colorPrimaryDark">
 
     </TextView>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/row3"
+        android:id="@+id/row4">
+    <TextView
+        android:text="Length"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/lengthLabel"
+        android:layout_alignBottom="@+id/widthLabel"
+        android:layout_marginStart="8dp"/>
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/widthTv">
+        android:layout_marginStart="8dp"
+        android:id="@+id/lengthTv"
+        android:layout_alignEnd="@+id/lengthLabel"
+        android:textColor="@color/colorPrimaryDark">
 
     </TextView>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/row4"
+        android:id="@+id/row5">
+    <TextView
+        android:text="Slope"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/slopeLabel"
+        android:layout_alignBottom="@+id/lengthLabel"
+        android:layout_marginStart="8dp"/>
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/lengthTv">
+        android:layout_marginStart="8dp"
+        android:id="@+id/slopeTv"
+        android:layout_alignEnd="@+id/slopeLabel"
+        android:textColor="@color/colorPrimaryDark">
 
     </TextView>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/row5"
+        android:id="@+id/row6">
+    <TextView
+        android:text="Price"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/priceLabel"
+        android:layout_marginStart="8dp"/>
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/slopeTv">
+        android:layout_marginStart="8dp"
+        android:id="@+id/priceTv"
+        android:layout_alignEnd="@+id/priceLabel"
+        android:textColor="@color/colorPrimaryDark">
 
     </TextView>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/row6"
+        android:id="@+id/row7">
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/ruvPhoto1">
+        android:id="@+id/ruvPhoto1"
+        android:layout_alignBottom="@+id/widthTv"
+        android:layout_marginStart="8dp">
 
     </ImageView>
     <ImageView
-        android:layout_width="fill_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
         android:id="@+id/ruvPhoto2"
-        android:layout_alignParentRight="false">
+        android:layout_alignEnd="@+id/ruvPhoto1">
 
     </ImageView>
     <ImageView
-        android:layout_width="fill_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/ruvPhoto3">
+        android:layout_marginStart="8dp"
+        android:id="@+id/ruvPhoto3"
+        android:layout_alignEnd="@+id/ruvPhoto2">
 
     </ImageView>
+    </LinearLayout>
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/roofOptions"
         android:text="Options"
-        android:layout_alignParentStart="false"
         android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true">
+        android:background="?android:attr/colorActivatedHighlight"
+        android:forceHasOverlappingRendering="true"
+        android:layout_marginEnd="24dp"
+        android:layout_marginBottom="12dp"
+        android:layout_marginTop="12dp"
+        android:layout_centerVertical="true">
 
     </Button>
-    <!--<LinearLayout-->
-        <!--android:layout_marginTop="4dp"-->
-        <!--android:layout_marginBottom="4dp"-->
-        <!--android:layout_width="fill_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:orientation="horizontal">-->
-    <!--<LinearLayout-->
-        <!--android:orientation="vertical"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:id="@+id/postInfo">-->
-
-        <!--<ImageView-->
-            <!--android:layout_height="32dp"-->
-            <!--android:id="@+id/profileImage"-->
-            <!--android:layout_width="32dp" />-->
-        <!--<TextView-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:textSize="10sp"-->
-            <!--android:id="@+id/posterName"/>-->
-        <!--<TextView-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:textSize="10dp"-->
-            <!--android:id="@+id/statusDate"/>-->
-
-    <!--</LinearLayout>-->
-
-    <!--<TextView-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:id="@+id/statusMessage"/>-->
-    <!--</LinearLayout>-->
-
-    <!--<ImageView-->
-        <!--android:id="@+id/stFeedImage"-->
-        <!--android:layout_height="170.65dp"-->
-        <!--android:layout_width="256dp"-->
-        <!--android:layout_alignParentLeft="true"-->
-        <!--android:layout_centerVertical="true"-->
-        <!--android:layout_centerHorizontal="true"-->
-        <!--android:layout_gravity="center_horizontal" />-->
-
-    <!--<TextView-->
-        <!--android:id="@+id/stFeedBody"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_toEndOf="@id/stFeedImage"-->
-        <!--android:lineSpacingExtra="3dp"-->
-        <!--android:paddingLeft="5dp"-->
-        <!--android:paddingTop="5dp"-->
-        <!--android:textStyle="bold"-->
-        <!--android:typeface="sans" />-->
-
-    <!--&lt;!&ndash;<com.devbrackets.android.exomedia.ui.widget.EMVideoView&ndash;&gt;-->
-        <!--&lt;!&ndash;android:id="@+id/video_view"&ndash;&gt;-->
-        <!--&lt;!&ndash;android:layout_width="match_parent"&ndash;&gt;-->
-        <!--&lt;!&ndash;android:layout_height="match_parent"&ndash;&gt;-->
-        <!--&lt;!&ndash;EMVideoView:useDefaultControls="true"/>&ndash;&gt;-->
-
-    <!--<ImageView-->
-        <!--android:id="@+id/video_feed_item_video_image"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_gravity="center"-->
-        <!--android:layout_marginLeft="@dimen/activity_horizontal_margin"-->
-        <!--android:layout_marginRight="@dimen/activity_horizontal_margin"-->
-        <!--android:adjustViewBounds="true"-->
-        <!--android:background="@android:color/holo_orange_dark"-->
-        <!--android:clickable="true" />-->
-        <!--&lt;!&ndash;android:minHeight="200dp" &ndash;&gt;-->
-
-
-    <!--&lt;!&ndash;<twitcher.twitcherurlconnect.video.TwitcherVideo&ndash;&gt;-->
-        <!--&lt;!&ndash;android:id="@+id/video_view"&ndash;&gt;-->
-        <!--&lt;!&ndash;android:layout_width="match_parent"&ndash;&gt;-->
-        <!--&lt;!&ndash;android:layout_height="wrap_content"&ndash;&gt;-->
-        <!--&lt;!&ndash;android:layout_gravity="center"&ndash;&gt;-->
-        <!--&lt;!&ndash;android:background="@android:color/black"&ndash;&gt;-->
-        <!--&lt;!&ndash;android:clickable="true"&ndash;&gt;-->
-        <!--&lt;!&ndash;android:minHeight="1dp"&ndash;&gt;-->
-        <!--&lt;!&ndash;android:visibility="invisible" />&ndash;&gt;-->
-    <!--&lt;!&ndash;<ImageView&ndash;&gt;-->
-        <!--&lt;!&ndash;android:id="@+id/video_play_img_btn"&ndash;&gt;-->
-        <!--&lt;!&ndash;android:layout_width="wrap_content"&ndash;&gt;-->
-        <!--&lt;!&ndash;android:layout_height="wrap_content"&ndash;&gt;-->
-        <!--&lt;!&ndash;android:layout_gravity="center"&ndash;&gt;-->
-        <!--&lt;!&ndash;android:clickable="true"&ndash;&gt;-->
-        <!--&lt;!&ndash;android:padding="1dp"&ndash;&gt;-->
-        <!--&lt;!&ndash;android:src="@mipmap/ic_play_circle_outline_black_48dp"&ndash;&gt;-->
-        <!--&lt;!&ndash;android:tint="@android:color/holo_red_dark" />&ndash;&gt;-->
-
-        <!--<LinearLayout-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:orientation="vertical">-->
-            <!--<RelativeLayout-->
-                <!--android:layout_width="match_parent"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:orientation="horizontal">-->
-                <!--<LinearLayout-->
-                    <!--android:layout_width="wrap_content"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:id="@+id/likeLayout"-->
-                    <!--android:orientation="horizontal"-->
-                    <!--android:layout_alignParentStart="true">-->
-                <!--<TextView-->
-                    <!--android:layout_width="wrap_content"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:id="@+id/likes"-->
-                    <!--android:textSize="18dp"-->
-                    <!--android:textColor="#c307c0"-->
-                     <!--/>-->
-
-                <!--<ImageView-->
-                    <!--android:layout_width="wrap_content"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:id="@+id/likeBtn"-->
-                    <!--android:layout_gravity="center_vertical"-->
-                    <!--android:layout_marginStart="12dp"-->
-                    <!--android:onClick="toggleLike" />-->
-                <!--</LinearLayout>-->
-
-                <!--<Button-->
-                    <!--android:layout_width="32dp"-->
-                    <!--android:layout_height="32dp"-->
-                    <!--android:id="@+id/commentBtn"-->
-                    <!--android:textSize="12sp"-->
-                    <!--android:layout_gravity="center_vertical"-->
-                    <!--android:background="@drawable/chat"-->
-                    <!--android:layout_marginLeft="12dp"-->
-                    <!--android:layout_marginRight="12dp"-->
-                    <!--android:layout_alignParentEnd="true"-->
-                    <!--/>-->
-
-            <!--</RelativeLayout>-->
-
-        <!--</LinearLayout>-->
-</RelativeLayout>
+    </RelativeLayout>
