@@ -59,6 +59,9 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
 
     private android.support.v7.widget.Toolbar mToolbar;
 
+    private LoginFragment mLoginFrag;
+    private AddressFragment mAddressFrag;
+
     private OrientationEventListener mListener;
 
     private NumberPicker roofLength, roofWidth, roofSlope;
@@ -232,23 +235,28 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
 
 
     public void loginDialog() {
-        FragmentManager fm = getFragmentManager();
-        LoginFragment loginFragment = new LoginFragment();
-        Bundle args = new Bundle();
-        args.putString("baseUrl", baseUrl);
-        if (getPrefCreds() != null) {
-            args.putString("email", prefs.getString("email", "Email"));
-            args.putString("password", prefs.getString("password", "Password"));
+
+        if (mLoginFrag == null) {
+            FragmentManager fm = getFragmentManager();
+            mLoginFrag = new LoginFragment();
+            Bundle args = new Bundle();
+            args.putString("baseUrl", baseUrl);
+            if (getPrefCreds() != null) {
+                args.putString("email", prefs.getString("email", "Email"));
+                args.putString("password", prefs.getString("password", "Password"));
+            }
+            mLoginFrag.setArguments(args);
+            mLoginFrag.show(fm, "Please Login");
         }
-        loginFragment.setArguments(args);
-        loginFragment.show(fm, "Please Login");
     }
 
 
     public void addressDialog() {
-        FragmentManager fm = getFragmentManager();
-        AddressFragment addressFragment = new AddressFragment();
-        addressFragment.show(fm, "Please Enter Addresss");
+        if (mAddressFrag == null) {
+            FragmentManager fm = getFragmentManager();
+            mAddressFrag = new AddressFragment();
+            mAddressFrag.show(fm, "Please Enter Addresss");
+        }
     }
 
 
@@ -256,6 +264,10 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
     public void loginFragInteraction(String output) {
         Toast.makeText(this, output, Toast.LENGTH_SHORT).show();
         this.authToken = output;
+
+        if (mLoginFrag != null) {
+            mLoginFrag.dismiss();
+        }
     }
 
 
@@ -264,6 +276,10 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         this.address = address + ",\n" + postal;
         Toast.makeText(this, this.address, Toast.LENGTH_SHORT).show();
         addressBtn.setAlpha(1f);
+
+        if (mAddressFrag != null) {
+            mAddressFrag.dismiss();
+        }
     }
 
     @Override

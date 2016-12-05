@@ -7,7 +7,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -52,18 +51,15 @@ public class RviewActivity extends AppCompatActivity {
             @Override
             public void processFinish(String output) {
                 Log.d(TAG, output);
-                Toast.makeText(getBaseContext(), output, Toast.LENGTH_LONG).show();
 
                 if (parseData(output)) {
                     updateUi();
-                    Log.d(TAG, "Suckcess!");
+                    Log.d(TAG, "UpdatedUI");
                 }
             }
         });
-
         rviewTask.execute();
     }
-
 
 
     public boolean parseData(String data) {
@@ -92,6 +88,7 @@ public class RviewActivity extends AppCompatActivity {
         }
     }
 
+
     public ArrayList<Roof> getFeed()  {
         return this.roofArrayList;
     }
@@ -112,7 +109,7 @@ public class RviewActivity extends AppCompatActivity {
                 @Override
                 public void onScrolled(RecyclerView recyclerView, int dx, int dy)  {
 //                    scrolled(recyclerView, dx, dy);
-                }        String uid;
+                }
 
             });
             LinearLayoutManager layoutMgr = new LinearLayoutManager(getBaseContext(),

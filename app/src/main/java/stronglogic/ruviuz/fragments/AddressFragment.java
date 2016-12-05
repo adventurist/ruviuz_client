@@ -100,8 +100,7 @@ public class AddressFragment extends DialogFragment {
 
     public void buttonClicked(View view)    {
         if (this.address != null && this.postal != null) {
-                    addressFragListener.addressFragInteraction(address, postal);
-
+            addressFragListener.addressFragInteraction(address, postal);
         }
     }
 
