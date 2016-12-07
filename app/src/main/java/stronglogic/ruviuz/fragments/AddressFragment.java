@@ -26,8 +26,8 @@ public class AddressFragment extends DialogFragment {
 
     private String address, city, province, postal;
 
-    public static AddressFragment newInstance(String param1, String param2) {
-        AddressFragment fragment = new AddressFragment();
+    public static RuvFragment newInstance(String param1, String param2) {
+        RuvFragment fragment = new RuvFragment();
 //        Bundle args = new Bundle();
 //        args.putString(ARG_PARAM1, param1);
 //        args.putString(ARG_PARAM2, param2);

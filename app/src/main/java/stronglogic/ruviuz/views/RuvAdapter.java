@@ -2,6 +2,7 @@ package stronglogic.ruviuz.views;
 
 
 import android.app.Activity;
+import android.app.FragmentManager;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -16,6 +17,7 @@ import java.util.ArrayList;
 
 import stronglogic.ruviuz.R;
 import stronglogic.ruviuz.content.Roof;
+import stronglogic.ruviuz.fragments.RuvFragment;
 
 
 /**
@@ -31,28 +33,20 @@ public class RuvAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final String TAG = "RuviuzRUVADAPTER";
     private final static int RUV_VIEW = 0;
 
+    private String baseUrl, authToken;
 
     private Bundle mBundle;
-    
-//    public stListener stListener, stCListener;
 
-    public RuvAdapter(Activity activity, ArrayList ruvList, Bundle mBundle)   {
+
+    public RuvAdapter(Activity activity, ArrayList ruvList, String baseUrl, String authToken)   {
         super();
         this.mActivity = activity;
         this.ruvList = ruvList;
-        this.mBundle = mBundle;
+        this.baseUrl = baseUrl;
+        this.authToken = authToken;
         layoutInflater = LayoutInflater.from(activity);
     }
 
-
-//    public interface stListener {
-//        void stLikeMessage(String value, Boolean like, int position);
-//    }
-
-//    public void setStListen(stListener stListener, stListener stCListener) {
-//        this.stListener = stListener;
-//        this.stCListener = stCListener;
-//    }
 
     static class RuvHolder extends RecyclerView.ViewHolder  {
         TextView addressTv, priceTv, idTv, widthTv, lengthTv, slopeTv;
@@ -72,7 +66,6 @@ public class RuvAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             ruvPhoto2  = (ImageView) mView.findViewById(R.id.ruvPhoto2);
             ruvPhoto3  = (ImageView) mView.findViewById(R.id.ruvPhoto3);
             roofOptions = (Button) mView.findViewById(R.id.roofOptions);
-        
         }
     }
 
@@ -118,47 +111,28 @@ public class RuvAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             ruvHolder.lengthTv.setText(String.valueOf(Roof.getLength()));
             ruvHolder.slopeTv.setText(String.valueOf(Roof.getSlope()));
             ruvHolder.priceTv.setText(String.valueOf(Roof.getPrice()));
-
+            final int ruvId = Roof.getId();
 
             ruvHolder.roofOptions.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
+
                     Toast.makeText(mActivity, "CLICKED!!", Toast.LENGTH_SHORT).show();
+                    ruvDialog(ruvId);
                 }
             });
-
-//            Glide.with(mActivity)
-//                    .load(getImg(Roof))
-//                    .centerCrop()
-//                    .diskCacheStrategy(DiskCacheStrategy.RESULT)
-//                    .into(ruvHolder.imageView);
-//            if (Roof.getImage() != null && Roof.getImage().length() > 0) {
-//
-//
-//                String extension = Roof.getImage().substring(Roof.getImage().lastIndexOf("."));
-//                Log.d("VideoDBG", extension);
-//                Log.d("VideoDBG", "Attempting to place video");
-//
-//
-//                if (ruvHolder.profileImage != null && Roof.getProfileImage() != null) {
-//                    Glide.with(mActivity)
-//                            .load(Roof.getProfileImage().replace("\\/\\/", "//"))
-//                            .centerCrop()
-//                            .diskCacheStrategy(DiskCacheStrategy.RESULT)
-//                            .into(ruvHolder.profileImage);
-//                }
-//            }
         }
     }
 
-    public void ruvDialog(String sid, String cid, int position) {
-//        FragmentManager fm = mActivity.getFragmentManager();
-//        CommentFragment commentFragment = new CommentFragment();
-//        mBundle.putString("sid", sid);
-//        mBundle.putString("uaid", cid);
-//        mBundle.putInt("position", position);
-//        commentFragment.setArguments(mBundle);
-//        commentFragment.show(fm, "Add a comment");
-//        commentFragment.setTargetFragment(commentFragment, 2);
+    public void ruvDialog(int id) {
+        FragmentManager fm = mActivity.getFragmentManager();
+        RuvFragment rFrag = new RuvFragment();
+        Bundle mBundle = new Bundle();
+        mBundle.putString("authToken", authToken);
+        mBundle.putString("baseUrl", baseUrl);
+        mBundle.putInt("ruvId", id);
+        rFrag.setArguments(mBundle);
+        rFrag.show(fm, "Modify a Roof");
+        rFrag.setTargetFragment(rFrag, 2);
     }
 
 //    public String getImg(Roof mRuv) {

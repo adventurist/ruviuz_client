@@ -7,6 +7,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -16,10 +17,11 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 
 import stronglogic.ruviuz.content.Roof;
+import stronglogic.ruviuz.fragments.RuvFragment;
 import stronglogic.ruviuz.tasks.RviewTask;
 import stronglogic.ruviuz.views.RuvAdapter;
 
-public class RviewActivity extends AppCompatActivity {
+public class RviewActivity extends AppCompatActivity implements RuvFragment.RuvFragListener {
 
     private static final String TAG = "RuviuzRVIEWACTIVITY";
 
@@ -97,7 +99,7 @@ public class RviewActivity extends AppCompatActivity {
     public void updateUi()  {
         final ArrayList<Roof> feedList = getFeed();
         if (feedList.size() > 0) {
-            final RuvAdapter ruvAdapter = new RuvAdapter(RviewActivity.this, feedList, mBundle);
+            final RuvAdapter ruvAdapter = new RuvAdapter(RviewActivity.this, feedList, baseUrl, authToken);
             rv = (RecyclerView) findViewById(R.id.recycView);
             rv.setAdapter(ruvAdapter);
             rv.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -121,4 +123,8 @@ public class RviewActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void ruvFragInteraction(String result) {
+        Toast.makeText(this, result, Toast.LENGTH_SHORT).show();
+    }
 }
