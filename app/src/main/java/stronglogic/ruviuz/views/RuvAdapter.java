@@ -56,8 +56,8 @@ public class RuvAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         
         public RuvHolder(View mView) {
             super(mView);
-            addressTv = (TextView) mView.findViewById(R.id.addressTv);
             priceTv = (TextView) mView.findViewById(R.id.priceTv);
+            addressTv = (TextView) mView.findViewById(R.id.addressTv);
             idTv = (TextView) mView.findViewById(R.id.idTv );
             widthTv = (TextView) mView.findViewById(R.id.widthTv);
             lengthTv = (TextView) mView.findViewById((R.id.lengthTv));

@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.DialogFragment;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.util.Base64;
 import android.util.Log;
@@ -13,7 +14,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.Toast;
+import android.widget.TextView;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -36,12 +37,13 @@ import stronglogic.ruviuz.R;
  * Created by logicp on 12/6/16.
  * Anoop's Birthday
  */
-public class RuvFragment extends DialogFragment implements Handler.Callback {
+public class RuvFragment extends DialogFragment {
 
     final private static String TAG = "RuviuzRUVFRAGMENT";
 
     private RuvFragListener ruvFragListener;
 
+    private TextView idTv;
     private EditText addressEt, priceEt, widthEt, lengthEt, slopeEt;
     private ImageView ruvPhoto1, ruvPhoto2, ruvPhoto3;
     private Button updateBtn;
@@ -50,7 +52,7 @@ public class RuvFragment extends DialogFragment implements Handler.Callback {
 
     private String baseUrl, authToken;
 
-    private Handler mHandler;
+    private Handler mHandler, xHandler;
 
     private Bundle mBundle;
 
@@ -74,6 +76,71 @@ public class RuvFragment extends DialogFragment implements Handler.Callback {
         this.baseUrl = getArguments().getString("baseUrl");
         this.authToken = getArguments().getString("authToken");
         this.ruvId = getArguments().getInt("ruvId");
+
+        this.mHandler = new Handler(Looper.getMainLooper()) {
+            @Override
+            public void handleMessage(Message inputMessage) {
+                if (inputMessage.getData().getString("RuuvUpdateMsg") != null) {
+                    try {
+                        JSONObject handlerJson = new JSONObject(inputMessage.getData().getString("RuuvUpdateMsg"));
+                        String mString = "Muhstrrang";
+                        try {
+                            if (handlerJson.getString("Update") != null) {
+                                ruvFragListener.ruvFragInteraction(handlerJson.getString("Update"));
+                            } else if (handlerJson.getString("RuvGet") != null) {
+                                ruvFragListener.ruvFragInteraction(handlerJson.getString("Roof"));
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        };
+        this.xHandler = new Handler(Looper.getMainLooper()) {
+            @Override
+            public void handleMessage(Message inputMessage) {
+                if (inputMessage.getData().getString("RuuvUpdateMsg") != null) {
+                    try {
+                        JSONObject handlerJson = new JSONObject(inputMessage.getData().getString("RuuvUpdateMsg"));
+                        String mString = "Muhstrrang";
+                        try {
+                            if (handlerJson.has("Update")) {
+                                ruvFragListener.ruvFragInteraction(handlerJson.getString("Update"));
+                            } else if (handlerJson.has("RuvGet")) {
+
+                                ruvFragListener.ruvFragInteraction(handlerJson.getString("Roof"));
+                                JSONObject roofJson = new JSONObject(handlerJson.getString("Roof"));
+                                if (idTv != null) {
+                                    idTv.setText(roofJson.getString("id"));
+                                }
+                                if (addressEt != null) {
+                                    addressEt.setText(roofJson.getString("address"));
+                                }
+                                if (lengthEt != null) {
+                                    lengthEt.setText(roofJson.getString("length"));
+                                }
+                                if (priceEt != null) {
+                                    priceEt.setText(roofJson.getString("price"));
+                                }
+                                if (widthEt != null) {
+                                    widthEt.setText(roofJson.getString("width"));
+                                }
+                                if (slopeEt != null) {
+                                    slopeEt.setText(roofJson.getString("slope"));
+                                }
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        };
     }
 
     @Override
@@ -82,8 +149,9 @@ public class RuvFragment extends DialogFragment implements Handler.Callback {
 
         View mView = inflater.inflate(R.layout.ruvfragment, parent, false);
 
-        addressEt = (EditText) mView.findViewById(R.id.addressEt);
+        idTv = (TextView) mView.findViewById(R.id.idTv);
         priceEt = (EditText) mView.findViewById(R.id.priceEt);
+        addressEt = (EditText) mView.findViewById(R.id.addressEt);
         widthEt = (EditText) mView.findViewById(R.id.widthEt);
         lengthEt = (EditText) mView.findViewById((R.id.lengthEt));
         slopeEt = (EditText) mView.findViewById(R.id.slopeEt);
@@ -97,6 +165,8 @@ public class RuvFragment extends DialogFragment implements Handler.Callback {
                 buttonClicked(v);
             }
         });
+
+        getRuv(mView);
 
         return mView;
     }
@@ -116,29 +186,36 @@ public class RuvFragment extends DialogFragment implements Handler.Callback {
     }
 
 
-    @Override
-    public boolean handleMessage(Message inputMessage) {
-        if (inputMessage.getData().getString("RuuvUpdateMsg") != null) {
-            Toast.makeText(getActivity(), inputMessage.getData().getString("RuuvUpdateMsg"), Toast.LENGTH_SHORT).show();
-            return true;
-        }
-        return false;
+//    @Override
+//    public boolean handleMessage(Message inputMessage) {
+//        if (inputMessage.getData().getString("RuuvUpdateMsg") != null) {
+//            Toast.makeText(getActivity(), inputMessage.getData().getString("RuuvUpdateMsg"), Toast.LENGTH_SHORT).show();
+//            return true;
+//        }
+//        return false;
+//    }
+
+
+    public void getRuv(View view) {
+        RuvGetThread rgThread = new RuvGetThread(this, xHandler, baseUrl, authToken, this.ruvId);
+        Thread getThread = new Thread(rgThread);
+        getThread.start();
+
     }
 
-
     public void buttonClicked(View view)    {
+
+
         mBundle = new Bundle();
         mBundle.putString("address", addressEt.getText().toString());
         mBundle.putString("price", priceEt.getText().toString());
-        mBundle.putFloat("width", Float.valueOf(widthEt.getText().toString()));
+        mBundle.putFloat("width", Float.valueOf((widthEt.getText().toString())));
         mBundle.putFloat("length", Float.valueOf(lengthEt.getText().toString()));
         mBundle.putFloat("slope", Float.valueOf(slopeEt.getText().toString()));
         mBundle.putInt("ruvId", ruvId);
-        RuvUpThread ruvUpThread = new RuvUpThread(this, mHandler, baseUrl, authToken, mBundle);
+        RuvUpThread ruvUpThread = new RuvUpThread(this, xHandler, baseUrl, authToken, mBundle);
         Thread updateThread = new Thread(ruvUpThread);
         updateThread.start();
-
-            ruvFragListener.ruvFragInteraction("Hi::How are you?");
     }
 
     public interface RuvFragListener {
@@ -186,10 +263,10 @@ public class RuvFragment extends DialogFragment implements Handler.Callback {
 
         @Override
         public void run() {
-            Log.d(TAG, "TODO!!");
+            updateRuv();
         }
 
-        private boolean sendRuuv() {
+        private boolean updateRuv() {
             final int ruvId = mBundle.getInt("ruvId");
             String endpoint = baseUrl + "/roof/update/" + String.valueOf(ruvId);
             JSONObject ruuvJson = new JSONObject();
@@ -230,7 +307,96 @@ public class RuvFragment extends DialogFragment implements Handler.Callback {
                     bildr.append(line);
                 }
 
-                response = bildr.toString();
+                try {
+                    JSONObject respJson = new JSONObject(bildr.toString());
+//                    respJson.put("RuvGet", "RuvGet");
+                    response = respJson.toString();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                if (!response.trim().isEmpty()) {
+                    Bundle msgData = new Bundle();
+                    msgData.putString("RuuvUpdateMsg", String.valueOf(response));
+                    Message outgoingMsg = new Message();
+                    outgoingMsg.setData(msgData);
+                    mHandler.sendMessage(outgoingMsg);
+                }
+                return true;
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+                return false;
+            } catch (IOException e) {
+                e.printStackTrace();
+                return false;
+            }
+        }
+    }
+
+    private static class RuvGetThread implements Runnable {
+
+        private Handler mHandler;
+        private WeakReference<RuvFragment> mReference;
+        private RuvFragment rFrag;
+
+        private String baseUrl, authToken;
+        private int ruvId;
+
+        private Bundle mBundle;
+
+
+        private RuvGetThread(RuvFragment rFrag, Handler mHandler, String baseUrl, String authToken, int id) {
+            this.mReference = new WeakReference<RuvFragment>(rFrag);
+            this.mHandler = mHandler;
+            this.baseUrl = baseUrl;
+            this.authToken = authToken;
+            this.rFrag = rFrag;
+            this.ruvId = id;
+        }
+
+
+        @Override
+        public void run() {
+            getRuv();
+        }
+
+        private boolean getRuv() {
+            final int ruvId = this.ruvId;
+            String endpoint = baseUrl + "/roofs/" + String.valueOf(ruvId);
+
+            HttpURLConnection connection = null;
+            BufferedReader reader = null;
+            String response = null;
+
+            try {
+                URL url = new URL(endpoint);
+                String mAuth = authToken + ":jigga";
+                connection = (HttpURLConnection) url.openConnection();
+                connection.setRequestMethod("GET");
+                connection.setRequestProperty("Content-Type", "application/json");
+                connection.setRequestProperty("Accept", "application/json");
+                connection.setRequestProperty("Authorization", "Basic " + Base64.encodeToString(mAuth.trim().getBytes(), Base64.NO_WRAP));
+                connection.connect();
+
+                Log.d(TAG, String.valueOf(connection.getResponseCode()));
+                InputStream stream = connection.getInputStream();
+                reader = new BufferedReader(new InputStreamReader(stream));
+                StringBuilder bildr = new StringBuilder();
+                String line;
+
+                while ((line = reader.readLine()) != null) {
+                    bildr.append(line);
+                }
+
+                try {
+                    JSONObject respJson = new JSONObject(bildr.toString());
+                    respJson.put("RuvGet", "RuvGet");
+                    response = respJson.toString();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+
 
                 if (!response.trim().isEmpty()) {
                     Bundle msgData = new Bundle();
