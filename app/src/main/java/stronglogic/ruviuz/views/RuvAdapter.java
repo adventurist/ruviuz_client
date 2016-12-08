@@ -117,19 +117,20 @@ public class RuvAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 public void onClick(View v) {
 
                     Toast.makeText(mActivity, "CLICKED!!", Toast.LENGTH_SHORT).show();
-                    ruvDialog(ruvId);
+                    ruvDialog(ruvId, position);
                 }
             });
         }
     }
 
-    public void ruvDialog(int id) {
+    private void ruvDialog(int id, int position) {
         FragmentManager fm = mActivity.getFragmentManager();
         RuvFragment rFrag = new RuvFragment();
         Bundle mBundle = new Bundle();
         mBundle.putString("authToken", authToken);
         mBundle.putString("baseUrl", baseUrl);
         mBundle.putInt("ruvId", id);
+        mBundle.putInt("position", position);
         rFrag.setArguments(mBundle);
         rFrag.show(fm, "Modify a Roof");
         rFrag.setTargetFragment(rFrag, 2);

@@ -48,11 +48,11 @@ public class RuvFragment extends DialogFragment {
     private ImageView ruvPhoto1, ruvPhoto2, ruvPhoto3;
     private Button updateBtn;
 
-    private int ruvId;
+    private int ruvId, position;
 
     private String baseUrl, authToken;
 
-    private Handler mHandler, xHandler;
+    private Handler mHandler;
 
     private Bundle mBundle;
 
@@ -76,6 +76,7 @@ public class RuvFragment extends DialogFragment {
         this.baseUrl = getArguments().getString("baseUrl");
         this.authToken = getArguments().getString("authToken");
         this.ruvId = getArguments().getInt("ruvId");
+        this.position = getArguments().getInt("position");
 
         this.mHandler = new Handler(Looper.getMainLooper()) {
             @Override
@@ -83,35 +84,13 @@ public class RuvFragment extends DialogFragment {
                 if (inputMessage.getData().getString("RuuvUpdateMsg") != null) {
                     try {
                         JSONObject handlerJson = new JSONObject(inputMessage.getData().getString("RuuvUpdateMsg"));
-                        String mString = "Muhstrrang";
-                        try {
-                            if (handlerJson.getString("Update") != null) {
-                                ruvFragListener.ruvFragInteraction(handlerJson.getString("Update"));
-                            } else if (handlerJson.getString("RuvGet") != null) {
-                                ruvFragListener.ruvFragInteraction(handlerJson.getString("Roof"));
-                            }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        };
-        this.xHandler = new Handler(Looper.getMainLooper()) {
-            @Override
-            public void handleMessage(Message inputMessage) {
-                if (inputMessage.getData().getString("RuuvUpdateMsg") != null) {
-                    try {
-                        JSONObject handlerJson = new JSONObject(inputMessage.getData().getString("RuuvUpdateMsg"));
-                        String mString = "Muhstrrang";
                         try {
                             if (handlerJson.has("Update")) {
-                                ruvFragListener.ruvFragInteraction(handlerJson.getString("Update"));
+                                handlerJson.put("position", position);
+                                ruvFragListener.ruvFragInteraction("Update", handlerJson.toString());
                             } else if (handlerJson.has("RuvGet")) {
 
-                                ruvFragListener.ruvFragInteraction(handlerJson.getString("Roof"));
+                                ruvFragListener.ruvFragInteraction("GetRoof", handlerJson.getString("Roof"));
                                 JSONObject roofJson = new JSONObject(handlerJson.getString("Roof"));
                                 if (idTv != null) {
                                     idTv.setText(roofJson.getString("id"));
@@ -162,11 +141,10 @@ public class RuvFragment extends DialogFragment {
 
         updateBtn.setOnClickListener(new View.OnClickListener()    {
             public void onClick(View v) {
-                buttonClicked(v);
+                updateRuv();
             }
         });
-
-        getRuv(mView);
+        getRuv();
 
         return mView;
     }
@@ -186,24 +164,14 @@ public class RuvFragment extends DialogFragment {
     }
 
 
-//    @Override
-//    public boolean handleMessage(Message inputMessage) {
-//        if (inputMessage.getData().getString("RuuvUpdateMsg") != null) {
-//            Toast.makeText(getActivity(), inputMessage.getData().getString("RuuvUpdateMsg"), Toast.LENGTH_SHORT).show();
-//            return true;
-//        }
-//        return false;
-//    }
-
-
-    public void getRuv(View view) {
-        RuvGetThread rgThread = new RuvGetThread(this, xHandler, baseUrl, authToken, this.ruvId);
+    public void getRuv() {
+        RuvGetThread rgThread = new RuvGetThread(this, mHandler, baseUrl, authToken, this.ruvId);
         Thread getThread = new Thread(rgThread);
         getThread.start();
 
     }
 
-    public void buttonClicked(View view)    {
+    public void updateRuv()    {
 
 
         mBundle = new Bundle();
@@ -213,13 +181,14 @@ public class RuvFragment extends DialogFragment {
         mBundle.putFloat("length", Float.valueOf(lengthEt.getText().toString()));
         mBundle.putFloat("slope", Float.valueOf(slopeEt.getText().toString()));
         mBundle.putInt("ruvId", ruvId);
-        RuvUpThread ruvUpThread = new RuvUpThread(this, xHandler, baseUrl, authToken, mBundle);
+        mBundle.putInt("position", position);
+        RuvUpThread ruvUpThread = new RuvUpThread(this, mHandler, baseUrl, authToken, mBundle);
         Thread updateThread = new Thread(ruvUpThread);
         updateThread.start();
     }
 
     public interface RuvFragListener {
-        void ruvFragInteraction(String result);
+        void ruvFragInteraction(String key, String data);
     }
 
 
@@ -268,6 +237,7 @@ public class RuvFragment extends DialogFragment {
 
         private boolean updateRuv() {
             final int ruvId = mBundle.getInt("ruvId");
+            final int position = mBundle.getInt("position");
             String endpoint = baseUrl + "/roof/update/" + String.valueOf(ruvId);
             JSONObject ruuvJson = new JSONObject();
 

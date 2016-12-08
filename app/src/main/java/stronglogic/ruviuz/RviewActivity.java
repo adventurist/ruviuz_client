@@ -30,8 +30,9 @@ public class RviewActivity extends AppCompatActivity implements RuvFragment.RuvF
     private String authToken;
     private String baseUrl;
 
-    ArrayList<Roof> roofArrayList;
-    RecyclerView rv;
+    private ArrayList<Roof> roofArrayList;
+    public RecyclerView rv;
+    private RuvAdapter ruvAdapter;
 
     private Bundle mBundle;
 
@@ -124,7 +125,33 @@ public class RviewActivity extends AppCompatActivity implements RuvFragment.RuvF
     }
 
     @Override
-    public void ruvFragInteraction(String result) {
-        Toast.makeText(this, result, Toast.LENGTH_SHORT).show();
+    public void ruvFragInteraction(String key, String data) {
+        if (key.equals("Update")) {
+            try {
+                JSONObject respJson = new JSONObject(data);
+                if (respJson.getString("Update").equals("Success")) {
+                    int ruvPosition = Integer.valueOf(respJson.getString("position"));
+                    JSONObject ruvJson = new JSONObject(respJson.getString("Roof"));
+                    Roof mRuv = roofArrayList.get(ruvPosition);
+                    mRuv.setAddress(ruvJson.getString("address"));
+                    mRuv.setLength(Float.valueOf(ruvJson.getString("length")));
+                    mRuv.setWidth(Float.valueOf(ruvJson.getString("width")));
+                    mRuv.setPrice(new BigDecimal((ruvJson.getString("price"))));
+                    mRuv.setSlope(Float.valueOf(ruvJson.getString("slope")));
+                    roofArrayList.set(ruvPosition, mRuv);
+                    rv.getAdapter().notifyItemChanged(ruvPosition);
+                    Toast.makeText(this, "RuuvUpdate successful.", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(this, "RuuvUpdate failed.", Toast.LENGTH_SHORT).show();
+                }
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            Toast.makeText(this, data, Toast.LENGTH_SHORT).show();
+        }
+        if (key.equals("GetRuv")) {
+            Toast.makeText(this, data, Toast.LENGTH_SHORT).show();
+        }
     }
 }
