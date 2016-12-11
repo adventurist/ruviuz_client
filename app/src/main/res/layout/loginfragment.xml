@@ -20,6 +20,7 @@
             android:inputType="textEmailAddress"
             android:layout_gravity="center_vertical"
             android:text="@string/email"
+            android:selectAllOnFocus="true"
             android:gravity="center"
             android:background="#46ffcb"
             android:layout_marginTop="1.5dp"
@@ -31,6 +32,7 @@
             android:inputType="textPassword"
             android:layout_gravity="center_vertical"
             android:text="@string/password"
+            android:selectAllOnFocus="true"
             android:gravity="center"
             android:background="#46ffcb"
             android:layout_marginBottom="1dp"/>

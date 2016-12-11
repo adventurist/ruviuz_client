@@ -107,7 +107,8 @@ public class RuvFragment extends DialogFragment {
                                     lengthEt.setText(roofJson.getString("length"));
                                 }
                                 if (priceEt != null) {
-                                    priceEt.setText(roofJson.getString("price"));
+                                    String ruvPrice = "$" + roofJson.getString("price");
+                                    priceEt.setText(ruvPrice);
                                 }
                                 if (widthEt != null) {
                                     widthEt.setText(roofJson.getString("width"));
@@ -181,7 +182,7 @@ public class RuvFragment extends DialogFragment {
 
         mBundle = new Bundle();
         mBundle.putString("address", addressEt.getText().toString());
-        mBundle.putString("price", priceEt.getText().toString());
+        mBundle.putString("price", priceEt.getText().toString().substring(1));
         mBundle.putFloat("width", Float.valueOf((widthEt.getText().toString())));
         mBundle.putFloat("length", Float.valueOf(lengthEt.getText().toString()));
         mBundle.putFloat("slope", Float.valueOf(slopeEt.getText().toString()));

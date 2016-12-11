@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#beffea">
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
@@ -22,13 +22,8 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:id="@+id/idTv"
-        android:layout_alignEnd="@+id/idLabel"
-        android:textColor="@color/colorPrimaryDark"
-        android:layout_alignParentRight="false"
-        android:layout_toEndOf="@+id/idLabel">
-
-    </TextView>
-    </RelativeLayout>
+        android:textColor="@color/colorPrimaryDark"/>
+    </LinearLayout>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

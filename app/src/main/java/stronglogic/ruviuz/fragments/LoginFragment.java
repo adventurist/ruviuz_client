@@ -66,23 +66,11 @@ public class LoginFragment extends DialogFragment {
         if (login[0] != null) {
             email.setText(login[0]);
         }
-        email.setOnClickListener(new View.OnClickListener()    {
-            @Override
-            public void onClick(View v) {
-                email.setText("");
-            }
-        });
 
         password = (EditText)view.findViewById(R.id.password);
         if (login[1] != null) {
             password.setText(login[1]);
         }
-        password.setOnClickListener(new View.OnClickListener()    {
-            @Override
-            public void onClick(View v) {
-                password.setText("");
-            }
-        });
 
         Button loginBtn = (Button)view.findViewById(R.id.loginBtn);
 

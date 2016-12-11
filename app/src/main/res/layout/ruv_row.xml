@@ -129,46 +129,48 @@
 
     </TextView>
     </LinearLayout>
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:padding="4dp"
         android:layout_height="wrap_content"
         android:layout_below="@id/row5"
         android:id="@+id/row6">
-    <TextView
-        android:text="Price"
-        android:layout_width="64dp"
-        android:layout_height="wrap_content"
-        android:id="@+id/priceLabel"
-        android:layout_marginStart="8dp"/>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/priceLayout"
+            android:orientation="horizontal">
+            <TextView
+                android:text="Price"
+                android:layout_width="64dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/priceLabel"
+                android:layout_marginStart="8dp"/>
 
-    <TextView
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:inputType=""
+                android:id="@+id/priceTv"
+                android:layout_alignEnd="@+id/priceLabel"
+                android:textColor="@color/colorPrimaryDark">
+            </TextView>
+        </LinearLayout>
+    <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:id="@+id/priceTv"
-        android:layout_alignEnd="@+id/priceLabel"
-        android:textColor="@color/colorPrimaryDark">
-
-    </TextView>
-    </LinearLayout>
+        android:layout_alignParentEnd="true"
+        android:id="@+id/roofOptions"
+        android:text="Edit"
+        android:background="?android:attr/colorActivatedHighlight" />
+    </RelativeLayout>
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="4dp"
         android:layout_below="@id/row6"
         android:id="@+id/row7">
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/roofOptions"
-        android:text="Edit"
-        android:layout_below="@+id/ruvPhoto3"
-        android:layout_marginBottom="8dp"
-        android:background="?android:attr/colorActivatedHighlight"
-        android:layout_alignParentEnd="true">
-
-    </Button>
 
     <ImageView
         android:layout_width="wrap_content"
