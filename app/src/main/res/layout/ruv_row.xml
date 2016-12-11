@@ -2,19 +2,24 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_marginTop="4dp"
+    android:layout_marginBottom="4dp"
     android:minHeight="100dp"
     android:descendantFocusability="blocksDescendants"
-    android:background="#beffea">
+    android:background="#beffea"
+    android:id="@+id/rviewRow">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
+        android:padding="4dp"
         android:id="@+id/row1"
         android:layout_alignParentTop="true"
         android:layout_alignParentStart="true">
     <TextView
         android:text="ID"
-        android:layout_width="wrap_content"
+        android:layout_width="64dp"
         android:layout_height="wrap_content"
         android:id="@+id/idLabel"
         android:layout_marginStart="8dp" />
@@ -31,11 +36,12 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:padding="4dp"
         android:layout_below="@id/row1"
         android:id="@+id/row2">
     <TextView
         android:text="Address"
-        android:layout_width="wrap_content"
+        android:layout_width="64dp"
         android:layout_height="wrap_content"
         android:id="@+id/addressLabel"
         android:layout_alignBottom="@+id/idLabel"
@@ -53,11 +59,12 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:padding="4dp"
         android:layout_below="@id/row2"
         android:id="@+id/row3">
     <TextView
         android:text="Width"
-        android:layout_width="wrap_content"
+        android:layout_width="64dp"
         android:layout_height="wrap_content"
         android:id="@+id/widthLabel"
         android:layout_alignBottom="@+id/addressLabel"
@@ -77,11 +84,12 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:padding="4dp"
         android:layout_below="@id/row3"
         android:id="@+id/row4">
     <TextView
         android:text="Length"
-        android:layout_width="wrap_content"
+        android:layout_width="64dp"
         android:layout_height="wrap_content"
         android:id="@+id/lengthLabel"
         android:layout_alignBottom="@+id/widthLabel"
@@ -100,11 +108,12 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:padding="4dp"
         android:layout_below="@id/row4"
         android:id="@+id/row5">
     <TextView
         android:text="Slope"
-        android:layout_width="wrap_content"
+        android:layout_width="64dp"
         android:layout_height="wrap_content"
         android:id="@+id/slopeLabel"
         android:layout_alignBottom="@+id/lengthLabel"
@@ -122,12 +131,13 @@
     </LinearLayout>
     <LinearLayout
         android:layout_width="match_parent"
+        android:padding="4dp"
         android:layout_height="wrap_content"
         android:layout_below="@id/row5"
         android:id="@+id/row6">
     <TextView
         android:text="Price"
-        android:layout_width="wrap_content"
+        android:layout_width="64dp"
         android:layout_height="wrap_content"
         android:id="@+id/priceLabel"
         android:layout_marginStart="8dp"/>
@@ -142,23 +152,38 @@
 
     </TextView>
     </LinearLayout>
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:padding="4dp"
         android:layout_below="@id/row6"
         android:id="@+id/row7">
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/roofOptions"
+        android:text="Edit"
+        android:layout_below="@+id/ruvPhoto3"
+        android:layout_marginBottom="8dp"
+        android:background="?android:attr/colorActivatedHighlight"
+        android:layout_alignParentEnd="true">
+
+    </Button>
+
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/ruvPhoto1"
-        android:layout_alignBottom="@+id/widthTv"
-        android:layout_marginStart="8dp">
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="4dp">
+
 
     </ImageView>
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
+        android:layout_marginTop="4dp"
         android:id="@+id/ruvPhoto2"
         android:layout_alignEnd="@+id/ruvPhoto1">
 
@@ -167,23 +192,18 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
+        android:layout_marginTop="4dp"
         android:id="@+id/ruvPhoto3"
         android:layout_alignEnd="@+id/ruvPhoto2">
 
     </ImageView>
-    </LinearLayout>
-    <Button
-        android:layout_width="wrap_content"
+    </RelativeLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/roofOptions"
-        android:text="Options"
-        android:layout_alignParentEnd="true"
-        android:background="?android:attr/colorActivatedHighlight"
-        android:forceHasOverlappingRendering="true"
-        android:layout_marginEnd="24dp"
-        android:layout_marginBottom="12dp"
-        android:layout_marginTop="12dp"
-        android:layout_centerVertical="true">
+        android:orientation="horizontal"
+        android:id="@+id/upFrag"
+        tools:layout="@layout/updatefragment"
+        android:layout_below="@+id/row7" />
 
-    </Button>
     </RelativeLayout>

@@ -87,7 +87,12 @@ public class RuvFragment extends DialogFragment {
                         try {
                             if (handlerJson.has("Update")) {
                                 handlerJson.put("position", position);
+
                                 ruvFragListener.ruvFragInteraction("Update", handlerJson.toString());
+
+                                if (handlerJson.getString("Updated").equals("Success")) {
+                                    dismiss();
+                                }
                             } else if (handlerJson.has("RuvGet")) {
 
                                 ruvFragListener.ruvFragInteraction("GetRoof", handlerJson.getString("Roof"));

@@ -70,8 +70,8 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
     private Button ruuvBtn, addressBtn;
 
     private static final String TAG = "Ruviuz";
-    private static final String baseUrl = "http://10.0.2.2:5000";
-//    private static final String baseUrl = "http://52.43.250.94:5000";
+//    private static final String baseUrl = "http://10.0.2.2:5000";
+    private static final String baseUrl = "http://52.43.250.94:5000";
 
     private String authToken;
 
@@ -87,7 +87,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
      */
-    private GoogleApiClient client;
+    private GoogleApiClient mGoogleApi;
 
 
     @Override
@@ -105,6 +105,15 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
             getSupportActionBar().setDisplayShowTitleEnabled(false);
             getSupportActionBar().setElevation(8f);
         }
+
+
+//        if (mGoogleApi == null) {
+//            mGoogleApi = new GoogleApiClient.Builder(this)
+//                    .addConnectionCallbacks(this)
+//                    .addOnConnectionFailedListener(this)
+//                    .addApi(LocationServices.API)
+//                    .build();
+//        }
 
         roofLength = (NumberPicker) findViewById(R.id.roofLength);
         roofWidth = (NumberPicker) findViewById(R.id.roofWidth);
@@ -197,7 +206,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         });
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
-        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
+        mGoogleApi = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
 
 
@@ -237,8 +246,12 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
     public void loginDialog() {
 
         if (mLoginFrag == null) {
-            FragmentManager fm = getFragmentManager();
             mLoginFrag = new LoginFragment();
+        }
+
+        if (!mLoginFrag.isAdded()) {
+            FragmentManager fm = getFragmentManager();
+
             Bundle args = new Bundle();
             args.putString("baseUrl", baseUrl);
             if (getPrefCreds() != null) {
@@ -247,9 +260,6 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
             }
             mLoginFrag.setArguments(args);
             mLoginFrag.show(fm, "Please Login");
-        }
-        if (!mLoginFrag.isAdded()) {
-            Log.d(TAG, "Frag isn't added");
         }
     }
 
@@ -267,6 +277,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
     public void loginFragInteraction(String output) {
         Toast.makeText(this, output, Toast.LENGTH_SHORT).show();
         this.authToken = output;
+
 
         if (mLoginFrag != null) {
             mLoginFrag.dismiss();
@@ -316,8 +327,8 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
 
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
-        client.connect();
-        AppIndex.AppIndexApi.start(client, getIndexApiAction());
+        mGoogleApi.connect();
+        AppIndex.AppIndexApi.start(mGoogleApi, getIndexApiAction());
     }
 
     @Override
@@ -326,8 +337,9 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
 
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
-        AppIndex.AppIndexApi.end(client, getIndexApiAction());
-        client.disconnect();
+        mGoogleApi.disconnect();
+        AppIndex.AppIndexApi.end(mGoogleApi, getIndexApiAction());
+        mGoogleApi.disconnect();
     }
 
     public String[] getPrefCreds()  {
@@ -359,6 +371,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
                 this.startActivity(rviewIntent);
                 break;
             case R.id.loginAction:
+                Log.d(TAG, "Login action!!");
                 loginDialog();
                 break;
             default:

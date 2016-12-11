@@ -12,4 +12,5 @@
     <string name="geolocation">Get Location</string>
     <string name="roofs">Roofs</string>
     <string name="actionlist">Action List</string>
+    <string name="updated">Updated!</string>
 </resources>

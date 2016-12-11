@@ -4,6 +4,8 @@ package stronglogic.ruviuz.views;
 import android.app.Activity;
 import android.app.FragmentManager;
 import android.os.Bundle;
+import android.os.Handler;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,13 +13,16 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
 import java.util.ArrayList;
 
 import stronglogic.ruviuz.R;
 import stronglogic.ruviuz.content.Roof;
 import stronglogic.ruviuz.fragments.RuvFragment;
+import stronglogic.ruviuz.fragments.UpdateFragment;
 
 
 /**
@@ -101,25 +106,78 @@ public class RuvAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
 
-        Roof Roof = ruvList.get(position);
+        Roof Roof = ruvList.get(holder.getAdapterPosition());
         if (holder.getItemViewType() == RUV_VIEW) {
             final RuvHolder ruvHolder = (RuvHolder) holder;
-
             ruvHolder.idTv.setText(String.valueOf(Roof.getId()));
             ruvHolder.addressTv.setText(Roof.getAddress());
             ruvHolder.widthTv.setText(String.valueOf(Roof.getWidth()));
             ruvHolder.lengthTv.setText(String.valueOf(Roof.getLength()));
             ruvHolder.slopeTv.setText(String.valueOf(Roof.getSlope()));
             ruvHolder.priceTv.setText(String.valueOf(Roof.getPrice()));
+            Glide.with(mActivity)
+                    .load(R.drawable.rvsamp)
+                    .fitCenter()
+                    .diskCacheStrategy(DiskCacheStrategy.RESULT)
+                    .into(ruvHolder.ruvPhoto1);
+
             final int ruvId = Roof.getId();
 
             ruvHolder.roofOptions.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
 
-                    Toast.makeText(mActivity, "CLICKED!!", Toast.LENGTH_SHORT).show();
-                    ruvDialog(ruvId, position);
+                    ruvDialog(ruvId, ruvHolder.getAdapterPosition());
                 }
             });
+
+            if (Roof.isUpdated()) {
+                final Roof mRoof = Roof;
+                ruvHolder.itemView.setBackgroundColor(ContextCompat.getColor(mActivity, R.color.colorUpdated));
+
+                final Handler xHandler = new Handler();
+                xHandler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        ruvHolder.itemView.setBackgroundColor(ContextCompat.getColor(mActivity, R.color.colorRow));
+                        mRoof.toggleJustUpdated();
+                    }
+                }, 4000);
+
+
+//                RelativeLayout rl = (RelativeLayout)ruvHolder.itemView;
+//
+//                RecyclerView.LayoutParams lp = (RecyclerView.LayoutParams) rl.getLayoutParams();
+//                lp.height = rl.getHeight() + 48;
+//                rl.setLayoutParams(lp);
+
+                FragmentManager fm = mActivity.getFragmentManager();
+                UpdateFragment upFrag = new UpdateFragment();
+                fm.beginTransaction().add(upFrag, "upFrag").commit();
+
+
+                final Handler zHandler = new Handler();
+                zHandler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        removeUpFrag(ruvHolder.itemView);
+                    }
+                }, 10000);
+            }
+        }
+    }
+
+    private void removeUpFrag(View view) {
+        if (mActivity.getFragmentManager().findFragmentByTag("upFrag") != null) {
+            UpdateFragment upFrag = (UpdateFragment) mActivity.getFragmentManager().findFragmentByTag("upFrag");
+            if (upFrag.isAdded()) {
+                mActivity.getFragmentManager().beginTransaction().remove(upFrag).commit();
+            }
+
+//            RelativeLayout rl = (RelativeLayout)view;
+//
+//            RecyclerView.LayoutParams lp = (RecyclerView.LayoutParams) rl.getLayoutParams();
+//            lp.height = rl.getHeight() - 48;
+//            rl.setLayoutParams(lp);
         }
     }
 
@@ -132,7 +190,7 @@ public class RuvAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         mBundle.putInt("ruvId", id);
         mBundle.putInt("position", position);
         rFrag.setArguments(mBundle);
-        rFrag.show(fm, "Modify a Roof");
+        rFrag.show(fm, "ruvFrag");
         rFrag.setTargetFragment(rFrag, 2);
     }
 

@@ -138,9 +138,14 @@ public class RviewActivity extends AppCompatActivity implements RuvFragment.RuvF
                     mRuv.setWidth(Float.valueOf(ruvJson.getString("width")));
                     mRuv.setPrice(new BigDecimal((ruvJson.getString("price"))));
                     mRuv.setSlope(Float.valueOf(ruvJson.getString("slope")));
+                    mRuv.toggleJustUpdated();
                     roofArrayList.set(ruvPosition, mRuv);
                     rv.getAdapter().notifyItemChanged(ruvPosition);
                     Toast.makeText(this, "RuuvUpdate successful.", Toast.LENGTH_SHORT).show();
+                    if (getFragmentManager().findFragmentByTag("ruvFrag") != null) {
+                        RuvFragment rFrag = (RuvFragment)getFragmentManager().findFragmentByTag("ruvFrag");
+                        rFrag.dismiss();
+                    }
                 } else {
                     Toast.makeText(this, "RuuvUpdate failed.", Toast.LENGTH_SHORT).show();
                 }

@@ -8,7 +8,8 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="stronglogic.ruviuz.RviewActivity">
+    tools:context="stronglogic.ruviuz.RviewActivity"
+    android:background="@color/common_google_signin_btn_text_dark_disabled">
 
     <include
         layout="@layout/app_bar"/>
@@ -16,6 +17,7 @@
     <android.support.v7.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/recycView"/>
+        android:id="@+id/recycView"
+        android:background="@color/common_google_signin_btn_text_light_focused" />
 
 </RelativeLayout>

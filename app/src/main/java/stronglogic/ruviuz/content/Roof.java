@@ -20,6 +20,8 @@ public class Roof extends LauncherActivity.ListItem implements Serializable  {
     private float width;
     private float length;
     private int id;
+    private boolean justUpdated;
+
     private ArrayList<URL> photos;
 
     private enum status{};
@@ -81,4 +83,13 @@ public class Roof extends LauncherActivity.ListItem implements Serializable  {
     }
 
     public ArrayList<URL> getPhotos() { return new ArrayList<URL>(this.photos);}
+
+
+    public void toggleJustUpdated() {
+        this.justUpdated = !this.justUpdated;
+    }
+
+    public boolean isUpdated() {
+        return this.justUpdated;
+    }
 }
