@@ -2,8 +2,10 @@ package stronglogic.ruviuz;
 
 import android.app.Activity;
 import android.app.FragmentManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.hardware.SensorManager;
 import android.net.Uri;
@@ -26,6 +28,7 @@ import android.view.OrientationEventListener;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.ImageButton;
 import android.widget.NumberPicker;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -67,6 +70,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
     private NumberPicker roofLength, roofWidth, roofSlope;
     private Switch isFlat, premiumMaterial;
     private TextView orientationText;
+    private ImageButton photoBtn;
     private Button ruuvBtn, addressBtn;
 
     private static final String TAG = "Ruviuz";
@@ -78,6 +82,8 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
     private IncomingHandler mHandler;
 
     private SharedPreferences prefs;
+
+    private boolean hasCamera;
 
     int width, length, slope;
     BigDecimal price;
@@ -106,6 +112,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
             getSupportActionBar().setElevation(8f);
         }
 
+        this.hasCamera = checkCameraHardware(this);
 
 //        if (mGoogleApi == null) {
 //            mGoogleApi = new GoogleApiClient.Builder(this)
@@ -204,6 +211,18 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
                 addressDialog();
             }
         });
+
+        if (hasCamera) {
+            photoBtn = (ImageButton) findViewById(R.id.takePhoto);
+            photoBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                }
+            });
+        } else {
+            Log.d(TAG, "Camera Not Available");
+        }
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         mGoogleApi = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
@@ -520,4 +539,16 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
             return false;
         }
     }
+
+    /** Check if this device has a camera */
+    private boolean checkCameraHardware(Context context) {
+        if (context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)){
+            // this device has a camera
+            return true;
+        } else {
+            // no camera on this device
+            return false;
+        }
+    }
+
 }

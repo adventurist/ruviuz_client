@@ -128,7 +128,7 @@
                         android:layout_alignParentEnd="true" />
 
                 </RelativeLayout>
-                <LinearLayout
+                <RelativeLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
@@ -138,7 +138,21 @@
                         android:layout_width="84dp"
                         android:layout_height="56dp"
                         android:background="@color/material_grey_300" />
-                </LinearLayout>
+                    <ImageButton
+                        android:layout_height="36dp"
+                        android:id="@+id/takePhoto"
+                        android:layout_gravity="end"
+                        android:layout_alignWithParentIfMissing="true"
+                        android:background="?attr/actionModeSplitBackground"
+                        android:layout_marginTop="10dp"
+                        android:textAlignment="center"
+                        android:textAllCaps="false"
+                        android:elevation="0dp"
+                        android:src="@android:drawable/ic_menu_camera"
+                        android:layout_width="108dp"
+                        android:layout_alignParentEnd="true" />
+
+                </RelativeLayout>
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
