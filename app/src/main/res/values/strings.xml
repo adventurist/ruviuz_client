@@ -13,4 +13,9 @@
     <string name="roofs">Roofs</string>
     <string name="actionlist">Action List</string>
     <string name="updated">Updated!</string>
+    <string name="title_activity_camera">CameraActivity</string>
+    <string name="draft">Draft</string>
+    <string name="send">Send</string>
+    <string name="_0_00000">0.00000</string>
+    <string name="ruvhomephoto">Photo of home for roofing quote</string>
 </resources>

@@ -1,5 +1,6 @@
 package stronglogic.ruviuz;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.FragmentManager;
 import android.content.Context;
@@ -13,6 +14,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -25,15 +27,19 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.OrientationEventListener;
+import android.view.TextureView;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.NumberPicker;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.appindexing.Thing;
@@ -44,6 +50,9 @@ import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -60,6 +69,8 @@ import stronglogic.ruviuz.fragments.LoginFragment;
 
 public class MainActivity extends AppCompatActivity implements LoginFragment.LoginFragListener, AddressFragment.AddressFragListener, Handler.Callback {
 
+    private static final int CAMERA_PERMISSION = 6;
+
     private android.support.v7.widget.Toolbar mToolbar;
 
     private LoginFragment mLoginFrag;
@@ -69,7 +80,9 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
 
     private NumberPicker roofLength, roofWidth, roofSlope;
     private Switch isFlat, premiumMaterial;
+    private TextureView textureView;
     private TextView orientationText;
+    private ImageView photo1, photo2, photo3;
     private ImageButton photoBtn;
     private Button ruuvBtn, addressBtn;
 
@@ -85,9 +98,11 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
 
     private boolean hasCamera;
 
-    int width, length, slope;
+    int fileCount, currentRid;
+    float width, length, slope;
     BigDecimal price;
     String address;
+    String[] fileUrls = new String[3];
     boolean premium;
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
@@ -103,6 +118,10 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
 
         mToolbar = (Toolbar) findViewById(R.id.app_bar);
 
+        if (getIntent() != null) {
+            getIntentData(getIntent());
+        }
+
         setSupportActionBar(mToolbar);
 
         if (getSupportActionBar()!= null) {
@@ -112,7 +131,29 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
             getSupportActionBar().setElevation(8f);
         }
 
-        this.hasCamera = checkCameraHardware(this);
+        if (checkCameraHardware(this)) {
+            photoBtn = (ImageButton) findViewById(R.id.takePhoto);
+            photoBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.CAMERA)
+                            != PackageManager.PERMISSION_GRANTED) {
+                        ActivityCompat.requestPermissions(MainActivity.this,
+                                new String[]{Manifest.permission.CAMERA}, CAMERA_PERMISSION);
+                    } else {
+                        if (checkCameraHardware(MainActivity.this)) {
+                            Intent intent = new Intent(MainActivity.this, CameraActivity.class);
+                            intent = putIntentData(intent);
+                            startActivity(intent);
+                        } else {
+                            Log.d(TAG, "No Camera Hardware on Device");
+                        }
+                    }
+                }
+            });
+        } else {
+            Log.d(TAG, "Camera Not Available");
+        }
 
 //        if (mGoogleApi == null) {
 //            mGoogleApi = new GoogleApiClient.Builder(this)
@@ -125,8 +166,6 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         roofLength = (NumberPicker) findViewById(R.id.roofLength);
         roofWidth = (NumberPicker) findViewById(R.id.roofWidth);
         roofSlope = (NumberPicker) findViewById(R.id.roofSlope);
-
-        premium = false;
 
         //set Picker ranges
         roofLength.setMinValue(0);
@@ -171,13 +210,16 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
             loginDialog();
         }
 
+        photo1 = (ImageView) findViewById(R.id.ruvPic1);
+        photo2 = (ImageView) findViewById(R.id.ruvPic2);
+        photo3 = (ImageView) findViewById(R.id.ruvPic3);
+
         ruuvBtn = (Button) findViewById(R.id.ruuvSubmitBtn);
 
         ruuvBtn.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
-                Log.d(TAG, "CLICKED");
                 if (address == null) {
                     addressDialog();
                 } else {
@@ -212,17 +254,6 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
             }
         });
 
-        if (hasCamera) {
-            photoBtn = (ImageButton) findViewById(R.id.takePhoto);
-            photoBtn.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-
-                }
-            });
-        } else {
-            Log.d(TAG, "Camera Not Available");
-        }
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         mGoogleApi = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
@@ -233,6 +264,55 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
     public void onResume() {
         super.onResume();
         mListener.enable();
+
+        if (getIntent() != null) {
+            Intent xIntent = getIntent();
+            getIntentData(xIntent);
+            if (xIntent.hasExtra("uri")) {
+                if (fileCount + 1 == 4) {
+                    Toast.makeText(MainActivity.this, "You cannot add more photos", Toast.LENGTH_SHORT);
+                } else {
+                    this.fileCount++;
+                    if (fileUrls == null) {
+                        this.fileUrls = new String[3];
+                    }
+                    if (fileUrls[fileCount - 1] == null) {
+                        fileUrls[fileCount - 1] = "";
+                    }
+                    Bundle stuff = xIntent.getExtras();
+                    String uriS = stuff.getString("uri");
+                    fileUrls[fileCount - 1] = uriS;
+                }
+            }
+        }
+        if (fileCount > 0) {
+            if (fileUrls[0] != null && photo1.getDrawable() == null) {
+                Glide.with(MainActivity.this)
+                        .load(fileUrls[0])
+                        .override(72, 54)
+                        .fitCenter()
+                        .diskCacheStrategy(DiskCacheStrategy.RESULT)
+                        .into(photo1);
+            }
+            if (fileUrls[1] != null && photo2.getDrawable() == null) {
+                photo2 = (ImageView) findViewById(R.id.ruvPic2);
+                Glide.with(MainActivity.this)
+                        .load(fileUrls[1])
+                        .override(72, 54)
+                        .fitCenter()
+                        .diskCacheStrategy(DiskCacheStrategy.RESULT)
+                        .into(photo2);
+            }
+            if (fileUrls[2] != null && photo3.getDrawable() == null) {
+                photo3 = (ImageView) findViewById(R.id.ruvPic3);
+                Glide.with(MainActivity.this)
+                        .load(fileUrls[2])
+                        .override(72, 54)
+                        .fitCenter()
+                        .diskCacheStrategy(DiskCacheStrategy.RESULT)
+                        .into(photo3);
+            }
+        }
     }
 
 
@@ -318,10 +398,48 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
     @Override
     public boolean handleMessage(Message inputMessage) {
         if (inputMessage.getData().getString("RuuvResponse") != null) {
-            Toast.makeText(MainActivity.this, inputMessage.getData().getString("RuuvResponse"), Toast.LENGTH_SHORT).show();
+            Log.d(TAG, inputMessage.getData().getString("RuuvResponse"));
+            try {
+                JSONObject returnedJson = new JSONObject(inputMessage.getData().getString("RuuvResponse"));
+                if (returnedJson.has("Roof")) {
+                    JSONObject ruuvJson = new JSONObject(returnedJson.getString("Roof"));
+                    this.currentRid = Integer.valueOf(ruuvJson.getString("id"));
+                    Toast.makeText(MainActivity.this, "Created Roof:: " + returnedJson.getString("Roof"), Toast.LENGTH_SHORT).show();
+
+                }
+                if (returnedJson.has("File")) {
+                    Toast.makeText(MainActivity.this, "Created File:: " + returnedJson.getString("File"), Toast.LENGTH_SHORT).show();
+                }
+
+                if (fileCount > 0) {
+                    if (sendRuuvFiles() > 0) {
+                        fileCount = 0;
+                        fileUrls[0] = null;
+                        fileUrls[1] = null;
+                        fileUrls[2] = null;
+                    }
+                }
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
             return true;
         }
         return false;
+    }
+
+    private int sendRuuvFiles() {
+        int sent = 0;
+        for (String url : fileUrls) {
+            //private RuuvFile(MainActivity mActivity, Handler mHandler, String baseUrl, String authToken, String fileUrl) {
+            if (url != null) {
+                RuuvFile rFile = new RuuvFile(MainActivity.this, mHandler, this.baseUrl, this.authToken, url, currentRid);
+                Thread sendFileThread = new Thread(rFile);
+                sendFileThread.start();
+                sent++;
+            }
+        }
+        return sent;
     }
 
     /**
@@ -445,12 +563,31 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         }
     }
 
-    public void dismissDialog(){
-//        prev = getSupportFragmentManager().findFragmentByTag("dialog");
-//        if (prev != null) {
-//            DialogFragment df = prev;
-//            df.dismiss();
-//        }
+
+    public Intent putIntentData(Intent intent) {
+        intent.putExtra("authToken", this.authToken);
+        intent.putExtra("slope", this.slope);
+        intent.putExtra("width", this.width);
+        intent.putExtra("length", this.length);
+        intent.putExtra("address", this.address);
+        intent.putExtra("premium", this.premium);
+        intent.putExtra("currentRid", this.currentRid);
+        intent.putExtra("fileCount", this.fileCount);
+        intent.putExtra("fileUrls", this.fileUrls);
+
+        return intent;
+    }
+    
+    public void getIntentData(Intent intent) {
+        this.authToken = intent.getStringExtra("authToken");
+        this.slope = intent.getFloatExtra("slope", 0);
+        this.width = intent.getFloatExtra("width", 0);
+        this.length = intent.getFloatExtra("length", 0);
+        this.address = intent.getStringExtra("address");
+        this.premium = intent.getBooleanExtra("premium", false);
+        this.currentRid = intent.getIntExtra("currentRid", -1);
+        this.fileCount = intent.getIntExtra("fileCount", 0);
+        this.fileUrls = intent.getStringArrayExtra("fileUrls");
     }
 
     private static class RuuvThread implements Runnable {
@@ -540,6 +677,23 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         }
     }
 
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,  String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case CAMERA_PERMISSION:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                        Intent intent = new Intent(this, CameraActivity.class);
+                        startActivity(intent);
+                } else {
+                    Toast.makeText(this, "Please grant camera permission to use the CAMERA", Toast.LENGTH_SHORT).show();
+                }
+                return;
+            default:
+                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
+    }
+
     /** Check if this device has a camera */
     private boolean checkCameraHardware(Context context) {
         if (context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)){
@@ -551,4 +705,125 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         }
     }
 
+    private static class RuuvFile implements Runnable {
+        private Handler mHandler;
+        private WeakReference<MainActivity> mReference;
+        private Activity mActivity;
+
+        private String baseUrl, authToken;
+
+        private String fileUrl;
+        private int ruvId;
+
+        private RuuvFile(MainActivity mActivity, Handler mHandler, String baseUrl, String authToken, String fileUrl, int ruvId) {
+            this.mReference = new WeakReference<MainActivity>(mActivity);
+            this.mHandler = mHandler;
+            this.baseUrl = baseUrl;
+            this.authToken = authToken;
+            this.fileUrl = fileUrl;
+            this.mActivity = mActivity;
+            this.ruvId = ruvId;
+        }
+
+        @Override
+        public void run() {
+            sendFile();
+        }
+
+        private boolean sendFile() {
+            String endpoint = baseUrl + "/file/upload";
+            try {
+                File file = new File(fileUrl);
+                FileInputStream fileInputStream = null;
+                DataOutputStream outputStream = null;
+                Writer writer = null;
+                BufferedReader reader = null;
+
+                HttpURLConnection connection = null;
+                String response = null;
+                String twoHyphens = "--";
+                String boundary = "*****" + Long.toString(System.currentTimeMillis()) + "*****";
+                String lineEnd = "\r\n";
+                try {
+                    URL url = new URL(endpoint);
+                    String mAuth = authToken + ":jigga";
+                    connection = (HttpURLConnection) url.openConnection();
+                    connection.setRequestMethod("POST");
+                    connection.setRequestProperty("Connection", "Keep-Alive");
+                    connection.setRequestProperty("User-Agent", "Ruviuz Android");
+                    connection.setRequestProperty("Authorization", "Basic " + Base64.encodeToString(mAuth.trim().getBytes(), Base64.NO_WRAP));
+                    connection.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
+
+                    outputStream = new DataOutputStream(connection.getOutputStream());
+                    outputStream.writeBytes(twoHyphens + boundary + lineEnd);
+                    outputStream.writeBytes("Content-Disposition: form-data; name=\"" + "upload" + "\"; filename=\"" + file.getName() + "\"" + lineEnd);
+                    outputStream.writeBytes("Content-Type: " + HttpURLConnection.guessContentTypeFromName(file.getName()) + lineEnd);
+                    outputStream.writeBytes("Content-Transfer-Encoding: binary" + lineEnd);
+                    outputStream.writeBytes(lineEnd);
+
+                    fileInputStream = new FileInputStream(file);
+                    byte[] buffer = new byte[4096];
+                    int bytesRead = -1;
+
+                    while ((bytesRead = fileInputStream.read(buffer)) != -1) {
+                        outputStream.write(buffer, 0, bytesRead);
+                    }
+
+                    outputStream.writeBytes(lineEnd);
+
+                    if (ruvId > -1) {
+                        outputStream.writeBytes(twoHyphens + boundary + lineEnd);
+                        outputStream.writeBytes("Content-Disposition: form-data; name=\"rid\"" + lineEnd);
+                        outputStream.writeBytes("Content-Type: text/plain" + lineEnd);
+                        outputStream.writeBytes(lineEnd);
+                        outputStream.writeBytes(String.valueOf(ruvId));
+                        outputStream.writeBytes(lineEnd);
+                        outputStream.writeBytes(twoHyphens + boundary + twoHyphens + lineEnd);
+                    }
+
+                    //TODO consolidate differences between BufferedWriter and DataOutputStream (do we use both, or can we use one over the other to handle the overall transaction
+                    outputStream.flush();
+//                    writer = new BufferedWriter(new OutputStreamWriter(connection.getOutputStream(), "UTF-8"));
+
+                    if (200 != connection.getResponseCode()) {
+                        Log.d(TAG, connection.getResponseMessage());
+                    }
+
+                    InputStream stream = connection.getInputStream();
+
+                    reader = new BufferedReader(new InputStreamReader(stream));
+                    StringBuilder bildr = new StringBuilder();
+                    String line;
+
+                    while ((line = reader.readLine()) != null) {
+                        bildr.append(line);
+                    }
+
+                    response = bildr.toString();
+
+                    fileInputStream.close();
+                    outputStream.flush();
+                    outputStream.close();
+
+                    if (!response.trim().isEmpty()) {
+                        Bundle msgData = new Bundle();
+                        msgData.putString("RuuvResponse", String.valueOf(response));
+                        Message outgoingMsg = new Message();
+                        outgoingMsg.setData(msgData);
+                        mHandler.sendMessage(outgoingMsg);
+                    }
+                    return true;
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                    return false;
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    return false;
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                return false;
+            }
+        }
+    }
 }

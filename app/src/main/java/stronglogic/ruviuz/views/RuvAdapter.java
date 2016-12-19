@@ -116,12 +116,34 @@ public class RuvAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             ruvHolder.lengthTv.setText(String.valueOf(Roof.getLength()));
             ruvHolder.slopeTv.setText(String.valueOf(Roof.getSlope()));
             ruvHolder.priceTv.setText(ruvPrice);
-            Glide.with(mActivity)
-                    .load(R.drawable.rvsamp)
-                    .fitCenter()
-                    .diskCacheStrategy(DiskCacheStrategy.RESULT)
-                    .into(ruvHolder.ruvPhoto1);
-
+            ArrayList<String> rPics = Roof.getPhotos();
+            if (rPics.get(0) != null) {
+                Glide.with(mActivity)
+                        .load(Roof.getPhotos().get(0))
+                        .fitCenter()
+                        .diskCacheStrategy(DiskCacheStrategy.RESULT)
+                        .into(ruvHolder.ruvPhoto1);
+                if (rPics.get(1) != null) {
+                    Glide.with(mActivity)
+                            .load(Roof.getPhotos().get(1))
+                            .fitCenter()
+                            .diskCacheStrategy(DiskCacheStrategy.RESULT)
+                            .into(ruvHolder.ruvPhoto2);
+                }
+                if (rPics.get(2) != null) {
+                    Glide.with(mActivity)
+                            .load(Roof.getPhotos().get(2))
+                            .fitCenter()
+                            .diskCacheStrategy(DiskCacheStrategy.RESULT)
+                            .into(ruvHolder.ruvPhoto3);
+                }
+            } else {
+                Glide.with(mActivity)
+                        .load(R.drawable.rvsamp)
+                        .fitCenter()
+                        .diskCacheStrategy(DiskCacheStrategy.RESULT)
+                        .into(ruvHolder.ruvPhoto1);
+            }
             final int ruvId = Roof.getId();
 
             ruvHolder.roofOptions.setOnClickListener(new View.OnClickListener() {

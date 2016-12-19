@@ -5,7 +5,6 @@ import android.app.LauncherActivity;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.net.URL;
 import java.util.ArrayList;
 
 /**
@@ -22,7 +21,7 @@ public class Roof extends LauncherActivity.ListItem implements Serializable  {
     private int id;
     private boolean justUpdated;
 
-    private ArrayList<URL> photos;
+    private ArrayList<String> photos;
 
     private enum status{};
 
@@ -78,11 +77,17 @@ public class Roof extends LauncherActivity.ListItem implements Serializable  {
     public int getId()  { return this.id;}
 
 
-    public void setPhotos (ArrayList<URL> urls)  {
+    public void setPhotos (ArrayList<String> urls)  {
         this.photos = urls;
     }
 
-    public ArrayList<URL> getPhotos() { return new ArrayList<URL>(this.photos);}
+    public ArrayList<String> getPhotos() {
+        if (this.photos != null) {
+            return this.photos;
+        } else {
+            return new ArrayList<String>();
+        }
+    }
 
 
     public void toggleJustUpdated() {
