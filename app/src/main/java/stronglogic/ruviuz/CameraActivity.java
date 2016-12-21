@@ -61,6 +61,7 @@ import stronglogic.ruviuz.util.RuvCamera;
 public class CameraActivity extends AppCompatActivity {
     private static final String TAG = "RuviuzCAMERAACTIVITY";
     private static final int REQUEST_CAMERA_PERMISSION = 7;
+    private static final int RUVIUZ_DATA_PERSIST = 14;
 
     private RuvCamera camHelper;
 
@@ -143,7 +144,7 @@ public class CameraActivity extends AppCompatActivity {
 
         @Override
         public void onDisconnected(CameraDevice camera) {
-            camera.close();
+            if (camera != null) camera.close();
             camera = null;
         }
 
@@ -266,10 +267,13 @@ public class CameraActivity extends AppCompatActivity {
                     String fileUri = file.getPath();
 
                     Intent returnPicIntent = new Intent(CameraActivity.this, MainActivity.class);
-                    returnPicIntent = putIntentData(returnPicIntent);
+                    putIntentData(returnPicIntent);
                     returnPicIntent.putExtra("uri", (fileUri));
+//                    returnPicIntent.putExtra("authToken", authToken);
+                    if (cameraDevice != null)
                     cameraDevice.close();
-
+                    setResult(RUVIUZ_DATA_PERSIST, returnPicIntent);
+//                    startActivityForResult(returnPicIntent, RUVIUZ_DATA_PERSIST);
                     startActivity(returnPicIntent);
                 }
             };
@@ -396,15 +400,6 @@ public class CameraActivity extends AppCompatActivity {
         super.onPause();
     }
 
-//    @Override
-//    protected void onCreate(Bundle savedInstanceState) {
-//        super.onCreate(savedInstanceState);
-//
-//        // ATTENTION: This was auto-generated to implement the App Indexing API.
-//        // See https://g.co/AppIndexing/AndroidStudio for more information.
-//        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
-//    }
-
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -442,7 +437,6 @@ public class CameraActivity extends AppCompatActivity {
     }
 
 
-//
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -455,6 +449,9 @@ public class CameraActivity extends AppCompatActivity {
 
         if (getIntent() != null) {
             getIntentData(getIntent());
+            if (!getIntent().hasExtra("fileCount")) {
+                Log.d(TAG, "NO FILE COUNT LINE 453 CAM");
+            }
         }
 
         setSupportActionBar(toolbar);
@@ -513,7 +510,7 @@ public class CameraActivity extends AppCompatActivity {
         return file;
     }
 
-    public Intent putIntentData(Intent intent) {
+    public void putIntentData(Intent intent) {
         intent.putExtra("authToken", this.authToken);
         intent.putExtra("slope", this.slope);
         intent.putExtra("width", this.width);
@@ -523,8 +520,6 @@ public class CameraActivity extends AppCompatActivity {
         intent.putExtra("currentRid", this.currentRid);
         intent.putExtra("fileCount", this.fileCount);
         intent.putExtra("fileUrls", this.fileUrls);
-
-        return intent;
     }
 
     public void getIntentData(Intent intent) {
@@ -539,5 +534,16 @@ public class CameraActivity extends AppCompatActivity {
         this.fileUrls = intent.getStringArrayExtra("fileUrls");
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        Log.d(TAG, "onActivityResult");
+        switch (requestCode) {
+            case RUVIUZ_DATA_PERSIST:
+                if (resultCode == RESULT_OK) {
+                    getIntentData(data);
+                }
+                break;
+        }
+    }
 }
-

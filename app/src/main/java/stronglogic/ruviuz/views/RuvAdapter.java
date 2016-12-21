@@ -117,7 +117,7 @@ public class RuvAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             ruvHolder.slopeTv.setText(String.valueOf(Roof.getSlope()));
             ruvHolder.priceTv.setText(ruvPrice);
             ArrayList<String> rPics = Roof.getPhotos();
-            if (rPics.get(0) != null) {
+            if (rPics.size() > 0)  {
                 Glide.with(mActivity)
                         .load(Roof.getPhotos().get(0))
                         .fitCenter()

@@ -9,7 +9,7 @@
     <!-- TODO: Update blank fragment layout -->
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="212dp"
+        android:layout_height="match_parent"
         android:id="@+id/loginUI"
         android:orientation="vertical"
         android:background="@color/material_blue_grey_800">
@@ -19,11 +19,39 @@
             android:id="@+id/addressText"
             android:inputType="textPostalAddress|textMultiLine"
             android:layout_gravity="center_vertical"
-            android:text="@string/address"
+            android:hint="@string/address"
+            android:selectAllOnFocus="true"
             android:gravity="center"
             android:background="#46ffcb"
             android:layout_marginTop="1.5dp"
             android:layout_marginBottom="1dp"/>
+        <LinearLayout
+            android:layout_width="320dp"
+            android:layout_height="38dp"
+            android:layout_marginBottom="1dp">
+            <EditText
+                android:layout_width="0dp"
+                android:layout_height="38dp"
+                android:id="@+id/cityText"
+                android:hint="@string/city"
+                android:selectAllOnFocus="true"
+                android:layout_marginEnd="0.5dp"
+                android:background="#46ffcb"
+                android:layout_weight="0.71"
+                android:textAlignment="center"
+                android:inputType="textEmailAddress" />
+            <EditText
+                android:layout_width="0dp"
+                android:layout_height="38dp"
+                android:id="@+id/provinceText"
+                android:hint="@string/province"
+                android:selectAllOnFocus="true"
+                android:layout_marginStart="0.5dp"
+                android:background="#46ffcb"
+                android:layout_weight="0.29"
+                android:textAlignment="center"
+                android:inputType="textPostalAddress" />
+        </LinearLayout>
         <EditText
             android:layout_width="320dp"
             android:layout_height="38dp"
@@ -31,6 +59,7 @@
             android:inputType="textPostalAddress"
             android:layout_gravity="center_vertical"
             android:text="@string/postal_code"
+            android:selectAllOnFocus="true"
             android:gravity="center"
             android:background="#46ffcb"
             android:layout_marginBottom="1dp"/>

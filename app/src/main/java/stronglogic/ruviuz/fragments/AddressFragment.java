@@ -2,6 +2,8 @@ package stronglogic.ruviuz.fragments;
 
 import android.app.Activity;
 import android.app.DialogFragment;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,8 +21,7 @@ public class AddressFragment extends DialogFragment {
 
     final private static String TAG = "RuviuzADDRESSFRAGMENT";
 
-    private EditText addressEt;
-    private EditText postalCodeEt;
+    private EditText addressEt, postalCodeEt, cityEt, provinceEt;
 
     private AddressFragListener addressFragListener;
 
@@ -50,21 +51,25 @@ public class AddressFragment extends DialogFragment {
 
         View view = inflater.inflate(R.layout.addressfragment, parent, false);
 
-        addressEt = (EditText)view.findViewById(R.id.addressText);
-        addressEt.setOnClickListener(new View.OnClickListener()    {
-            @Override
-            public void onClick(View v) {
-                addressEt.setText("");
-            }
-        });
+        SharedPreferences mPrefs = getActivity().getSharedPreferences("RuviuzApp", Context.MODE_PRIVATE);
 
+        addressEt = (EditText)view.findViewById(R.id.addressText);
         postalCodeEt = (EditText)view.findViewById(R.id.postalCode);
-        postalCodeEt.setOnClickListener(new View.OnClickListener()    {
-            @Override
-            public void onClick(View v) {
-                postalCodeEt.setText("");
-            }
-        });
+        cityEt = (EditText)view.findViewById(R.id.cityText);
+        provinceEt = (EditText)view.findViewById(R.id.provinceText);
+
+        if (!mPrefs.getString("address", "").equals("")) {
+            addressEt.setText(mPrefs.getString("address", ""));
+        }
+        if (!mPrefs.getString("postalcode", "").equals("")) {
+            addressEt.setText(mPrefs.getString("postalcode", ""));
+        }
+        if (city != null) {
+            cityEt.setText(city);
+        }
+        if (province != null) {
+            provinceEt.setText(province);
+        }
 
         Button addressBtn = (Button)view.findViewById(R.id.addressBtn);
 
@@ -108,5 +113,8 @@ public class AddressFragment extends DialogFragment {
         void addressFragInteraction(String address, String postal);
     }
 
-
+    public void setArea(String city, String province) {
+        this.city = city;
+        this.province = province;
+    }
 }

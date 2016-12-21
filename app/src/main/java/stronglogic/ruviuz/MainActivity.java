@@ -9,6 +9,10 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.hardware.SensorManager;
+import android.location.Address;
+import android.location.Geocoder;
+import android.location.Location;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -63,13 +67,17 @@ import java.math.BigDecimal;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.List;
+import java.util.Locale;
 
 import stronglogic.ruviuz.fragments.AddressFragment;
 import stronglogic.ruviuz.fragments.LoginFragment;
+import stronglogic.ruviuz.util.RuvLocation;
 
 public class MainActivity extends AppCompatActivity implements LoginFragment.LoginFragListener, AddressFragment.AddressFragListener, Handler.Callback {
 
     private static final int CAMERA_PERMISSION = 6;
+    private static final int RUVIUZ_DATA_PERSIST = 14;
 
     private android.support.v7.widget.Toolbar mToolbar;
 
@@ -96,12 +104,14 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
 
     private SharedPreferences prefs;
 
-    private boolean hasCamera;
+    private RuvLocation rLocation;
+
+    private Geocoder geocoder;
 
     int fileCount, currentRid;
     float width, length, slope;
     BigDecimal price;
-    String address;
+    String address, postalcode, city, province;
     String[] fileUrls = new String[3];
     boolean premium;
     /**
@@ -121,6 +131,10 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         if (getIntent() != null) {
             getIntentData(getIntent());
         }
+
+        this.prefs = MainActivity.this.getSharedPreferences("RuviuzApp", Context.MODE_PRIVATE);
+
+        getPrefsData();
 
         setSupportActionBar(mToolbar);
 
@@ -143,7 +157,11 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
                     } else {
                         if (checkCameraHardware(MainActivity.this)) {
                             Intent intent = new Intent(MainActivity.this, CameraActivity.class);
-                            intent = putIntentData(intent);
+                            putIntentData(intent);
+                            intent.putExtra("authToken", authToken);
+                            putPrefsData();
+                            setResult(RUVIUZ_DATA_PERSIST);
+//                            startActivityForResult(intent, RUVIUZ_DATA_PERSIST);
                             startActivity(intent);
                         } else {
                             Log.d(TAG, "No Camera Hardware on Device");
@@ -170,6 +188,11 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         //set Picker ranges
         roofLength.setMinValue(0);
         roofLength.setMaxValue(500);
+        roofLength.setValue(Math.round(length));
+        if (prefs.contains("length")) {
+            roofLength.setValue(Math.round(prefs.getFloat("length", 0f)));
+        }
+
         roofLength.setWrapSelectorWheel(true);
         roofLength.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
             @Override
@@ -180,13 +203,16 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
 
         roofWidth.setMinValue(0);
         roofWidth.setMaxValue(500);
+        roofWidth.setValue(Math.round(width));
         roofWidth.setWrapSelectorWheel(true);
         roofSlope.setMinValue(0);
         roofSlope.setMaxValue(180);
+        roofSlope.setValue(Math.round(slope));
         roofSlope.setWrapSelectorWheel(true);
 
         isFlat = (Switch) findViewById(R.id.roofFlat);
         premiumMaterial = (Switch) findViewById(R.id.premiumMaterial);
+        premiumMaterial.setChecked(premium);
 
         premiumMaterial.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -234,6 +260,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
 
                         Bundle mBundle = new Bundle();
                         mBundle.putString("address", address);
+                        mBundle.putString("postalcode", postalcode);
                         mBundle.putString("price", calculatePrice().toString());
                         mBundle.putFloat("width", roofWidth.getValue());
                         mBundle.putFloat("length", roofLength.getValue());
@@ -254,6 +281,10 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
             }
         });
 
+        if (!address.equals("")) {
+            addressBtn.setAlpha(1f);
+        }
+
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         mGoogleApi = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
@@ -268,7 +299,9 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         if (getIntent() != null) {
             Intent xIntent = getIntent();
             getIntentData(xIntent);
+
             if (xIntent.hasExtra("uri")) {
+//                getIntentData(xIntent);
                 if (fileCount + 1 == 4) {
                     Toast.makeText(MainActivity.this, "You cannot add more photos", Toast.LENGTH_SHORT);
                 } else {
@@ -285,32 +318,35 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
                 }
             }
         }
+
         if (fileCount > 0) {
-            if (fileUrls[0] != null && photo1.getDrawable() == null) {
-                Glide.with(MainActivity.this)
-                        .load(fileUrls[0])
-                        .override(72, 54)
-                        .fitCenter()
-                        .diskCacheStrategy(DiskCacheStrategy.RESULT)
-                        .into(photo1);
-            }
-            if (fileUrls[1] != null && photo2.getDrawable() == null) {
-                photo2 = (ImageView) findViewById(R.id.ruvPic2);
-                Glide.with(MainActivity.this)
-                        .load(fileUrls[1])
-                        .override(72, 54)
-                        .fitCenter()
-                        .diskCacheStrategy(DiskCacheStrategy.RESULT)
-                        .into(photo2);
-            }
-            if (fileUrls[2] != null && photo3.getDrawable() == null) {
-                photo3 = (ImageView) findViewById(R.id.ruvPic3);
-                Glide.with(MainActivity.this)
-                        .load(fileUrls[2])
-                        .override(72, 54)
-                        .fitCenter()
-                        .diskCacheStrategy(DiskCacheStrategy.RESULT)
-                        .into(photo3);
+            if (fileUrls != null) {
+                if (fileUrls[0] != null && photo1.getDrawable() == null) {
+                    Glide.with(MainActivity.this)
+                            .load(fileUrls[0])
+                            .override(72, 54)
+                            .fitCenter()
+                            .diskCacheStrategy(DiskCacheStrategy.RESULT)
+                            .into(photo1);
+                }
+                if (fileUrls[1] != null && photo2.getDrawable() == null) {
+                    photo2 = (ImageView) findViewById(R.id.ruvPic2);
+                    Glide.with(MainActivity.this)
+                            .load(fileUrls[1])
+                            .override(72, 54)
+                            .fitCenter()
+                            .diskCacheStrategy(DiskCacheStrategy.RESULT)
+                            .into(photo2);
+                }
+                if (fileUrls[2] != null && photo3.getDrawable() == null) {
+                    photo3 = (ImageView) findViewById(R.id.ruvPic3);
+                    Glide.with(MainActivity.this)
+                            .load(fileUrls[2])
+                            .override(72, 54)
+                            .fitCenter()
+                            .diskCacheStrategy(DiskCacheStrategy.RESULT)
+                            .into(photo3);
+                }
             }
         }
     }
@@ -320,6 +356,16 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
     public void onPause() {
         super.onPause();
         mListener.disable();
+        putPrefsData();
+        if (rLocation != null) {
+            rLocation = null;
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        putPrefsData();
     }
 
     void setPremium(boolean checked) {
@@ -364,10 +410,28 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
 
 
     public void addressDialog() {
+        FragmentManager fm = getFragmentManager();
         if (mAddressFrag == null) {
-            FragmentManager fm = getFragmentManager();
             mAddressFrag = new AddressFragment();
-            mAddressFrag.show(fm, "Please Enter Addresss");
+            if (!mAddressFrag.isAdded()) {
+                mAddressFrag.show(fm, "Please Enter Address");
+                if (province != null && city != null) {
+                    if (!province.equals("") && !city.equals("")) {
+                        mAddressFrag.setArea(city, province);
+                    }
+                }
+            }
+        }
+        if (mAddressFrag != null) {
+            fm.beginTransaction().remove(mAddressFrag).commit();
+            mAddressFrag = null;
+            mAddressFrag = new AddressFragment();
+            mAddressFrag.show(fm, "Please Enter Address");
+            if (province != null && city != null) {
+                if (!province.equals("") && !city.equals("")) {
+                    mAddressFrag.setArea(city, province);
+                }
+            }
         }
     }
 
@@ -380,18 +444,21 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
 
         if (mLoginFrag != null) {
             mLoginFrag.dismiss();
+            getFragmentManager().beginTransaction().remove(mLoginFrag).commit();
         }
     }
 
 
     @Override
     public void addressFragInteraction(String address, String postal) {
-        this.address = address + ",\n" + postal;
+        this.address = address;
+        this.postalcode = postal;
         Toast.makeText(this, this.address, Toast.LENGTH_SHORT).show();
         addressBtn.setAlpha(1f);
 
         if (mAddressFrag != null) {
             mAddressFrag.dismiss();
+            getFragmentManager().beginTransaction().remove(mAddressFrag).commit();
         }
     }
 
@@ -405,7 +472,6 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
                     JSONObject ruuvJson = new JSONObject(returnedJson.getString("Roof"));
                     this.currentRid = Integer.valueOf(ruuvJson.getString("id"));
                     Toast.makeText(MainActivity.this, "Created Roof:: " + returnedJson.getString("Roof"), Toast.LENGTH_SHORT).show();
-
                 }
                 if (returnedJson.has("File")) {
                     Toast.makeText(MainActivity.this, "Created File:: " + returnedJson.getString("File"), Toast.LENGTH_SHORT).show();
@@ -419,7 +485,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
                         fileUrls[2] = null;
                     }
                 }
-
+            clearValues();
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -479,14 +545,74 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         mGoogleApi.disconnect();
     }
 
+
     public String[] getPrefCreds()  {
-        this.prefs = getSharedPreferences("RuviuzApp", MODE_PRIVATE);
         String[] creds = new String[2];
         creds[0] = prefs.getString("email", "0");
         creds[1] = prefs.getString("pass", "0");
 
         return creds;
     }
+
+    public void putPrefsData() {
+        updateValues();
+        SharedPreferences.Editor prefEdit = MainActivity.this.getSharedPreferences("RuviuzApp", Context.MODE_PRIVATE).edit();
+        prefEdit.putString("address", address);
+        prefEdit.putString("postalcode", postalcode);
+        prefEdit.putString("price", String.valueOf(price));
+        prefEdit.putFloat("width", width);
+        prefEdit.putFloat("length", length);
+        prefEdit.putFloat("slope", slope);
+        prefEdit.putBoolean("premium", premium);
+        prefEdit.putInt("currentRid", currentRid);
+//        prefEdit.putInt("fileCount", fileCount);
+        prefEdit.commit();
+    }
+
+
+    public void getPrefsData() {
+        SharedPreferences mPrefs = MainActivity.this.getSharedPreferences("RuviuzApp", Context.MODE_PRIVATE);
+        this.address = mPrefs.getString("address", "");
+        this.postalcode = mPrefs.getString("postalcode", "");
+        this.price = new BigDecimal(mPrefs.getString("price", "0"));
+        this.width = mPrefs.getFloat("width", 0f);
+        this.length = mPrefs.getFloat("length", 0f);
+        this.slope = mPrefs.getFloat("slope", 0f);
+        this.premium = mPrefs.getBoolean("premium", false);
+        this.currentRid = mPrefs.getInt("currentRid", 0);
+//        this.fileCount = mPrefs.getInt("fileCount", 0);
+    }
+
+    public void updateValues() {
+        this.width = (float)roofWidth.getValue();
+        this.length = (float)roofLength.getValue();
+        this.slope = (float)roofSlope.getValue();
+    }
+
+    public void clearValues() {
+        this.address = "";
+        this.postalcode = "";
+        this.city = "";
+        this.province = "";
+        this.price = new BigDecimal(0);
+        this.width = 0f;
+        this.length = 0f;
+        this.slope = 0f;
+        this.premium = false;
+        this.currentRid = 0;
+        this.fileCount = 0;
+
+        putPrefsData();
+
+        premiumMaterial.setChecked(false);
+        roofLength.setValue(0);
+        roofWidth.setValue(0);
+        roofSlope.setValue(0);
+        photo1.setImageDrawable(null);
+        photo2.setImageDrawable(null);
+        photo3.setImageDrawable(null);
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -505,18 +631,53 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
                 Intent rviewIntent = new Intent(this, RviewActivity.class);
                 rviewIntent.putExtra("authToken", authToken);
                 rviewIntent.putExtra("baseUrl", baseUrl);
-                this.startActivity(rviewIntent);
+                putPrefsData();
+                setResult(RUVIUZ_DATA_PERSIST, rviewIntent);
+                this.startActivityForResult(rviewIntent, RUVIUZ_DATA_PERSIST);
                 break;
             case R.id.loginAction:
                 Log.d(TAG, "Login action!!");
                 loginDialog();
                 break;
+            case R.id.geoLocate:
+                Log.d(TAG, "GEOLOCATION REQUEST");
+                getGeoLocation();
             default:
                 return super.onOptionsItemSelected(item);
         }
         return true;
     }
 
+
+    public boolean getGeoLocation() {
+        LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+        geocoder = new Geocoder(MainActivity.this, Locale.getDefault());
+        rLocation = new RuvLocation(MainActivity.this, new RuvLocation.GeoListener() {
+            @Override
+            public void sendLocation(Location location) {
+                Log.d(TAG, "Getting Location\n" + location.toString());
+                Toast.makeText(MainActivity.this, location.toString(), Toast.LENGTH_SHORT).show();
+
+                try {
+                    List<Address> addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+
+                    for (Address address : addresses) {
+                        Log.d(TAG, "Address => " + address.getLocality() + " || " + address.getAdminArea());
+                        MainActivity.this.city = address.getLocality();
+                        MainActivity.this.province = address.getAdminArea();
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }, locationManager);
+
+        if (rLocation.init()) {
+            rLocation.getLocation();
+        }
+
+        return false;
+    }
 
     static class IncomingHandler extends Handler {
         private final WeakReference<MainActivity> mActivity;
@@ -564,31 +725,102 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
     }
 
 
-    public Intent putIntentData(Intent intent) {
+    public void putIntentData(Intent intent) {
+        updateValues();
         intent.putExtra("authToken", this.authToken);
         intent.putExtra("slope", this.slope);
         intent.putExtra("width", this.width);
         intent.putExtra("length", this.length);
         intent.putExtra("address", this.address);
+        intent.putExtra("postalcode", this.postalcode);
+        intent.putExtra("city", this.city);
+        intent.putExtra("province", this.province);
         intent.putExtra("premium", this.premium);
         intent.putExtra("currentRid", this.currentRid);
         intent.putExtra("fileCount", this.fileCount);
         intent.putExtra("fileUrls", this.fileUrls);
 
-        return intent;
     }
     
     public void getIntentData(Intent intent) {
+        if (!intent.hasExtra("fileCount")) {
+            Log.d(TAG, "NO FILE COUNT LINE 715 MAIN");
+        }
         this.authToken = intent.getStringExtra("authToken");
         this.slope = intent.getFloatExtra("slope", 0);
         this.width = intent.getFloatExtra("width", 0);
         this.length = intent.getFloatExtra("length", 0);
         this.address = intent.getStringExtra("address");
+        this.postalcode = intent.getStringExtra("postalcode");
+        this.city= intent.getStringExtra("city");
+        this.province= intent.getStringExtra("province");
         this.premium = intent.getBooleanExtra("premium", false);
         this.currentRid = intent.getIntExtra("currentRid", -1);
         this.fileCount = intent.getIntExtra("fileCount", 0);
         this.fileUrls = intent.getStringArrayExtra("fileUrls");
     }
+
+
+    public void putBundleData(Bundle bundle) {
+        bundle.putString("authToken", this.authToken);
+        bundle.putFloat("slope", this.slope);
+        bundle.putFloat("width", this.width);
+        bundle.putFloat("length", this.length);
+        bundle.putString("address", this.address);
+        bundle.putString("postalcode", this.postalcode);
+        bundle.putBoolean("premium", this.premium);
+        bundle.putInt("currentRid", this.currentRid);
+//        bundle.putExtra("fileCount", this.fileCount);
+//        bundle.putExtra("fileUrls", this.fileUrls);
+    }
+
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        Log.d(TAG, "onActivityResult");
+        switch (requestCode) {
+            case RUVIUZ_DATA_PERSIST:
+                if (resultCode == RESULT_OK) {
+                    getIntentData(data);
+                }
+                break;
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,  String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case CAMERA_PERMISSION:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    Intent intent = new Intent(this, CameraActivity.class);
+                    putPrefsData();
+                    intent.putExtra("authToken", authToken);
+                    putIntentData(intent);
+                    setResult(RUVIUZ_DATA_PERSIST);
+//                    startActivityForResult(intent, RUVIUZ_DATA_PERSIST);
+                    startActivity(intent);
+                } else {
+                    Toast.makeText(this, "Please grant camera permission to use the CAMERA", Toast.LENGTH_SHORT).show();
+                }
+                return;
+            default:
+                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
+    }
+
+    /** Check if this device has a camera */
+    private boolean checkCameraHardware(Context context) {
+        if (context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)){
+            // this device has a camera
+            return true;
+        } else {
+            // no camera on this device
+            return false;
+        }
+    }
+
 
     private static class RuuvThread implements Runnable {
         private Handler mHandler;
@@ -620,7 +852,8 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
             if (mBundle != null) {
 
                 try {
-                    ruuvJson.put("address", mBundle.getString("address"));
+                    String mAddress = mBundle.getString("address") + "\n" + mBundle.getString("postalcode");
+                    ruuvJson.put("address", mAddress);
                     ruuvJson.put("width", mBundle.getFloat("width"));
                     ruuvJson.put("length", mBundle.getFloat("length"));
                     ruuvJson.put("slope", mBundle.getFloat("slope"));
@@ -673,34 +906,6 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
                     return false;
                 }
             }
-            return false;
-        }
-    }
-
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode,  String permissions[], int[] grantResults) {
-        switch (requestCode) {
-            case CAMERA_PERMISSION:
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                        Intent intent = new Intent(this, CameraActivity.class);
-                        startActivity(intent);
-                } else {
-                    Toast.makeText(this, "Please grant camera permission to use the CAMERA", Toast.LENGTH_SHORT).show();
-                }
-                return;
-            default:
-                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        }
-    }
-
-    /** Check if this device has a camera */
-    private boolean checkCameraHardware(Context context) {
-        if (context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)){
-            // this device has a camera
-            return true;
-        } else {
-            // no camera on this device
             return false;
         }
     }
