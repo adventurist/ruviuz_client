@@ -480,7 +480,9 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
                 JSONObject returnedJson = new JSONObject(inputMessage.getData().getString("RuuvResponse"));
                 if (returnedJson.has("Roof")) {
                     JSONObject ruuvJson = new JSONObject(returnedJson.getString("Roof"));
-                    this.currentRid = Integer.valueOf(ruuvJson.getString("id"));
+                    if (ruuvJson.getString("id") != null) {
+                        this.currentRid = Integer.valueOf(ruuvJson.getString("id"));
+                    }
                     Toast.makeText(MainActivity.this, "Created Roof:: " + returnedJson.getString("Roof"), Toast.LENGTH_SHORT).show();
                 }
                 if (returnedJson.has("File")) {
