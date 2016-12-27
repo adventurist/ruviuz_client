@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/MainParentView"
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
@@ -73,8 +74,8 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/rfLgText"
                     android:text="Length"
-                    android:layout_marginBottom="17dp"
-                    android:layout_marginTop="4dp"
+                    android:layout_marginBottom="26dp"
+                    android:layout_marginTop="8dp"
                     android:textColor="@color/material_deep_teal_200" />
 
                 <TextView
@@ -83,7 +84,7 @@
                     android:id="@+id/rfWdText"
                     android:text="Width"
                     android:layout_marginTop="22dp"
-                    android:layout_marginBottom="20dp"
+                    android:layout_marginBottom="28dp"
                     android:textColor="@color/material_deep_teal_200" />
 
                 <TextView
@@ -106,16 +107,19 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:id="@+id/uiRow1"
+                    android:layout_marginBottom="1dp"
                     android:weightSum="1">
                     <NumberPicker
                         android:id="@+id/roofLength"
                         android:layout_width="84dp"
-                        android:layout_height="56dp"
-                        android:background="@color/material_grey_300" />
+                        android:layout_height="64dp"
+                        android:theme="@style/AppTheme.Picker"
+                        android:solidColor="#a2b7d4"
+                        android:divider="@color/NumberSeparator" />
                     <Button
                         android:layout_height="36dp"
                         android:id="@+id/addressGetDialog"
-                        android:text="Address"
+                        android:text="@string/address"
                         android:layout_gravity="end"
                         android:layout_alignWithParentIfMissing="true"
                         android:background="@android:color/holo_green_light"
@@ -133,12 +137,22 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:id="@+id/uiRow2">
+                    android:id="@+id/uiRow2"
+                    android:layout_marginBottom="1dp">
+                    <!--<biz.kasual.materialnumberpicker.MaterialNumberPicker-->
+
+                        <!--android:id="@+id/roofWidth"-->
+                        <!--android:layout_width="84dp"-->
+                        <!--android:layout_height="64dp"-->
+                        <!--android:theme="@style/AppTheme.Picker"-->
+                        <!--android:background="@color/material_grey_300" />-->
                     <NumberPicker
                         android:id="@+id/roofWidth"
                         android:layout_width="84dp"
-                        android:layout_height="56dp"
-                        android:background="@color/material_grey_300" />
+                        android:layout_height="64dp"
+                        android:solidColor="#a2b7d4"
+                        android:theme="@style/AppTheme.Picker"
+                        />
                     <ImageButton
                         android:layout_height="36dp"
                         android:id="@+id/takePhoto"
@@ -151,7 +165,7 @@
                         android:elevation="0dp"
                         android:src="@android:drawable/ic_menu_camera"
                         android:layout_width="108dp"
-                        android:layout_alignParentEnd="true" />
+                        android:layout_alignParentEnd="true"/>
 
                 </RelativeLayout>
                 <LinearLayout
@@ -162,8 +176,11 @@
                     <NumberPicker
                         android:id="@+id/roofSlope"
                         android:layout_width="84dp"
-                        android:layout_height="56dp"
-                        android:background="@color/material_grey_300" />
+                        android:layout_height="64dp"
+                        android:theme="@style/AppTheme.Picker"
+                        android:divider="@color/NumberSeparator"
+                        android:solidColor="#a2b7d4"
+                        android:showDividers="beginning" />
                 </LinearLayout>
             </LinearLayout>
         </LinearLayout>
@@ -216,6 +233,20 @@
         </RelativeLayout>
 
         <Button
+            android:id="@+id/clearBtn"
+            android:text="@string/clear"
+            android:textColor="#FFFFFF"
+            android:layout_height="36dp"
+            android:layout_width="96dp"
+            android:background="@drawable/clearbtn"
+            android:shadowColor="#A8A8A8"
+            android:shadowDx="0"
+            android:shadowDy="0"
+            android:shadowRadius="5"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentBottom="true"/>
+
+        <Button
             android:layout_width="128dp"
             android:layout_height="48dp"
             android:id="@+id/ruuvSubmitBtn"
@@ -229,11 +260,13 @@
             android:textColorHighlight="@color/colorAccent"
             android:backgroundTint="@android:color/black"
             android:elevation="0dp"
+            android:layout_marginBottom="24dp"
             android:textSize="18sp"
             android:layout_alignParentBottom="true"/>
 
         <Button
             android:layout_height="36dp"
+            android:layout_width="96dp"
             android:id="@+id/quoteStatus"
             android:text="@string/draft"
             android:layout_alignBottom="@id/ruuvSubmitBtn"
@@ -244,7 +277,6 @@
             android:textAllCaps="false"
             android:elevation="0dp"
             android:drawableEnd="@drawable/checked"
-            android:layout_width="96dp"
             android:layout_alignParentEnd="true"
             android:layout_alignWithParentIfMissing="false"
             android:layout_centerInParent="false"

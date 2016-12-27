@@ -226,6 +226,9 @@ public class RviewActivity extends AppCompatActivity implements RuvFragment.RuvF
         if (key.equals("GetRuv")) {
             Toast.makeText(this, data, Toast.LENGTH_SHORT).show();
         }
+        if (key.equals("FileUpdate")) {
+            Toast.makeText(this, data, Toast.LENGTH_SHORT).show();
+        }
     }
 
 

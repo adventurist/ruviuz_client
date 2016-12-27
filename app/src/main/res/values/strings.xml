@@ -20,4 +20,8 @@
     <string name="ruvhomephoto">Photo of home for roofing quote</string>
     <string name="city">City</string>
     <string name="province">Province</string>
+    <string name="clear">Clear</string>
+    <string name="update">Update</string>
+    <string name="upload">Upload</string>
+    <string name="take_pic">Take Pic</string>
 </resources>

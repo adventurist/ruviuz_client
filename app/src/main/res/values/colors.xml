@@ -5,4 +5,7 @@
     <color name="colorAccent">#ff4081</color>
     <color name="colorUpdated">#00ff14</color>
     <color name="colorRow">#beffea</color>
+    <color name="NumberHighlight">#ff0000</color>
+    <color name="NumberSeparator">#282828</color>
+    <color name="NumberBackground">#2f2f2f</color>
 </resources>

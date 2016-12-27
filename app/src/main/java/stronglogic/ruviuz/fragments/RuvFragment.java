@@ -2,10 +2,15 @@ package stronglogic.ruviuz.fragments;
 
 import android.app.Activity;
 import android.app.DialogFragment;
+import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.provider.DocumentsContract;
+import android.provider.MediaStore;
 import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -15,12 +20,18 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -30,8 +41,13 @@ import java.lang.ref.WeakReference;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 
 import stronglogic.ruviuz.R;
+import stronglogic.ruviuz.content.RuvFileInfo;
+import stronglogic.ruviuz.util.RuuvFile;
+
+import static android.app.Activity.RESULT_OK;
 
 /**
  * Created by logicp on 12/6/16.
@@ -40,13 +56,16 @@ import stronglogic.ruviuz.R;
 public class RuvFragment extends DialogFragment {
 
     final private static String TAG = "RuviuzRUVFRAGMENT";
+    final private static int RESULT_LOAD_IMAGE = 17;
 
     private RuvFragListener ruvFragListener;
 
     private TextView idTv;
     private EditText addressEt, priceEt, widthEt, lengthEt, slopeEt;
     private ImageView ruvPhoto1, ruvPhoto2, ruvPhoto3;
-    private Button updateBtn;
+    private Button imgBtn, updateBtn;
+
+    private ArrayList<RuvFileInfo> ruvFiles;
 
     private int ruvId, position;
 
@@ -56,6 +75,11 @@ public class RuvFragment extends DialogFragment {
 
     private Bundle mBundle;
 
+    private Activity mActivity;
+
+    private RuvFileInfo rFileInfo;
+
+    private ArrayList<String> ruvFileUrls;
 
     public static RuvFragment newInstance(String param1, String param2) {
         RuvFragment fragment = new RuvFragment();
@@ -85,18 +109,71 @@ public class RuvFragment extends DialogFragment {
                     try {
                         JSONObject handlerJson = new JSONObject(inputMessage.getData().getString("RuuvUpdateMsg"));
                         try {
+                            Log.d(TAG, handlerJson.toString());
+
+                            if (handlerJson.has("File")) {
+                                Log.d(TAG, handlerJson.getString("File"));
+                                Toast.makeText(mActivity, "Created File:: " + handlerJson.getString("File"), Toast.LENGTH_SHORT).show();
+                            }
+
                             if (handlerJson.has("Update")) {
                                 handlerJson.put("position", position);
 
                                 ruvFragListener.ruvFragInteraction("Update", handlerJson.toString());
 
-                                if (handlerJson.getString("Updated").equals("Success")) {
+                                if (handlerJson.getString("Update").equals("Success")) {
                                     dismiss();
                                 }
-                            } else if (handlerJson.has("RuvGet")) {
+
+                                if (!handlerJson.getString("FilesNotFound").isEmpty()) {
+                                    JSONArray filesNotFoundJsonArr = new JSONArray((handlerJson.getString("FilesNotFound")));
+
+                                    for (int i = 0; i < filesNotFoundJsonArr.length(); i++) {
+
+                                        JSONObject fileToSendJson = (filesNotFoundJsonArr.getJSONObject(i));
+                                        String filePath = ruvFiles.get(Integer.valueOf(fileToSendJson.getString("num"))).getFilePath();
+                                        RuuvFile ruuvFile = new RuuvFile(mActivity, mHandler, baseUrl, authToken, filePath, ruvId);
+                                        Thread sendFileThread = new Thread(ruuvFile);
+                                        sendFileThread.start();
+                                    }
+                                }
+                            }
+
+                            if (handlerJson.has("RuvGet")) {
 
                                 ruvFragListener.ruvFragInteraction("GetRoof", handlerJson.getString("Roof"));
                                 JSONObject roofJson = new JSONObject(handlerJson.getString("Roof"));
+                                JSONArray roofFiles = new JSONArray(handlerJson.getString("Files"));
+
+                                if (roofFiles.length() > 0)  {
+                                    Glide.with(mActivity)
+                                            .load(baseUrl + "/files/" + roofFiles.getJSONObject(0).getString("file"))
+                                            .fitCenter()
+                                            .diskCacheStrategy(DiskCacheStrategy.RESULT)
+                                            .into(ruvPhoto1);
+                                    if (roofFiles.length() > 1 && roofFiles.get(1) != null) {
+                                        Glide.with(mActivity)
+                                                .load(baseUrl + "/files/" + roofFiles.getJSONObject(1).getString("file"))
+                                                .fitCenter()
+                                                .diskCacheStrategy(DiskCacheStrategy.RESULT)
+                                                .into(ruvPhoto2);
+                                    } else {
+//                                        Glide.clear(ruvPhoto2);
+                                    }
+                                    if (roofFiles.length() > 2 && roofFiles.get(2) != null) {
+                                        Glide.with(mActivity)
+                                                .load(baseUrl + "/files/" + roofFiles.getJSONObject(2).getString("file"))
+                                                .fitCenter()
+                                                .diskCacheStrategy(DiskCacheStrategy.RESULT)
+                                                .into(ruvPhoto3);
+                                    } else {
+//                                        Glide.clear(ruvPhoto3);
+                                    }
+                                } else {
+//                                    Glide.clear(ruvPhoto1);
+//                                    Glide.clear(ruvPhoto2);
+//                                    Glide.clear(ruvPhoto3);
+                                }
                                 if (idTv != null) {
                                     idTv.setText(roofJson.getString("id"));
                                 }
@@ -124,6 +201,23 @@ public class RuvFragment extends DialogFragment {
                         e.printStackTrace();
                     }
                 }
+
+                if (inputMessage.getData().getString("RuuvResponse") != null) {
+                    Log.d(TAG, inputMessage.getData().getString("RuuvResponse"));
+                    try {
+                        JSONObject returnedJson = new JSONObject(inputMessage.getData().getString("RuuvResponse"));
+
+                        if (returnedJson.has("File")) {
+                            Toast.makeText(mActivity, "Created File:: " + returnedJson.getString("File"), Toast.LENGTH_SHORT).show();
+                        }
+
+                        ruvFragListener.ruvFragInteraction("FileUpdate", returnedJson.toString());
+
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
             }
         };
     }
@@ -143,8 +237,20 @@ public class RuvFragment extends DialogFragment {
         ruvPhoto1 = (ImageView) mView.findViewById(R.id.ruvUpPhoto1);
         ruvPhoto2  = (ImageView) mView.findViewById(R.id.ruvUpPhoto2);
         ruvPhoto3  = (ImageView) mView.findViewById(R.id.ruvUpPhoto3);
+        imgBtn = (Button) mView.findViewById(R.id.imgBtn);
         updateBtn = (Button) mView.findViewById(R.id.ruvUpdate);
 
+        imgBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Intent intent = new Intent();
+                intent.setType("image/*");
+                intent.setAction(Intent.ACTION_GET_CONTENT);
+                startActivityForResult(Intent.createChooser(intent,
+                        "Select Picture"), RESULT_LOAD_IMAGE);
+            }
+        });
         updateBtn.setOnClickListener(new View.OnClickListener()    {
             public void onClick(View v) {
                 updateRuv();
@@ -161,7 +267,8 @@ public class RuvFragment extends DialogFragment {
         super.onAttach(activity);
         try {
             if (activity != null) {
-                ruvFragListener= (RuvFragListener) activity;
+                this.mActivity = activity;
+                ruvFragListener = (RuvFragListener) activity;
             }
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
@@ -179,7 +286,6 @@ public class RuvFragment extends DialogFragment {
 
     public void updateRuv()    {
 
-
         mBundle = new Bundle();
         mBundle.putString("address", addressEt.getText().toString());
         mBundle.putString("price", priceEt.getText().toString().substring(1));
@@ -188,32 +294,91 @@ public class RuvFragment extends DialogFragment {
         mBundle.putFloat("slope", Float.valueOf(slopeEt.getText().toString()));
         mBundle.putInt("ruvId", ruvId);
         mBundle.putInt("position", position);
+
+        if (ruvFiles != null && ruvFiles.size() > 0) {
+            ArrayList<String> rFilesArray = new ArrayList<>();
+            for (int i = 0; i < ruvFiles.size(); i++) {
+                rFilesArray.add(ruvFiles.get(i).getFilename());
+            }
+            mBundle.putStringArrayList("ruvFiles", rFilesArray);
+        }
         RuvUpThread ruvUpThread = new RuvUpThread(this, mHandler, baseUrl, authToken, mBundle);
         Thread updateThread = new Thread(ruvUpThread);
         updateThread.start();
     }
 
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            case RESULT_LOAD_IMAGE:
+                if (resultCode == RESULT_OK && data != null) {
+                    if (ruvFiles == null) {
+                        ruvFiles = new ArrayList<>();
+                    }
+                    processImage(data, ruvFiles.size());
+                }
+                break;
+        }
+    }
+
+
     public interface RuvFragListener {
         void ruvFragInteraction(String key, String data);
     }
 
+    public void processImage(Intent data, int fileCount) {
+        if (fileCount < 3) {
+            Uri rawUri = data.getData();
+            String imageUri = null;
+            String wholeID = DocumentsContract.getDocumentId(rawUri);
 
-//    static class IncomingHandler extends Handler {
-//        private final WeakReference<RuvFragment> rFrag;
-//
-//        IncomingHandler(RuvFragment rFrag) {
-//            this.rFrag = new WeakReference<RuvFragment>(rFrag);
-//        }
-//
-//        @Override
-//        public void handleMessage(Message msg) {
-//
-//            if (rFrag!= null) {
-//                rFrag.handleMessage(msg);
-//            }
-//        }
-//    }
+            String id = wholeID.split(":")[1];
 
+            String[] column = { MediaStore.Images.Media.DATA };
+
+            String sel = MediaStore.Images.Media._ID + "=?";
+
+            Cursor cursor = mActivity.getContentResolver().
+                    query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                            column, sel, new String[]{ id }, null);
+
+            String filePath = "";
+            if (cursor != null) {
+                int columnIndex = cursor.getColumnIndex(column[0]);
+
+                if (cursor.moveToFirst()) {
+                    filePath = cursor.getString(columnIndex);
+                }
+                imageUri = filePath;
+                cursor.close();
+            }
+            if (imageUri != null) {
+                File file = new File(imageUri);
+                String filepath = file.getPath();
+                rFileInfo = new RuvFileInfo();
+                rFileInfo.setFilePath(file.getPath());
+                rFileInfo.setFilename(filepath.substring(filepath.lastIndexOf('/') + 1));
+                rFileInfo.setNum(fileCount);
+                Uri imgUri = Uri.parse(imageUri);
+                ruvFiles.add(rFileInfo);
+                if (fileCount == 0) {
+                    ruvPhoto1.setImageURI(imgUri);
+                }
+                if (fileCount == 1) {
+                    ruvPhoto2.setImageURI(imgUri);
+                }
+                if (fileCount == 2) {
+                    ruvPhoto3.setImageURI(imgUri);
+                }
+            } else {
+                Toast.makeText(mActivity, "Unable to get content URI", Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            Toast.makeText(mActivity, "You have already chosen 3 images", Toast.LENGTH_SHORT).show();
+        }
+    }
 
     private static class RuvUpThread implements Runnable {
 
@@ -253,6 +418,23 @@ public class RuvFragment extends DialogFragment {
                 ruuvJson.put("length", mBundle.getFloat("length"));
                 ruuvJson.put("slope", mBundle.getFloat("slope"));
                 ruuvJson.put("price", mBundle.getString("price"));
+
+                if (mBundle.getStringArrayList("ruvFiles") != null) {
+                    JSONArray ruuvFileJsonArr = new JSONArray();
+                    ArrayList<String> ruvFiles = mBundle.getStringArrayList("ruvFiles");
+
+                    if (ruvFiles != null) {
+                        for (int i = 0; i < ruvFiles.size(); i++) {
+                            JSONObject ruuvFileJson = new JSONObject().put("file", ruvFiles.get(i))
+                                                                        .put("num", String.valueOf(i));
+                            ruuvFileJsonArr.put(ruuvFileJson);
+                        }
+                    }
+                    ruuvJson.put("files", ruuvFileJsonArr);
+                    Log.d(TAG, "RUUVJSON==::>>" + ruuvJson.toString());
+
+                }
+
             } catch (JSONException e) {
                 e.printStackTrace();
             }

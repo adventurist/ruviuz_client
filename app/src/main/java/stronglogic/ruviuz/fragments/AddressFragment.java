@@ -21,7 +21,7 @@ public class AddressFragment extends DialogFragment {
 
     final private static String TAG = "RuviuzADDRESSFRAGMENT";
 
-    private EditText addressEt, postalCodeEt, cityEt, provinceEt;
+    private EditText addressEt, postalEt, cityEt, provinceEt;
 
     private AddressFragListener addressFragListener;
 
@@ -54,21 +54,21 @@ public class AddressFragment extends DialogFragment {
         SharedPreferences mPrefs = getActivity().getSharedPreferences("RuviuzApp", Context.MODE_PRIVATE);
 
         addressEt = (EditText)view.findViewById(R.id.addressText);
-        postalCodeEt = (EditText)view.findViewById(R.id.postalCode);
+        postalEt = (EditText)view.findViewById(R.id.postalCode);
         cityEt = (EditText)view.findViewById(R.id.cityText);
         provinceEt = (EditText)view.findViewById(R.id.provinceText);
 
         if (!mPrefs.getString("address", "").equals("")) {
             addressEt.setText(mPrefs.getString("address", ""));
         }
-        if (!mPrefs.getString("postalcode", "").equals("")) {
-            addressEt.setText(mPrefs.getString("postalcode", ""));
+        if (!mPrefs.getString("postal", "").equals("")) {
+            postalEt.setText(mPrefs.getString("postal", ""));
         }
-        if (city != null) {
-            cityEt.setText(city);
-        }
-        if (province != null) {
-            provinceEt.setText(province);
+        if (!mPrefs.getString("city", "").equals("")) {
+            cityEt.setText(mPrefs.getString("city", ""));
+        } 
+        if (!mPrefs.getString("region", "").equals("")) {
+            provinceEt.setText(mPrefs.getString("region", ""));
         }
 
         Button addressBtn = (Button)view.findViewById(R.id.addressBtn);
@@ -76,12 +76,14 @@ public class AddressFragment extends DialogFragment {
         addressBtn.setOnClickListener(new View.OnClickListener()    {
             public void onClick(View v) {
                 if (addressEt.getText().toString().length() > 0 &&
-                        postalCodeEt.getText().toString().length() > 0) {
+                        postalEt.getText().toString().length() > 0) {
                     address = addressEt.getText().toString();
-                    postal = postalCodeEt.getText().toString();
+                    postal = postalEt.getText().toString();
+                    city = cityEt.getText().toString();
+                    province = provinceEt.getText().toString();
                     buttonClicked(v);
                 } else {
-                    Toast.makeText(getActivity(), "You must enter your email and password!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), "Enter Complete Address, bitch", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -105,12 +107,12 @@ public class AddressFragment extends DialogFragment {
 
     public void buttonClicked(View view)    {
         if (this.address != null && this.postal != null) {
-            addressFragListener.addressFragInteraction(address, postal);
+            addressFragListener.addressFragInteraction(address, postal, city, province);
         }
     }
 
     public interface AddressFragListener {
-        void addressFragInteraction(String address, String postal);
+        void addressFragInteraction(String address, String postal, String city, String province);
     }
 
     public void setArea(String city, String province) {

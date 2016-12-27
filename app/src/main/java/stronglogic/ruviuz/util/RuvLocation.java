@@ -35,7 +35,9 @@ public class RuvLocation {
 
     private GeoListener mListener;
 
-    private HashMap<String, String> provinceMap = new HashMap<>();
+    public static HashMap<String, String> provinceMap = new HashMap<>();
+
+    //TODO create statesMap HashMap
 
     public RuvLocation(Activity activity, GeoListener listener, LocationManager locationManager) {
         this.mActivity = activity;

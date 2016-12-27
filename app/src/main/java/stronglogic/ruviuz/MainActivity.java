@@ -54,9 +54,6 @@ import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -72,6 +69,7 @@ import java.util.Locale;
 
 import stronglogic.ruviuz.fragments.AddressFragment;
 import stronglogic.ruviuz.fragments.LoginFragment;
+import stronglogic.ruviuz.util.RuuvFile;
 import stronglogic.ruviuz.util.RuvLocation;
 
 public class MainActivity extends AppCompatActivity implements LoginFragment.LoginFragListener, AddressFragment.AddressFragListener, Handler.Callback {
@@ -92,7 +90,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
     private TextView orientationText;
     private ImageView photo1, photo2, photo3;
     private ImageButton photoBtn;
-    private Button ruuvBtn, addressBtn;
+    private Button ruuvBtn, addressBtn, clearBtn;
 
     private static final String TAG = "Ruviuz";
 //    private static final String baseUrl = "http://10.0.2.2:5000";
@@ -111,7 +109,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
     int fileCount, currentRid;
     float width, length, slope;
     BigDecimal price;
-    String address, postalcode, city, province;
+    String address, postal, city, province;
     String[] fileUrls = new String[3];
     boolean premium;
     /**
@@ -260,7 +258,9 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
 
                         Bundle mBundle = new Bundle();
                         mBundle.putString("address", address);
-                        mBundle.putString("postalcode", postalcode);
+                        mBundle.putString("postal", postal);
+                        mBundle.putString("city", city);
+                        mBundle.putString("region", province);
                         mBundle.putString("price", calculatePrice().toString());
                         mBundle.putFloat("width", roofWidth.getValue());
                         mBundle.putFloat("length", roofLength.getValue());
@@ -285,6 +285,13 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
             addressBtn.setAlpha(1f);
         }
 
+        clearBtn = (Button) findViewById(R.id.clearBtn);
+        clearBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                clearValues();
+            }
+        });
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         mGoogleApi = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
@@ -298,7 +305,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
 
         if (getIntent() != null) {
             Intent xIntent = getIntent();
-            getIntentData(xIntent);
+//            getIntentData(xIntent);
 
             if (xIntent.hasExtra("uri")) {
 //                getIntentData(xIntent);
@@ -349,6 +356,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
                 }
             }
         }
+        getPrefCreds();
     }
 
 
@@ -415,11 +423,11 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
             mAddressFrag = new AddressFragment();
             if (!mAddressFrag.isAdded()) {
                 mAddressFrag.show(fm, "Please Enter Address");
-                if (province != null && city != null) {
-                    if (!province.equals("") && !city.equals("")) {
-                        mAddressFrag.setArea(city, province);
-                    }
-                }
+//                if (province != null && city != null) {
+//                    if (!province.equals("") && !city.equals("")) {
+//                        mAddressFrag.setArea(city, province);
+//                    }
+//                }
             }
         }
         if (mAddressFrag != null) {
@@ -427,11 +435,11 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
             mAddressFrag = null;
             mAddressFrag = new AddressFragment();
             mAddressFrag.show(fm, "Please Enter Address");
-            if (province != null && city != null) {
-                if (!province.equals("") && !city.equals("")) {
-                    mAddressFrag.setArea(city, province);
-                }
-            }
+//            if (province != null && city != null) {
+//                if (!province.equals("") && !city.equals("")) {
+//                    mAddressFrag.setArea(city, province);
+//                }
+//            }
         }
     }
 
@@ -450,9 +458,11 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
 
 
     @Override
-    public void addressFragInteraction(String address, String postal) {
+    public void addressFragInteraction(String address, String postal, String city, String province) {
         this.address = address;
-        this.postalcode = postal;
+        this.postal = postal;
+        this.city = city;
+        this.province = province;
         Toast.makeText(this, this.address, Toast.LENGTH_SHORT).show();
         addressBtn.setAlpha(1f);
 
@@ -499,7 +509,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         for (String url : fileUrls) {
             //private RuuvFile(MainActivity mActivity, Handler mHandler, String baseUrl, String authToken, String fileUrl) {
             if (url != null) {
-                RuuvFile rFile = new RuuvFile(MainActivity.this, mHandler, this.baseUrl, this.authToken, url, currentRid);
+                RuuvFile rFile = new RuuvFile(MainActivity.this, mHandler, baseUrl, this.authToken, url, currentRid);
                 Thread sendFileThread = new Thread(rFile);
                 sendFileThread.start();
                 sent++;
@@ -558,14 +568,15 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         updateValues();
         SharedPreferences.Editor prefEdit = MainActivity.this.getSharedPreferences("RuviuzApp", Context.MODE_PRIVATE).edit();
         prefEdit.putString("address", address);
-        prefEdit.putString("postalcode", postalcode);
+        prefEdit.putString("postal", postal);
+        prefEdit.putString("city", city);
+        prefEdit.putString("region", province);
         prefEdit.putString("price", String.valueOf(price));
         prefEdit.putFloat("width", width);
         prefEdit.putFloat("length", length);
         prefEdit.putFloat("slope", slope);
         prefEdit.putBoolean("premium", premium);
-        prefEdit.putInt("currentRid", currentRid);
-//        prefEdit.putInt("fileCount", fileCount);
+        prefEdit.putInt("currentRid", currentRid);;
         prefEdit.commit();
     }
 
@@ -573,14 +584,13 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
     public void getPrefsData() {
         SharedPreferences mPrefs = MainActivity.this.getSharedPreferences("RuviuzApp", Context.MODE_PRIVATE);
         this.address = mPrefs.getString("address", "");
-        this.postalcode = mPrefs.getString("postalcode", "");
+        this.postal = mPrefs.getString("postal", "");
         this.price = new BigDecimal(mPrefs.getString("price", "0"));
         this.width = mPrefs.getFloat("width", 0f);
         this.length = mPrefs.getFloat("length", 0f);
         this.slope = mPrefs.getFloat("slope", 0f);
         this.premium = mPrefs.getBoolean("premium", false);
         this.currentRid = mPrefs.getInt("currentRid", 0);
-//        this.fileCount = mPrefs.getInt("fileCount", 0);
     }
 
     public void updateValues() {
@@ -591,7 +601,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
 
     public void clearValues() {
         this.address = "";
-        this.postalcode = "";
+        this.postal = "";
         this.city = "";
         this.province = "";
         this.price = new BigDecimal(0);
@@ -611,6 +621,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         photo1.setImageDrawable(null);
         photo2.setImageDrawable(null);
         photo3.setImageDrawable(null);
+        addressBtn.setAlpha(0.2f);
     }
 
 
@@ -664,8 +675,9 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
                     for (Address address : addresses) {
                         Log.d(TAG, "Address => " + address.getLocality() + " || " + address.getAdminArea());
                         MainActivity.this.city = address.getLocality();
-                        MainActivity.this.province = address.getAdminArea();
+                        MainActivity.this.province = RuvLocation.provinceMap.get(address.getAdminArea());
                     }
+                    MainActivity.this.putPrefsData();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -732,9 +744,9 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         intent.putExtra("width", this.width);
         intent.putExtra("length", this.length);
         intent.putExtra("address", this.address);
-        intent.putExtra("postalcode", this.postalcode);
+        intent.putExtra("postal", this.postal);
         intent.putExtra("city", this.city);
-        intent.putExtra("province", this.province);
+        intent.putExtra("region", this.province);
         intent.putExtra("premium", this.premium);
         intent.putExtra("currentRid", this.currentRid);
         intent.putExtra("fileCount", this.fileCount);
@@ -751,9 +763,9 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         this.width = intent.getFloatExtra("width", 0);
         this.length = intent.getFloatExtra("length", 0);
         this.address = intent.getStringExtra("address");
-        this.postalcode = intent.getStringExtra("postalcode");
+        this.postal = intent.getStringExtra("postal");
         this.city= intent.getStringExtra("city");
-        this.province= intent.getStringExtra("province");
+        this.province= intent.getStringExtra("region");
         this.premium = intent.getBooleanExtra("premium", false);
         this.currentRid = intent.getIntExtra("currentRid", -1);
         this.fileCount = intent.getIntExtra("fileCount", 0);
@@ -767,7 +779,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         bundle.putFloat("width", this.width);
         bundle.putFloat("length", this.length);
         bundle.putString("address", this.address);
-        bundle.putString("postalcode", this.postalcode);
+        bundle.putString("postal", this.postal);
         bundle.putBoolean("premium", this.premium);
         bundle.putInt("currentRid", this.currentRid);
 //        bundle.putExtra("fileCount", this.fileCount);
@@ -852,8 +864,11 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
             if (mBundle != null) {
 
                 try {
-                    String mAddress = mBundle.getString("address") + "\n" + mBundle.getString("postalcode");
-                    ruuvJson.put("address", mAddress);
+//                    String mAddress = mBundle.getString("address") + "\n" + mBundle.getString("postal");
+                    ruuvJson.put("address", mBundle.getString("address"));
+                    ruuvJson.put("postal", mBundle.getString("postal"));
+                    ruuvJson.put("city", mBundle.getString("city"));
+                    ruuvJson.put("region", mBundle.getString("region"));
                     ruuvJson.put("width", mBundle.getFloat("width"));
                     ruuvJson.put("length", mBundle.getFloat("length"));
                     ruuvJson.put("slope", mBundle.getFloat("slope"));
@@ -910,125 +925,123 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         }
     }
 
-    private static class RuuvFile implements Runnable {
-        private Handler mHandler;
-        private WeakReference<MainActivity> mReference;
-        private Activity mActivity;
-
-        private String baseUrl, authToken;
-
-        private String fileUrl;
-        private int ruvId;
-
-        private RuuvFile(MainActivity mActivity, Handler mHandler, String baseUrl, String authToken, String fileUrl, int ruvId) {
-            this.mReference = new WeakReference<MainActivity>(mActivity);
-            this.mHandler = mHandler;
-            this.baseUrl = baseUrl;
-            this.authToken = authToken;
-            this.fileUrl = fileUrl;
-            this.mActivity = mActivity;
-            this.ruvId = ruvId;
-        }
-
-        @Override
-        public void run() {
-            sendFile();
-        }
-
-        private boolean sendFile() {
-            String endpoint = baseUrl + "/file/upload";
-            try {
-                File file = new File(fileUrl);
-                FileInputStream fileInputStream = null;
-                DataOutputStream outputStream = null;
-                Writer writer = null;
-                BufferedReader reader = null;
-
-                HttpURLConnection connection = null;
-                String response = null;
-                String twoHyphens = "--";
-                String boundary = "*****" + Long.toString(System.currentTimeMillis()) + "*****";
-                String lineEnd = "\r\n";
-                try {
-                    URL url = new URL(endpoint);
-                    String mAuth = authToken + ":jigga";
-                    connection = (HttpURLConnection) url.openConnection();
-                    connection.setRequestMethod("POST");
-                    connection.setRequestProperty("Connection", "Keep-Alive");
-                    connection.setRequestProperty("User-Agent", "Ruviuz Android");
-                    connection.setRequestProperty("Authorization", "Basic " + Base64.encodeToString(mAuth.trim().getBytes(), Base64.NO_WRAP));
-                    connection.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
-
-                    outputStream = new DataOutputStream(connection.getOutputStream());
-                    outputStream.writeBytes(twoHyphens + boundary + lineEnd);
-                    outputStream.writeBytes("Content-Disposition: form-data; name=\"" + "upload" + "\"; filename=\"" + file.getName() + "\"" + lineEnd);
-                    outputStream.writeBytes("Content-Type: " + HttpURLConnection.guessContentTypeFromName(file.getName()) + lineEnd);
-                    outputStream.writeBytes("Content-Transfer-Encoding: binary" + lineEnd);
-                    outputStream.writeBytes(lineEnd);
-
-                    fileInputStream = new FileInputStream(file);
-                    byte[] buffer = new byte[4096];
-                    int bytesRead = -1;
-
-                    while ((bytesRead = fileInputStream.read(buffer)) != -1) {
-                        outputStream.write(buffer, 0, bytesRead);
-                    }
-
-                    outputStream.writeBytes(lineEnd);
-
-                    if (ruvId > -1) {
-                        outputStream.writeBytes(twoHyphens + boundary + lineEnd);
-                        outputStream.writeBytes("Content-Disposition: form-data; name=\"rid\"" + lineEnd);
-                        outputStream.writeBytes("Content-Type: text/plain" + lineEnd);
-                        outputStream.writeBytes(lineEnd);
-                        outputStream.writeBytes(String.valueOf(ruvId));
-                        outputStream.writeBytes(lineEnd);
-                        outputStream.writeBytes(twoHyphens + boundary + twoHyphens + lineEnd);
-                    }
-
-                    //TODO consolidate differences between BufferedWriter and DataOutputStream (do we use both, or can we use one over the other to handle the overall transaction
-                    outputStream.flush();
-//                    writer = new BufferedWriter(new OutputStreamWriter(connection.getOutputStream(), "UTF-8"));
-
-                    if (200 != connection.getResponseCode()) {
-                        Log.d(TAG, connection.getResponseMessage());
-                    }
-
-                    InputStream stream = connection.getInputStream();
-
-                    reader = new BufferedReader(new InputStreamReader(stream));
-                    StringBuilder bildr = new StringBuilder();
-                    String line;
-
-                    while ((line = reader.readLine()) != null) {
-                        bildr.append(line);
-                    }
-
-                    response = bildr.toString();
-
-                    fileInputStream.close();
-                    outputStream.flush();
-                    outputStream.close();
-
-                    if (!response.trim().isEmpty()) {
-                        Bundle msgData = new Bundle();
-                        msgData.putString("RuuvResponse", String.valueOf(response));
-                        Message outgoingMsg = new Message();
-                        outgoingMsg.setData(msgData);
-                        mHandler.sendMessage(outgoingMsg);
-                    }
-                    return true;
-                } catch (MalformedURLException e) {
-                    e.printStackTrace();
-                    return false;
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    return false;
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-                return false;
-            }
-        }
-    }
+//    private static class RuuvFile implements Runnable {
+//        private Handler mHandler;
+//        private WeakReference<MainActivity> mReference;
+//        private Activity mActivity;
+//
+//        private String baseUrl, authToken;
+//
+//        private String fileUrl;
+//        private int ruvId;
+//
+//        private RuuvFile(MainActivity mActivity, Handler mHandler, String baseUrl, String authToken, String fileUrl, int ruvId) {
+//            this.mReference = new WeakReference<MainActivity>(mActivity);
+//            this.mHandler = mHandler;
+//            this.baseUrl = baseUrl;
+//            this.authToken = authToken;
+//            this.fileUrl = fileUrl;
+//            this.mActivity = mActivity;
+//            this.ruvId = ruvId;
+//        }
+//
+//        @Override
+//        public void run() {
+//            sendFile();
+//        }
+//
+//        private boolean sendFile() {
+//            String endpoint = baseUrl + "/file/upload";
+//            try {
+//                File file = new File(fileUrl);
+//                FileInputStream fileInputStream = null;
+//                DataOutputStream outputStream = null;
+//                Writer writer = null;
+//                BufferedReader reader = null;
+//
+//                HttpURLConnection connection = null;
+//                String response = null;
+//                String twoHyphens = "--";
+//                String boundary = "*****" + Long.toString(System.currentTimeMillis()) + "*****";
+//                String lineEnd = "\r\n";
+//                try {
+//                    URL url = new URL(endpoint);
+//                    String mAuth = authToken + ":jigga";
+//                    connection = (HttpURLConnection) url.openConnection();
+//                    connection.setRequestMethod("POST");
+//                    connection.setRequestProperty("Connection", "Keep-Alive");
+//                    connection.setRequestProperty("User-Agent", "Ruviuz Android");
+//                    connection.setRequestProperty("Authorization", "Basic " + Base64.encodeToString(mAuth.trim().getBytes(), Base64.NO_WRAP));
+//                    connection.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
+//
+//                    outputStream = new DataOutputStream(connection.getOutputStream());
+//                    outputStream.writeBytes(twoHyphens + boundary + lineEnd);
+//                    outputStream.writeBytes("Content-Disposition: form-data; name=\"" + "upload" + "\"; filename=\"" + file.getName() + "\"" + lineEnd);
+//                    outputStream.writeBytes("Content-Type: " + HttpURLConnection.guessContentTypeFromName(file.getName()) + lineEnd);
+//                    outputStream.writeBytes("Content-Transfer-Encoding: binary" + lineEnd);
+//                    outputStream.writeBytes(lineEnd);
+//
+//                    fileInputStream = new FileInputStream(file);
+//                    byte[] buffer = new byte[4096];
+//                    int bytesRead = -1;
+//
+//                    while ((bytesRead = fileInputStream.read(buffer)) != -1) {
+//                        outputStream.write(buffer, 0, bytesRead);
+//                    }
+//
+//                    outputStream.writeBytes(lineEnd);
+//
+//                    if (ruvId > -1) {
+//                        outputStream.writeBytes(twoHyphens + boundary + lineEnd);
+//                        outputStream.writeBytes("Content-Disposition: form-data; name=\"rid\"" + lineEnd);
+//                        outputStream.writeBytes("Content-Type: text/plain" + lineEnd);
+//                        outputStream.writeBytes(lineEnd);
+//                        outputStream.writeBytes(String.valueOf(ruvId));
+//                        outputStream.writeBytes(lineEnd);
+//                        outputStream.writeBytes(twoHyphens + boundary + twoHyphens + lineEnd);
+//                    }
+//
+//                    outputStream.flush();
+//
+//                    if (200 != connection.getResponseCode()) {
+//                        Log.d(TAG, connection.getResponseMessage());
+//                    }
+//
+//                    InputStream stream = connection.getInputStream();
+//
+//                    reader = new BufferedReader(new InputStreamReader(stream));
+//                    StringBuilder bildr = new StringBuilder();
+//                    String line;
+//
+//                    while ((line = reader.readLine()) != null) {
+//                        bildr.append(line);
+//                    }
+//
+//                    response = bildr.toString();
+//
+//                    fileInputStream.close();
+//                    outputStream.flush();
+//                    outputStream.close();
+//
+//                    if (!response.trim().isEmpty()) {
+//                        Bundle msgData = new Bundle();
+//                        msgData.putString("RuuvResponse", String.valueOf(response));
+//                        Message outgoingMsg = new Message();
+//                        outgoingMsg.setData(msgData);
+//                        mHandler.sendMessage(outgoingMsg);
+//                    }
+//                    return true;
+//                } catch (MalformedURLException e) {
+//                    e.printStackTrace();
+//                    return false;
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                    return false;
+//                }
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//                return false;
+//            }
+//        }
+//    }
 }

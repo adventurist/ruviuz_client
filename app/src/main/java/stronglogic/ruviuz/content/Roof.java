@@ -23,7 +23,6 @@ public class Roof extends LauncherActivity.ListItem implements Serializable  {
 
     private ArrayList<String> photos;
 
-    private enum status{};
 
     public void setAddress(String address)    {
         this.address = address;

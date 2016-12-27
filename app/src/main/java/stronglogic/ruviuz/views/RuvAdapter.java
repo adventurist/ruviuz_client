@@ -89,16 +89,6 @@ public class RuvAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         return null;
     }
 
-    
-//    @Override
-//    public void onViewRecycled(RecyclerView.ViewHolder holder)  {
-//
-////        if (holder.getClass() == RuvHolder.class) {
-////            Log.d(TAG, "Video Class Recycled");
-////        }
-//
-//    }
-
 
     @Override
     public int getItemCount()  {return this.ruvList.size();}
@@ -123,21 +113,29 @@ public class RuvAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                         .fitCenter()
                         .diskCacheStrategy(DiskCacheStrategy.RESULT)
                         .into(ruvHolder.ruvPhoto1);
-                if (rPics.get(1) != null) {
+                if (rPics.size() > 1 && rPics.get(1) != null) {
                     Glide.with(mActivity)
                             .load(Roof.getPhotos().get(1))
                             .fitCenter()
                             .diskCacheStrategy(DiskCacheStrategy.RESULT)
                             .into(ruvHolder.ruvPhoto2);
+                } else {
+                    Glide.clear(ruvHolder.ruvPhoto2);
                 }
-                if (rPics.get(2) != null) {
+                if (rPics.size() > 2 && rPics.get(2) != null) {
                     Glide.with(mActivity)
                             .load(Roof.getPhotos().get(2))
                             .fitCenter()
                             .diskCacheStrategy(DiskCacheStrategy.RESULT)
                             .into(ruvHolder.ruvPhoto3);
+                } else {
+                    Glide.clear(ruvHolder.ruvPhoto3);
                 }
             } else {
+                Glide.clear(ruvHolder.ruvPhoto1);
+                Glide.clear(ruvHolder.ruvPhoto2);
+                Glide.clear(ruvHolder.ruvPhoto3);
+
                 Glide.with(mActivity)
                         .load(R.drawable.rvsamp)
                         .fitCenter()
@@ -161,7 +159,7 @@ public class RuvAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 xHandler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        ruvHolder.itemView.setBackgroundColor(ContextCompat.getColor(mActivity, R.color.colorRow));
+                        ruvHolder.itemView.setBackgroundColor(ContextCompat.getColor(mActivity, R.color.common_google_signin_btn_text_dark_disabled));
                         mRoof.toggleJustUpdated();
                     }
                 }, 4000);

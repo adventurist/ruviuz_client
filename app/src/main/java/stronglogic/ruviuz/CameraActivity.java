@@ -76,7 +76,7 @@ public class CameraActivity extends AppCompatActivity {
     private int currentRid, fileCount;
     private float slope, width, length;
     private boolean premium;
-    private String address;
+    private String address, region, city, postal;
     private String[] fileUrls = new String[3];
 
 
@@ -516,6 +516,9 @@ public class CameraActivity extends AppCompatActivity {
         intent.putExtra("width", this.width);
         intent.putExtra("length", this.length);
         intent.putExtra("address", this.address);
+        intent.putExtra("city", this.city);
+        intent.putExtra("region", this.region);
+        intent.putExtra("postal", this.postal);
         intent.putExtra("premium", this.premium);
         intent.putExtra("currentRid", this.currentRid);
         intent.putExtra("fileCount", this.fileCount);
@@ -528,6 +531,9 @@ public class CameraActivity extends AppCompatActivity {
         this.width = intent.getFloatExtra("width", 0);
         this.length = intent.getFloatExtra("length", 0);
         this.address = intent.getStringExtra("address");
+        this.postal = intent.getStringExtra("postal");
+        this.city = intent.getStringExtra("city");
+        this.region = intent.getStringExtra("region");
         this.premium = intent.getBooleanExtra("premium", false);
         this.currentRid = intent.getIntExtra("currentRid", -1);
         this.fileCount = intent.getIntExtra("fileCount", 0);
