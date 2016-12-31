@@ -1,0 +1,121 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#00796B"
+    android:fitsSystemWindows="true">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="56dp"
+        android:paddingLeft="24dp"
+        android:paddingRight="24dp">
+
+        <ImageView android:src="@drawable/rlogo"
+            android:layout_width="wrap_content"
+            android:layout_height="72dp"
+            android:layout_marginBottom="24dp"
+            android:layout_gravity="center_horizontal" />
+
+        <!-- Email Label -->
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp">
+            <EditText android:id="@+id/input_email"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#46ffcb"
+                android:inputType="textEmailAddress"
+                android:hint="Email" />
+        </android.support.design.widget.TextInputLayout>
+
+        <!-- Password Label -->
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp">
+            <EditText android:id="@+id/input_password"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#46ffcb"
+                android:inputType="textPassword"
+                android:hint="Passsword"
+                />
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.v7.widget.AppCompatButton
+            android:id="@+id/customerBtn"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:layout_marginBottom="24dp"
+            android:padding="12dp"
+        android:text="Login"/>
+
+        <TextView android:id="@+id/link_signup"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
+            android:background="#46ffcb"
+            android:text="No account yet? Create one"
+            android:gravity="center"
+            android:textSize="16dip"/>
+
+    </LinearLayout>
+</RelativeLayout>
+
+
+<!--<GridLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
+    <!--xmlns:tools="http://schemas.android.com/tools"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="match_parent"-->
+    <!--tools:context="layout.CustomerFragment"-->
+    <!--android:rowCount="4"-->
+    <!--android:columnCount="2"-->
+    <!--android:background="#00796B"-->
+    <!--android:orientation="vertical">-->
+
+    <!--<EditText-->
+        <!--android:hint="First Name"-->
+        <!--android:textSize="14sp"-->
+        <!--android:layout_row="0"-->
+        <!--android:background="#46ffcb"-->
+        <!--android:layout_column="0" />-->
+    <!--<EditText-->
+        <!--android:hint="Last Name"-->
+        <!--android:textSize="14sp"-->
+        <!--android:layout_row="0"-->
+        <!--android:background="#46ffcb"-->
+        <!--android:layout_column="1" />-->
+    <!--<Space-->
+        <!--android:layout_row="1"-->
+        <!--android:layout_column="0"-->
+        <!--android:layout_width="200dp"-->
+        <!--android:layout_height="200dp" />-->
+    <!--<EditText-->
+        <!--android:hint="@string/email"-->
+        <!--android:inputType="textEmailAddress"-->
+        <!--android:background="#46ffcb"-->
+        <!--android:textSize="14sp"-->
+        <!--android:layout_row="2"-->
+        <!--android:layout_column="0" />-->
+    <!--<EditText-->
+        <!--android:hint="Phone"-->
+        <!--android:inputType="phone"-->
+        <!--android:textSize="14sp"-->
+        <!--android:background="#46ffcb"-->
+        <!--android:layout_row="2"-->
+        <!--android:layout_column="1" />-->
+    <!--<Button-->
+        <!--android:id="@+id/customerBtn"-->
+        <!--android:layout_height="200dp"-->
+        <!--android:layout_width="260dp"-->
+        <!--android:text="DeezNutz"-->
+        <!--android:textSize="20sp"-->
+        <!--android:layout_row="3"-->
+        <!--android:layout_column="0" />-->
+<!--</GridLayout>-->

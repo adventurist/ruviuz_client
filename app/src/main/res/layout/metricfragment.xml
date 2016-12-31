@@ -1,0 +1,191 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#3c3c3c"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context="stronglogic.ruviuz.fragments.MetricFragment">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:textSize="28sp"
+        android:textAllCaps="true"
+        android:textStyle="bold"
+        android:layout_marginTop="24dp"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/metricWelcome"
+        android:text="@string/metrics"
+        android:textColor="#ffffff"
+        android:layout_centerInParent="false" />
+
+    <me.angrybyte.numberpicker.view.ActualNumberPicker
+        android:id="@+id/lengthPicker"
+        android:layout_width="wrap_content"
+        android:layout_height="48dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginStart="36dp"
+        android:layout_marginEnd="36dp"
+        android:background="#fc0"
+        app:bar_color="@android:color/white"
+        app:bar_width="2dp"
+        app:bars_count="26"
+        app:controls_color="@android:color/white"
+        app:draw_over_controls="true"
+        app:draw_over_text="false"
+        app:fast_controls_color="@android:color/darker_gray"
+        app:highlight_color="#009dff"
+        app:max_value="500"
+        app:min_value="0"
+        app:selection_color="#00ff23"
+        app:show_bars="true"
+        app:show_controls="true"
+        app:show_fast_controls="true"
+        app:show_highlight="true"
+        app:show_text="true"
+        app:text_color="@android:color/holo_red_dark"
+        app:text_size="20sp"
+        app:value="50"
+        android:layout_below="@id/metricWelcome"
+        android:layout_marginTop="48dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/lengthPicker"
+        android:textSize="24sp"
+        android:id="@+id/lengthPickTv"
+        android:layout_centerHorizontal="true"
+        android:text="@string/length"
+        android:layout_marginTop="12dp"
+        android:textColor="#ffffff" />
+
+
+    <me.angrybyte.numberpicker.view.ActualNumberPicker
+        android:id="@+id/widthPicker"
+        android:layout_width="wrap_content"
+        android:layout_height="48dp"
+        android:layout_gravity="center"
+        android:layout_marginStart="36dp"
+        android:layout_marginEnd="36dp"
+        android:layout_marginTop="36dp"
+        android:background="#fc0"
+        app:bar_color="@android:color/white"
+        app:bar_width="2dp"
+        app:bars_count="26"
+        app:controls_color="@android:color/white"
+        app:draw_over_controls="true"
+        app:draw_over_text="false"
+        app:fast_controls_color="@android:color/darker_gray"
+        app:highlight_color="#009dff"
+        app:max_value="500"
+        app:min_value="0"
+        app:selection_color="#00ff23"
+        app:show_bars="true"
+        app:show_controls="true"
+        app:show_fast_controls="true"
+        app:show_highlight="true"
+        app:show_text="true"
+        app:text_color="@android:color/holo_red_dark"
+        app:text_size="20sp"
+        app:value="50"
+        android:layout_alignParentBottom="false"
+        android:layout_centerVertical="false"
+        android:layout_below="@id/lengthPickTv"
+        android:layout_centerHorizontal="true"
+        />
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="24sp"
+        android:id="@+id/widthPickerTv"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/widthPicker"
+        android:text="@string/width"
+        android:layout_marginTop="12dp"
+        android:textColor="#ffffff" />
+
+    <me.angrybyte.numberpicker.view.ActualNumberPicker
+        android:id="@+id/slopePicker"
+        android:layout_width="wrap_content"
+        android:layout_height="48dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="12dp"
+        android:layout_marginStart="36dp"
+        android:layout_marginEnd="36dp"
+        android:layout_below="@id/widthPickerTv"
+        android:background="#fc0"
+        app:bar_color="@android:color/white"
+        app:bar_width="2dp"
+        app:bars_count="26"
+        android:layout_centerVertical="false"
+        app:controls_color="@android:color/white"
+        app:draw_over_controls="true"
+        app:draw_over_text="false"
+        app:fast_controls_color="@android:color/darker_gray"
+        app:highlight_color="#009dff"
+        app:max_value="500"
+        app:min_value="0"
+        app:selection_color="#00ff23"
+        app:show_bars="true"
+        app:show_controls="true"
+        app:show_fast_controls="true"
+        app:show_highlight="true"
+        app:show_text="true"
+        app:text_color="@android:color/holo_red_dark"
+        app:text_size="20sp"
+        app:value="50"
+        android:layout_marginTop="32dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:textSize="24sp"
+        android:layout_marginTop="12dp"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/slopePicker"
+        android:text="@string/slope"
+        android:textColor="#ffffff" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/metricBack"
+        android:background="@drawable/backward"
+        android:text="@string/previous"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginBottom="36dp"
+        android:layout_marginStart="24dp"
+         />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/previousDetail"
+        android:layout_alignBottom="@id/metricBack"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/metricForward"
+        android:background="@drawable/forward"
+        android:text="@string/next"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginBottom="36dp"
+        android:layout_marginEnd="24dp"
+         />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/metricForward"
+        android:id="@+id/nextDetail"/>
+
+
+</RelativeLayout>

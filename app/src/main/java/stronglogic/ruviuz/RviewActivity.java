@@ -1,6 +1,8 @@
 package stronglogic.ruviuz;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -33,13 +35,14 @@ import stronglogic.ruviuz.views.RuvAdapter;
 public class RviewActivity extends AppCompatActivity implements RuvFragment.RuvFragListener {
 
     private static final String TAG = "RuviuzRVIEWACTIVITY";
+    private static final int RUVIUZ_CAMERA = 15;
 
     private android.support.v7.widget.Toolbar mToolbar;
 
     private String authToken;
     private String baseUrl;
 
-    private int currentRid, fileCount;
+    private int currentRid, fileCount, reopenDialog;
     private float slope, width, length;
     private boolean premium;
     private String address;
@@ -47,14 +50,16 @@ public class RviewActivity extends AppCompatActivity implements RuvFragment.RuvF
 
     private ArrayList<Roof> roofArrayList;
     public RecyclerView rv;
-    private RuvAdapter ruvAdapter;
-
-    private Bundle mBundle;
+//    private RuvAdapter ruvAdapter;
+//
+//    private Bundle mBundle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_rview);
+
+        getPrefsData();
 
         mToolbar = (Toolbar) findViewById(R.id.app_bar);
         setSupportActionBar(mToolbar);
@@ -67,10 +72,28 @@ public class RviewActivity extends AppCompatActivity implements RuvFragment.RuvF
         }
 
         Intent mIntent = getIntent();
-        this.authToken = mIntent.getStringExtra("authToken");
-        this.baseUrl= mIntent.getStringExtra("baseUrl");
 
         getIntentData(mIntent);
+
+        if (mIntent.hasExtra("fromCamera") && mIntent.getBooleanExtra("fromCamera", false)) {
+            if (mIntent.hasExtra("uri")) {
+//                getIntentData(xIntent);
+                if (fileCount + 1 == 4) {
+                    Toast.makeText(RviewActivity.this, "You cannot add more photos", Toast.LENGTH_SHORT).show();
+                } else {
+                    this.fileCount++;
+                    if (fileUrls == null) {
+                        this.fileUrls = new String[3];
+                    }
+                    if (fileUrls[fileCount - 1] == null) {
+                        fileUrls[fileCount - 1] = "";
+                    }
+                    String uriS = mIntent.getStringExtra("uri");
+                    fileUrls[fileCount - 1] = uriS;
+                    reopenDialog = currentRid;
+                }
+            }
+        }
 
         roofArrayList = new ArrayList<>();
 
@@ -136,7 +159,7 @@ public class RviewActivity extends AppCompatActivity implements RuvFragment.RuvF
     public void updateUi()  {
         final ArrayList<Roof> feedList = getFeed();
         if (feedList.size() > 0) {
-            final RuvAdapter ruvAdapter = new RuvAdapter(RviewActivity.this, feedList, baseUrl, authToken);
+            final RuvAdapter ruvAdapter = new RuvAdapter(RviewActivity.this, feedList, baseUrl, authToken, reopenDialog, fileUrls);
             rv = (RecyclerView) findViewById(R.id.recycView);
             rv.setAdapter(ruvAdapter);
             rv.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -275,6 +298,7 @@ public class RviewActivity extends AppCompatActivity implements RuvFragment.RuvF
 
     public void getIntentData(Intent intent) {
         this.authToken = intent.getStringExtra("authToken");
+        this.baseUrl = intent.getStringExtra("baseUrl");
         this.slope = intent.getFloatExtra("slope", 0);
         this.width = intent.getFloatExtra("width", 0);
         this.length = intent.getFloatExtra("length", 0);
@@ -283,5 +307,42 @@ public class RviewActivity extends AppCompatActivity implements RuvFragment.RuvF
         this.currentRid = intent.getIntExtra("currentRid", -1);
         this.fileCount = intent.getIntExtra("fileCount", 0);
         this.fileUrls = intent.getStringArrayExtra("fileUrls");
+    }
+
+    public void putPrefsData() {
+        SharedPreferences.Editor prefEdit = RviewActivity.this.getSharedPreferences("RuviuzApp", Context.MODE_PRIVATE).edit();
+        prefEdit.putString("address", address);
+        prefEdit.putFloat("width", width);
+        prefEdit.putFloat("length", length);
+        prefEdit.putFloat("slope", slope);
+        prefEdit.putBoolean("premium", premium);
+        prefEdit.putInt("currentRid", currentRid);
+        prefEdit.commit();
+    }
+
+    public void getPrefsData() {
+        SharedPreferences mPrefs = RviewActivity.this.getSharedPreferences("RuviuzApp", Context.MODE_PRIVATE);
+        this.address = mPrefs.getString("address", "");
+        this.width = mPrefs.getFloat("width", 0f);
+        this.length = mPrefs.getFloat("length", 0f);
+        this.slope = mPrefs.getFloat("slope", 0f);
+        this.premium = mPrefs.getBoolean("premium", false);
+        this.currentRid = mPrefs.getInt("currentRid", 0);
+    }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        Log.d(TAG, "onActivityResult");
+        switch (requestCode) {
+            case RUVIUZ_CAMERA:
+                if (resultCode == RESULT_OK) {
+
+                    //TODO do stuff
+                    Log.d(TAG, "RETURNED in onActivityResult RUVIUZ CAMERA");
+                }
+                break;
+        }
     }
 }

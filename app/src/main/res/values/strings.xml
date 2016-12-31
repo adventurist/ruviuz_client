@@ -24,4 +24,56 @@
     <string name="update">Update</string>
     <string name="upload">Upload</string>
     <string name="take_pic">Take Pic</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="measure">measure</string>
+    <string name="width">Width</string>
+    <string name="length">Length</string>
+    <string name="slope">Slope</string>
+    <string name="metrics">METRICS</string>
+    <string name="side_menu">Side Menu</string>
+    <string name="menu">Menu</string>
+    <string name="ruuvmenu">RuuvMenu</string>
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
+    <string name="OpenDrawer">Open Side Menu</string>
+    <string name="CloseDrawer">Close Side Menu</string>
+
+    <string-array name="ruvitems">
+        <item>Roof List</item>
+        <item>Measure</item>
+        <item>Client</item>
+        <item>Address</item>
+        <item>Get Location</item>
+        <item>Upload</item>
+        <item>Take photo</item>
+        <item>Clear</item>
+        <item>Login</item>
+        <item>Logout</item>
+    </string-array>
+
+    <string-array name="actionnames">
+        <item>stronglogic.ruviuz.RviewActivity</item>
+        <item>Metric</item>
+        <item>Customer</item>
+        <item>Address</item>
+        <item>Location</item>
+        <item>Upload</item>
+        <item>stronglogic.ruviuz.CameraActivity</item>
+        <item>Clear</item>
+        <item>Login</item>
+        <item>Logout</item>
+    </string-array>
+
+
+    <string-array name="ruvItemsWithIcons">
+        <item>Ruuv Quotes</item>
+        <item>@drawable/geolocate</item>
+        <item>@drawable/metric</item>
+        <item>@drawable/login2</item>
+        <item>Logout</item>
+    </string-array>
+
+
 </resources>

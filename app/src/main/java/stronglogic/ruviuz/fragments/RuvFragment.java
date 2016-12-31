@@ -1,8 +1,11 @@
 package stronglogic.ruviuz.fragments;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.DialogFragment;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -11,6 +14,8 @@ import android.os.Looper;
 import android.os.Message;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -18,6 +23,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -43,6 +49,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 
+import stronglogic.ruviuz.CameraActivity;
 import stronglogic.ruviuz.R;
 import stronglogic.ruviuz.content.RuvFileInfo;
 import stronglogic.ruviuz.util.RuuvFile;
@@ -56,7 +63,11 @@ import static android.app.Activity.RESULT_OK;
 public class RuvFragment extends DialogFragment {
 
     final private static String TAG = "RuviuzRUVFRAGMENT";
+    private static final int RUVIUZ_CAMERA = 15;
     final private static int RESULT_LOAD_IMAGE = 17;
+    private static final int CAMERA_PERMISSION = 6;
+
+    private String[] fileUrls;
 
     private RuvFragListener ruvFragListener;
 
@@ -64,10 +75,11 @@ public class RuvFragment extends DialogFragment {
     private EditText addressEt, priceEt, widthEt, lengthEt, slopeEt;
     private ImageView ruvPhoto1, ruvPhoto2, ruvPhoto3;
     private Button imgBtn, updateBtn;
+    private ImageButton photoBtn;
 
     private ArrayList<RuvFileInfo> ruvFiles;
 
-    private int ruvId, position;
+    private int ruvId, position, fileCount;
 
     private String baseUrl, authToken;
 
@@ -97,6 +109,7 @@ public class RuvFragment extends DialogFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         this.baseUrl = getArguments().getString("baseUrl");
         this.authToken = getArguments().getString("authToken");
         this.ruvId = getArguments().getInt("ruvId");
@@ -257,6 +270,37 @@ public class RuvFragment extends DialogFragment {
             }
         });
         getRuv();
+
+        if (checkCameraHardware(mActivity)) {
+            photoBtn = (ImageButton) mView.findViewById(R.id.takePhoto);
+            photoBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (ContextCompat.checkSelfPermission(mActivity, Manifest.permission.CAMERA)
+                            != PackageManager.PERMISSION_GRANTED) {
+                        ActivityCompat.requestPermissions(mActivity,
+                                new String[]{Manifest.permission.CAMERA}, CAMERA_PERMISSION);
+                    } else {
+                        if (checkCameraHardware(mActivity)) {
+                            Intent intent = new Intent(mActivity, CameraActivity.class);
+                            putIntentData(intent);
+                            intent.putExtra("currentRid", ruvId);
+                            intent.putExtra("callingClass", RuvFragment.this.getClass().getSimpleName());
+//                            intent.putExtra("baseUrl", baseUrl);
+//                            putPrefsData();
+//                            setResult(RUVIUZ_DATA_PERSIST);
+//                            startActivityForResult(intent, RUVIUZ_DATA_PERSIST);
+                            startActivity(intent);
+                        } else {
+                            Log.d(TAG, "No Camera Hardware on Device");
+                        }
+                    }
+                }
+            });
+        } else {
+            Log.d(TAG, "Camera Not Available");
+        }
+
 
         return mView;
     }
@@ -432,7 +476,6 @@ public class RuvFragment extends DialogFragment {
                     }
                     ruuvJson.put("files", ruuvFileJsonArr);
                     Log.d(TAG, "RUUVJSON==::>>" + ruuvJson.toString());
-
                 }
 
             } catch (JSONException e) {
@@ -573,4 +616,57 @@ public class RuvFragment extends DialogFragment {
             }
         }
     }
+
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,  String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case CAMERA_PERMISSION:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    Intent intent = new Intent(mActivity, CameraActivity.class);
+//                    putPrefsData();
+                    Log.d(TAG, this.getClass().toString());
+                    Log.d(TAG, this.getClass().getName());
+                    Log.d(TAG, this.getClass().getSimpleName());
+                    intent.putExtra("authToken", authToken);
+                    intent.putExtra("callingClass", RuvFragment.this.getClass().getSimpleName());
+//                    putIntentData(intent);
+//                    setResult(RUVIUZ_DATA_PERSIST);
+//                    startActivityForResult(intent, RUVIUZ_DATA_PERSIST);
+                    startActivity(intent);
+                } else {
+                    Toast.makeText(mActivity, "Please grant camera permission to use the CAMERA", Toast.LENGTH_SHORT).show();
+                }
+                return;
+            default:
+                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
+    }
+
+
+    /** Check if this device has a camera */
+    private boolean checkCameraHardware(Context context) {
+        if (context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)){
+            // this device has a camera
+            return true;
+        } else {
+            // no camera on this device
+            return false;
+        }
+    }
+
+    public void putIntentData(Intent intent) {
+        intent.putExtra("authToken", this.authToken);
+        intent.putExtra("baseUrl", this.baseUrl);
+        intent.putExtra("fileCount", this.fileCount);
+        intent.putExtra("fileUrls", this.fileUrls);
+    }
+
+    public void getIntentData(Intent intent) {
+        this.authToken = intent.getStringExtra("authToken");
+        this.baseUrl = intent.getStringExtra("baseUrl");
+        this.fileCount = intent.getIntExtra("fileCount", 0);
+        this.fileUrls = intent.getStringArrayExtra("fileUrls");
+    }
+
 }

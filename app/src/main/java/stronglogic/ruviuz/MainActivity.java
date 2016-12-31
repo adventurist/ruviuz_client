@@ -7,6 +7,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.hardware.SensorManager;
 import android.location.Address;
@@ -20,6 +22,9 @@ import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.SpannableStringBuilder;
@@ -27,16 +32,19 @@ import android.text.Spanned;
 import android.text.style.ImageSpan;
 import android.util.Base64;
 import android.util.Log;
+import android.view.Display;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.OrientationEventListener;
-import android.view.TextureView;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.NumberPicker;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -67,30 +75,40 @@ import java.net.URL;
 import java.util.List;
 import java.util.Locale;
 
+import stronglogic.ruviuz.content.RuvMenuItem;
 import stronglogic.ruviuz.fragments.AddressFragment;
+import stronglogic.ruviuz.fragments.CustomerFragment;
 import stronglogic.ruviuz.fragments.LoginFragment;
+import stronglogic.ruviuz.fragments.MetricFragment;
 import stronglogic.ruviuz.util.RuuvFile;
 import stronglogic.ruviuz.util.RuvLocation;
+import stronglogic.ruviuz.views.RuvMenuAdapter;
 
-public class MainActivity extends AppCompatActivity implements LoginFragment.LoginFragListener, AddressFragment.AddressFragListener, Handler.Callback {
+import static android.R.drawable.ic_menu_camera;
+
+public class MainActivity extends AppCompatActivity implements LoginFragment.LoginFragListener, AddressFragment.AddressFragListener, MetricFragment.OnFragmentInteractionListener, CustomerFragment.OnFragmentInteractionListener, Handler.Callback {
 
     private static final int CAMERA_PERMISSION = 6;
     private static final int RUVIUZ_DATA_PERSIST = 14;
+    private static final int METRICFRAG_COMPLETE = 21;
 
     private android.support.v7.widget.Toolbar mToolbar;
 
+    private FragmentManager fm;
+
     private LoginFragment mLoginFrag;
     private AddressFragment mAddressFrag;
+    private MetricFragment metricFrag;
+    private CustomerFragment mCustomerFrag;
 
     private OrientationEventListener mListener;
 
     private NumberPicker roofLength, roofWidth, roofSlope;
     private Switch isFlat, premiumMaterial;
-    private TextureView textureView;
     private TextView orientationText;
     private ImageView photo1, photo2, photo3;
     private ImageButton photoBtn;
-    private Button ruuvBtn, addressBtn, clearBtn;
+    private Button ruuvBtn, addressBtn, clearBtn, metricBtn;
 
     private static final String TAG = "Ruviuz";
 //    private static final String baseUrl = "http://10.0.2.2:5000";
@@ -119,10 +137,23 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
     private GoogleApiClient mGoogleApi;
 
 
+    private RuvMenuItem[] ruuvMenuItems;
+    private DrawerLayout mDrawerLayout;
+    private ActionBarDrawerToggle mDrawerToggle;
+    private ListView mDrawerList;
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        Display display = getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+
+        Log.d(TAG, "This device has the following screen size: \n" + String.valueOf(size.x) + "x\n" + String.valueOf(size.y) + "y");
 
         mToolbar = (Toolbar) findViewById(R.id.app_bar);
 
@@ -137,9 +168,8 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         setSupportActionBar(mToolbar);
 
         if (getSupportActionBar()!= null) {
-            getSupportActionBar().setDisplayShowHomeEnabled(true);
-            getSupportActionBar().setLogo(R.drawable.rlogo);
-            getSupportActionBar().setDisplayShowTitleEnabled(false);
+            getSupportActionBar().setHomeAsUpIndicator(R.drawable.rlogo);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setElevation(8f);
         }
 
@@ -157,6 +187,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
                             Intent intent = new Intent(MainActivity.this, CameraActivity.class);
                             putIntentData(intent);
                             intent.putExtra("authToken", authToken);
+                            intent.putExtra("callingClass", MainActivity.this.getClass().getSimpleName());
                             putPrefsData();
                             setResult(RUVIUZ_DATA_PERSIST);
 //                            startActivityForResult(intent, RUVIUZ_DATA_PERSIST);
@@ -285,6 +316,15 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
             addressBtn.setAlpha(1f);
         }
 
+        metricBtn = (Button) findViewById(R.id.metricfragOpen);
+
+        metricBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getMetric();
+            }
+        });
+
         clearBtn = (Button) findViewById(R.id.clearBtn);
         clearBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -295,8 +335,93 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         mGoogleApi = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
+
+        String[] menuItemsArray = getResources().getStringArray(R.array.ruvitems);
+
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.side_menu);
+        mDrawerList = (ListView) findViewById(R.id.left_drawer);
+
+        makeSideMenu(mDrawerLayout, mDrawerList, menuItemsArray);
     }
 
+
+    public void makeSideMenu(final DrawerLayout mDrawerLayout, ListView mDrawerList, String[] mItems) {
+        ruuvMenuItems = new RuvMenuItem[mItems.length];
+
+        if (mItems.length > 8) {
+                String[] actionNames = getResources().getStringArray(R.array.actionnames);
+                ruuvMenuItems[0] = new RuvMenuItem(R.drawable.rooflist, mItems[0], RuvMenuItem.type.ACTIVITY, actionNames[0]);
+                ruuvMenuItems[1] = new RuvMenuItem(R.drawable.metric, mItems[1], RuvMenuItem.type.FRAGMENT, actionNames[1]);
+                ruuvMenuItems[2] = new RuvMenuItem(R.drawable.customer, mItems[2], RuvMenuItem.type.FRAGMENT,actionNames[2]);
+                ruuvMenuItems[3] = new RuvMenuItem(R.drawable.address, mItems[3], RuvMenuItem.type.FRAGMENT, actionNames[3]);
+                ruuvMenuItems[4] = new RuvMenuItem(R.drawable.geolocate, mItems[4], RuvMenuItem.type.FRAGMENT, actionNames[4]);
+                ruuvMenuItems[5] = new RuvMenuItem(R.drawable.getimg, mItems[5], RuvMenuItem.type.INTENT_ACTION, actionNames[5]);
+                ruuvMenuItems[6] = new RuvMenuItem(ic_menu_camera, mItems[6], RuvMenuItem.type.ACTIVITY, actionNames[6]);
+                ruuvMenuItems[7] = new RuvMenuItem(R.drawable.destroy, mItems[7], RuvMenuItem.type.INTENT_ACTION, actionNames[7]);
+                ruuvMenuItems[8] = new RuvMenuItem(R.drawable.login2, mItems[8], RuvMenuItem.type.FRAGMENT, actionNames[8]);
+                ruuvMenuItems[9] = new RuvMenuItem(R.drawable.logout, mItems[9], RuvMenuItem.type.INTENT_ACTION, actionNames[9]);
+        }
+
+        // Set the adapter for the list view
+        mDrawerList.setAdapter(new RuvMenuAdapter(this,
+                R.layout.drawer_list_item, ruuvMenuItems));
+        // Set the list's click listener
+        mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Log.d(TAG, String.valueOf(ruuvMenuItems[position]));
+            }
+        });
+
+        MainActivity.this.getClass().get
+
+        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
+                mToolbar, R.string.OpenDrawer, R.string.CloseDrawer) {
+
+            /** Called when a drawer has settled in a completely closed state. */
+            public void onDrawerClosed(View view) {
+                super.onDrawerClosed(view);
+                if (mToolbar != null) mToolbar.setTitle("Ruviuz");
+
+                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+            }
+
+            /** Called when a drawer has settled in a completely open state. */
+            public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened(drawerView);
+                if (mToolbar != null) mToolbar.setTitle("Choose Your Destiny.");
+                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+            }
+
+            @Override
+            public void onDrawerSlide(View drawerView, float slideOffset) {
+                super.onDrawerSlide(drawerView, slideOffset);
+                mDrawerLayout.bringChildToFront(drawerView);
+                mDrawerLayout.requestLayout();
+                if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
+                    mDrawerLayout.closeDrawer(GravityCompat.START);
+                    mDrawerLayout.setBackgroundColor(Color.BLACK);
+                    sendViewToBack(mDrawerLayout);
+                } else {
+                    mDrawerLayout.openDrawer(GravityCompat.START);
+                    mDrawerLayout.setBackgroundColor(Color.TRANSPARENT);
+                    mDrawerLayout.bringToFront();
+                }
+            }
+
+        };
+
+        // Set the drawer toggle as the DrawerListener
+        mDrawerLayout.setDrawerListener(mDrawerToggle);
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        // If the nav drawer is open, hide action items related to the content view
+        boolean drawerOpen = mDrawerLayout.isDrawerOpen(mDrawerList);
+        Log.d(TAG, "Drawer Open? => " + String.valueOf(drawerOpen));
+        return super.onPrepareOptionsMenu(menu);
+    }
 
     @Override
     public void onResume() {
@@ -310,7 +435,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
             if (xIntent.hasExtra("uri")) {
 //                getIntentData(xIntent);
                 if (fileCount + 1 == 4) {
-                    Toast.makeText(MainActivity.this, "You cannot add more photos", Toast.LENGTH_SHORT);
+                    Toast.makeText(MainActivity.this, "You cannot add more photos", Toast.LENGTH_SHORT).show();
                 } else {
                     this.fileCount++;
                     if (fileUrls == null) {
@@ -417,17 +542,12 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
     }
 
 
-    public void addressDialog() {
+    public static void addressDialog(FragmentManager fm, AddressFragment mAddressFrag) {
         FragmentManager fm = getFragmentManager();
         if (mAddressFrag == null) {
             mAddressFrag = new AddressFragment();
             if (!mAddressFrag.isAdded()) {
                 mAddressFrag.show(fm, "Please Enter Address");
-//                if (province != null && city != null) {
-//                    if (!province.equals("") && !city.equals("")) {
-//                        mAddressFrag.setArea(city, province);
-//                    }
-//                }
             }
         }
         if (mAddressFrag != null) {
@@ -435,11 +555,45 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
             mAddressFrag = null;
             mAddressFrag = new AddressFragment();
             mAddressFrag.show(fm, "Please Enter Address");
-//            if (province != null && city != null) {
-//                if (!province.equals("") && !city.equals("")) {
-//                    mAddressFrag.setArea(city, province);
-//                }
-//            }
+        }
+    }
+
+    public void customerDialog() {
+        FragmentManager fm = getFragmentManager();
+        if (mCustomerFrag == null) {
+            mCustomerFrag = new CustomerFragment();
+            if (!mCustomerFrag .isAdded()) {
+                mCustomerFrag.show(fm, "Please Enter Address");
+            }
+        }
+        if (mCustomerFrag != null) {
+            fm.beginTransaction().remove(mCustomerFrag ).commit();
+            mCustomerFrag = null;
+            mCustomerFrag = new CustomerFragment();
+            mCustomerFrag.show(fm, "Please Enter Address");
+        }
+    }
+
+    public void getMetric() {
+        updateValues();
+        Bundle mBundle = new Bundle();
+        mBundle.putFloat("length", length);
+        mBundle.putFloat("width", width);
+        mBundle.putFloat("slope", slope);
+
+        FragmentManager fm = getFragmentManager();
+        if (metricFrag == null) {
+            metricFrag = new MetricFragment();
+            metricFrag.setArguments(mBundle);
+            if (!metricFrag.isAdded()) {
+                metricFrag.show(fm, "Please Enter Metrics");
+            }
+        } else {
+            fm.beginTransaction().remove(metricFrag).commit();
+            metricFrag = null;
+            metricFrag = new MetricFragment();
+            metricFrag.setArguments(mBundle);
+            metricFrag.show(fm, "Please Enter Metrics");
         }
     }
 
@@ -509,7 +663,6 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
     private int sendRuuvFiles() {
         int sent = 0;
         for (String url : fileUrls) {
-            //private RuuvFile(MainActivity mActivity, Handler mHandler, String baseUrl, String authToken, String fileUrl) {
             if (url != null) {
                 RuuvFile rFile = new RuuvFile(MainActivity.this, mHandler, baseUrl, this.authToken, url, currentRid);
                 Thread sendFileThread = new Thread(rFile);
@@ -634,12 +787,23 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         int color = ContextCompat.getColor(this, R.color.colorAccent);
         updateMenuWithIcon(menu.findItem(R.id.loginAction), color);
         updateMenuWithIcon(menu.findItem(R.id.geoLocate), color);
+//        updateMenuWithIcon(menu.findItem(R.id.side_menu), color);
         return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        Log.d(TAG, item.getTitle().toString());
         switch (item.getItemId()) {
+            case android.R.id.home:
+                if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
+                    mDrawerLayout.closeDrawer(GravityCompat.START);
+//                    sendViewToBack(mDrawerLayout);
+                } else {
+                    mDrawerLayout.openDrawer(GravityCompat.START);
+//                    mDrawerLayout.bringToFront();
+                }
+                break;
             case R.id.roofView:
                 Intent rviewIntent = new Intent(this, RviewActivity.class);
                 rviewIntent.putExtra("authToken", authToken);
@@ -655,12 +819,21 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
             case R.id.geoLocate:
                 Log.d(TAG, "GEOLOCATION REQUEST");
                 getGeoLocation();
+                break;
             default:
                 return super.onOptionsItemSelected(item);
         }
         return true;
     }
 
+
+    public static void sendViewToBack(final View child) {
+        final ViewGroup parent = (ViewGroup)child.getParent();
+        if (null != parent) {
+            parent.removeView(child);
+            parent.addView(child, 0);
+        }
+    }
 
     public boolean getGeoLocation() {
         LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
@@ -675,8 +848,12 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
                     List<Address> addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
 
                     for (Address address : addresses) {
-                        Log.d(TAG, "Address => " + address.getLocality() + " || " + address.getAdminArea());
-                        MainActivity.this.city = address.getLocality();
+                        Log.d(TAG, "Address => " + address.toString());
+                        String locality = address.getLocality();
+                        String addressLine1 = address.getAddressLine(1).substring(0, address.getAddressLine(1).indexOf(","));
+                        Log.d(TAG, "Locality = " + locality);
+                        Log.d(TAG, "AddressLn1 = " + addressLine1);
+                        MainActivity.this.city = locality == null ? addressLine1 : locality;
                         MainActivity.this.province = RuvLocation.provinceMap.get(address.getAdminArea());
                     }
                     MainActivity.this.putPrefsData();
@@ -691,6 +868,31 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         }
 
         return false;
+    }
+
+    @Override
+    public void metricfragInteraction(Float[] values, String data) {
+        Log.d(TAG, data);
+        if (data.equals("METRIC_SUCCESS")) {
+            Log.d(TAG, "METRICFRAG_COMPLETE");
+            this.length = values[0];
+            roofLength.setValue(Math.round(values[0]));
+            this.width = values[1];
+            roofWidth.setValue(Math.round(values[1]));
+            this.slope = values[2];
+            roofSlope.setValue(Math.round(values[2]));
+
+            if (metricFrag != null && metricFrag.isAdded()) {
+                metricFrag.dismiss();
+            }
+
+            customerDialog();
+        }
+    }
+
+    @Override
+    public void customerfragInteraction(Uri uri) {
+        Log.d(TAG, "CUSTOMERFRAGINTERACTION");
     }
 
     static class IncomingHandler extends Handler {
@@ -800,6 +1002,13 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
                     getIntentData(data);
                 }
                 break;
+            case METRICFRAG_COMPLETE:
+                if (resultCode == RESULT_OK) {
+                    Log.d(TAG, "METRICFRAG_COMPLETE");
+                    if (metricFrag != null && metricFrag.isAdded()) {
+                        metricFrag.dismiss();
+                    }
+                }
         }
     }
 
@@ -811,6 +1020,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
                     Intent intent = new Intent(this, CameraActivity.class);
                     putPrefsData();
                     intent.putExtra("authToken", authToken);
+                    intent.putExtra("callingClass", MainActivity.this.getClass().getSimpleName());
                     putIntentData(intent);
                     setResult(RUVIUZ_DATA_PERSIST);
 //                    startActivityForResult(intent, RUVIUZ_DATA_PERSIST);
@@ -926,124 +1136,4 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
             return false;
         }
     }
-
-//    private static class RuuvFile implements Runnable {
-//        private Handler mHandler;
-//        private WeakReference<MainActivity> mReference;
-//        private Activity mActivity;
-//
-//        private String baseUrl, authToken;
-//
-//        private String fileUrl;
-//        private int ruvId;
-//
-//        private RuuvFile(MainActivity mActivity, Handler mHandler, String baseUrl, String authToken, String fileUrl, int ruvId) {
-//            this.mReference = new WeakReference<MainActivity>(mActivity);
-//            this.mHandler = mHandler;
-//            this.baseUrl = baseUrl;
-//            this.authToken = authToken;
-//            this.fileUrl = fileUrl;
-//            this.mActivity = mActivity;
-//            this.ruvId = ruvId;
-//        }
-//
-//        @Override
-//        public void run() {
-//            sendFile();
-//        }
-//
-//        private boolean sendFile() {
-//            String endpoint = baseUrl + "/file/upload";
-//            try {
-//                File file = new File(fileUrl);
-//                FileInputStream fileInputStream = null;
-//                DataOutputStream outputStream = null;
-//                Writer writer = null;
-//                BufferedReader reader = null;
-//
-//                HttpURLConnection connection = null;
-//                String response = null;
-//                String twoHyphens = "--";
-//                String boundary = "*****" + Long.toString(System.currentTimeMillis()) + "*****";
-//                String lineEnd = "\r\n";
-//                try {
-//                    URL url = new URL(endpoint);
-//                    String mAuth = authToken + ":jigga";
-//                    connection = (HttpURLConnection) url.openConnection();
-//                    connection.setRequestMethod("POST");
-//                    connection.setRequestProperty("Connection", "Keep-Alive");
-//                    connection.setRequestProperty("User-Agent", "Ruviuz Android");
-//                    connection.setRequestProperty("Authorization", "Basic " + Base64.encodeToString(mAuth.trim().getBytes(), Base64.NO_WRAP));
-//                    connection.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
-//
-//                    outputStream = new DataOutputStream(connection.getOutputStream());
-//                    outputStream.writeBytes(twoHyphens + boundary + lineEnd);
-//                    outputStream.writeBytes("Content-Disposition: form-data; name=\"" + "upload" + "\"; filename=\"" + file.getName() + "\"" + lineEnd);
-//                    outputStream.writeBytes("Content-Type: " + HttpURLConnection.guessContentTypeFromName(file.getName()) + lineEnd);
-//                    outputStream.writeBytes("Content-Transfer-Encoding: binary" + lineEnd);
-//                    outputStream.writeBytes(lineEnd);
-//
-//                    fileInputStream = new FileInputStream(file);
-//                    byte[] buffer = new byte[4096];
-//                    int bytesRead = -1;
-//
-//                    while ((bytesRead = fileInputStream.read(buffer)) != -1) {
-//                        outputStream.write(buffer, 0, bytesRead);
-//                    }
-//
-//                    outputStream.writeBytes(lineEnd);
-//
-//                    if (ruvId > -1) {
-//                        outputStream.writeBytes(twoHyphens + boundary + lineEnd);
-//                        outputStream.writeBytes("Content-Disposition: form-data; name=\"rid\"" + lineEnd);
-//                        outputStream.writeBytes("Content-Type: text/plain" + lineEnd);
-//                        outputStream.writeBytes(lineEnd);
-//                        outputStream.writeBytes(String.valueOf(ruvId));
-//                        outputStream.writeBytes(lineEnd);
-//                        outputStream.writeBytes(twoHyphens + boundary + twoHyphens + lineEnd);
-//                    }
-//
-//                    outputStream.flush();
-//
-//                    if (200 != connection.getResponseCode()) {
-//                        Log.d(TAG, connection.getResponseMessage());
-//                    }
-//
-//                    InputStream stream = connection.getInputStream();
-//
-//                    reader = new BufferedReader(new InputStreamReader(stream));
-//                    StringBuilder bildr = new StringBuilder();
-//                    String line;
-//
-//                    while ((line = reader.readLine()) != null) {
-//                        bildr.append(line);
-//                    }
-//
-//                    response = bildr.toString();
-//
-//                    fileInputStream.close();
-//                    outputStream.flush();
-//                    outputStream.close();
-//
-//                    if (!response.trim().isEmpty()) {
-//                        Bundle msgData = new Bundle();
-//                        msgData.putString("RuuvResponse", String.valueOf(response));
-//                        Message outgoingMsg = new Message();
-//                        outgoingMsg.setData(msgData);
-//                        mHandler.sendMessage(outgoingMsg);
-//                    }
-//                    return true;
-//                } catch (MalformedURLException e) {
-//                    e.printStackTrace();
-//                    return false;
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                    return false;
-//                }
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//                return false;
-//            }
-//        }
-//    }
 }

@@ -56,14 +56,12 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import stronglogic.ruviuz.util.RuvCamera;
-
 public class CameraActivity extends AppCompatActivity {
     private static final String TAG = "RuviuzCAMERAACTIVITY";
     private static final int REQUEST_CAMERA_PERMISSION = 7;
     private static final int RUVIUZ_DATA_PERSIST = 14;
+    private static final int RUVIUZ_CAMERA = 15;
 
-    private RuvCamera camHelper;
 
     private Activity mActivity;
     private Size previewsize;
@@ -79,9 +77,7 @@ public class CameraActivity extends AppCompatActivity {
     private String address, region, city, postal;
     private String[] fileUrls = new String[3];
 
-
     private File file;
-
 
     private CameraDevice cameraDevice;
     private CaptureRequest.Builder previewBuilder;
@@ -92,6 +88,8 @@ public class CameraActivity extends AppCompatActivity {
     protected CaptureRequest captureRequest;
     protected CaptureRequest.Builder captureRequestBuilder;
     private ImageReader imageReader;
+
+    private String callingClass;
 
 
     private TextureView textureView;
@@ -265,16 +263,21 @@ public class CameraActivity extends AppCompatActivity {
                 public void onCaptureCompleted(CameraCaptureSession session, CaptureRequest request, TotalCaptureResult result) {
                     super.onCaptureCompleted(session, request, result);
                     String fileUri = file.getPath();
-
-                    Intent returnPicIntent = new Intent(CameraActivity.this, MainActivity.class);
+                    Intent returnPicIntent = null;
+                    if (CameraActivity.this.callingClass.equals("MainActivity")) {
+                        returnPicIntent = new Intent(CameraActivity.this, MainActivity.class);
+                    }
+                    if (CameraActivity.this.callingClass.equals("RuvFragment")) {
+                        finish();
+                        returnPicIntent = new Intent(CameraActivity.this, RviewActivity.class);
+                    }
                     putIntentData(returnPicIntent);
-                    returnPicIntent.putExtra("uri", (fileUri));
-//                    returnPicIntent.putExtra("authToken", authToken);
+                    returnPicIntent.putExtra("uri", fileUri);
+                    returnPicIntent.putExtra("fromCamera", true);
                     if (cameraDevice != null)
                     cameraDevice.close();
-                    setResult(RUVIUZ_DATA_PERSIST, returnPicIntent);
-//                    startActivityForResult(returnPicIntent, RUVIUZ_DATA_PERSIST);
-                    startActivity(returnPicIntent);
+                    startActivityForResult(returnPicIntent, RUVIUZ_CAMERA);
+//                    startActivity(returnPicIntent);
                 }
             };
             cameraDevice.createCaptureSession(outputSurfaces, new CameraCaptureSession.StateCallback() {
@@ -445,13 +448,8 @@ public class CameraActivity extends AppCompatActivity {
         textureView = (TextureView) findViewById(R.id.textureview);
         cameraBtn= (Button) findViewById(R.id.getpicture);
 
-        camHelper = new RuvCamera(this, textureView);
-
         if (getIntent() != null) {
             getIntentData(getIntent());
-            if (!getIntent().hasExtra("fileCount")) {
-                Log.d(TAG, "NO FILE COUNT LINE 453 CAM");
-            }
         }
 
         setSupportActionBar(toolbar);
@@ -512,6 +510,7 @@ public class CameraActivity extends AppCompatActivity {
 
     public void putIntentData(Intent intent) {
         intent.putExtra("authToken", this.authToken);
+        intent.putExtra("baseUrl", this.baseUrl);
         intent.putExtra("slope", this.slope);
         intent.putExtra("width", this.width);
         intent.putExtra("length", this.length);
@@ -527,6 +526,7 @@ public class CameraActivity extends AppCompatActivity {
 
     public void getIntentData(Intent intent) {
         this.authToken = intent.getStringExtra("authToken");
+        this.baseUrl = intent.getStringExtra("baseUrl");
         this.slope = intent.getFloatExtra("slope", 0);
         this.width = intent.getFloatExtra("width", 0);
         this.length = intent.getFloatExtra("length", 0);
@@ -538,6 +538,8 @@ public class CameraActivity extends AppCompatActivity {
         this.currentRid = intent.getIntExtra("currentRid", -1);
         this.fileCount = intent.getIntExtra("fileCount", 0);
         this.fileUrls = intent.getStringArrayExtra("fileUrls");
+        this.callingClass = intent.getStringExtra("callingClass");
+        String jigga = "jigga";
     }
 
     @Override

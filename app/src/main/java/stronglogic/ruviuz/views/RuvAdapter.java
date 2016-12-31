@@ -40,15 +40,21 @@ public class RuvAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private String baseUrl, authToken;
 
+    private String[] fileUrls;
+
+    private int reopenDialog;
+
     private Bundle mBundle;
 
 
-    public RuvAdapter(Activity activity, ArrayList ruvList, String baseUrl, String authToken)   {
+    public RuvAdapter(Activity activity, ArrayList ruvList, String baseUrl, String authToken, int reopenDialog, String[] fileUrls)   {
         super();
         this.mActivity = activity;
         this.ruvList = ruvList;
         this.baseUrl = baseUrl;
         this.authToken = authToken;
+        this.reopenDialog = reopenDialog;
+        this.fileUrls = fileUrls;
         layoutInflater = LayoutInflater.from(activity);
     }
 
@@ -151,6 +157,10 @@ public class RuvAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 }
             });
 
+            if (reopenDialog > 0) {
+                ruvDialog(reopenDialog, ruvHolder.getAdapterPosition());
+            }
+
             if (Roof.isUpdated()) {
                 final Roof mRoof = Roof;
                 ruvHolder.itemView.setBackgroundColor(ContextCompat.getColor(mActivity, R.color.colorUpdated));
@@ -164,12 +174,6 @@ public class RuvAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     }
                 }, 4000);
 
-
-//                RelativeLayout rl = (RelativeLayout)ruvHolder.itemView;
-//
-//                RecyclerView.LayoutParams lp = (RecyclerView.LayoutParams) rl.getLayoutParams();
-//                lp.height = rl.getHeight() + 48;
-//                rl.setLayoutParams(lp);
 
                 FragmentManager fm = mActivity.getFragmentManager();
                 UpdateFragment upFrag = new UpdateFragment();
@@ -210,6 +214,7 @@ public class RuvAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         mBundle.putString("baseUrl", baseUrl);
         mBundle.putInt("ruvId", id);
         mBundle.putInt("position", position);
+        mBundle.putStringArray("fileUrls", fileUrls);
         rFrag.setArguments(mBundle);
         rFrag.show(fm, "ruvFrag");
         rFrag.setTargetFragment(rFrag, 2);
