@@ -2,6 +2,7 @@ package stronglogic.ruviuz;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Context;
 import android.content.Intent;
@@ -20,6 +21,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
@@ -39,12 +41,10 @@ import android.view.MenuItem;
 import android.view.OrientationEventListener;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.NumberPicker;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -82,9 +82,6 @@ import stronglogic.ruviuz.fragments.LoginFragment;
 import stronglogic.ruviuz.fragments.MetricFragment;
 import stronglogic.ruviuz.util.RuuvFile;
 import stronglogic.ruviuz.util.RuvLocation;
-import stronglogic.ruviuz.views.RuvMenuAdapter;
-
-import static android.R.drawable.ic_menu_camera;
 
 public class MainActivity extends AppCompatActivity implements LoginFragment.LoginFragListener, AddressFragment.AddressFragListener, MetricFragment.OnFragmentInteractionListener, CustomerFragment.OnFragmentInteractionListener, Handler.Callback {
 
@@ -93,8 +90,6 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
     private static final int METRICFRAG_COMPLETE = 21;
 
     private android.support.v7.widget.Toolbar mToolbar;
-
-    private FragmentManager fm;
 
     private LoginFragment mLoginFrag;
     private AddressFragment mAddressFrag;
@@ -140,8 +135,8 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
     private RuvMenuItem[] ruuvMenuItems;
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mDrawerToggle;
-    private ListView mDrawerList;
-
+    private NavigationView mDrawerView;
+//    private ListView mDrawerList;
 
 
     @Override
@@ -235,8 +230,8 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         roofWidth.setValue(Math.round(width));
         roofWidth.setWrapSelectorWheel(true);
         roofSlope.setMinValue(0);
-        roofSlope.setMaxValue(180);
-        roofSlope.setValue(Math.round(slope));
+        roofSlope.setMaxValue(360);
+        roofSlope.setValue(Math.round(MainActivity.this.slope));
         roofSlope.setWrapSelectorWheel(true);
 
         isFlat = (Switch) findViewById(R.id.roofFlat);
@@ -339,63 +334,69 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         String[] menuItemsArray = getResources().getStringArray(R.array.ruvitems);
 
         mDrawerLayout = (DrawerLayout) findViewById(R.id.side_menu);
-        mDrawerList = (ListView) findViewById(R.id.left_drawer);
-
-        makeSideMenu(mDrawerLayout, mDrawerList, menuItemsArray);
-    }
-
-
-    public void makeSideMenu(final DrawerLayout mDrawerLayout, ListView mDrawerList, String[] mItems) {
-        ruuvMenuItems = new RuvMenuItem[mItems.length];
-
-        if (mItems.length > 8) {
-                String[] actionNames = getResources().getStringArray(R.array.actionnames);
-                ruuvMenuItems[0] = new RuvMenuItem(R.drawable.rooflist, mItems[0], RuvMenuItem.type.ACTIVITY, actionNames[0]);
-                ruuvMenuItems[1] = new RuvMenuItem(R.drawable.metric, mItems[1], RuvMenuItem.type.FRAGMENT, actionNames[1]);
-                ruuvMenuItems[2] = new RuvMenuItem(R.drawable.customer, mItems[2], RuvMenuItem.type.FRAGMENT,actionNames[2]);
-                ruuvMenuItems[3] = new RuvMenuItem(R.drawable.address, mItems[3], RuvMenuItem.type.FRAGMENT, actionNames[3]);
-                ruuvMenuItems[4] = new RuvMenuItem(R.drawable.geolocate, mItems[4], RuvMenuItem.type.FRAGMENT, actionNames[4]);
-                ruuvMenuItems[5] = new RuvMenuItem(R.drawable.getimg, mItems[5], RuvMenuItem.type.INTENT_ACTION, actionNames[5]);
-                ruuvMenuItems[6] = new RuvMenuItem(ic_menu_camera, mItems[6], RuvMenuItem.type.ACTIVITY, actionNames[6]);
-                ruuvMenuItems[7] = new RuvMenuItem(R.drawable.destroy, mItems[7], RuvMenuItem.type.INTENT_ACTION, actionNames[7]);
-                ruuvMenuItems[8] = new RuvMenuItem(R.drawable.login2, mItems[8], RuvMenuItem.type.FRAGMENT, actionNames[8]);
-                ruuvMenuItems[9] = new RuvMenuItem(R.drawable.logout, mItems[9], RuvMenuItem.type.INTENT_ACTION, actionNames[9]);
-        }
-
-        // Set the adapter for the list view
-        mDrawerList.setAdapter(new RuvMenuAdapter(this,
-                R.layout.drawer_list_item, ruuvMenuItems));
-        // Set the list's click listener
-        mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        mDrawerView = (NavigationView) findViewById(R.id.left_drawer);
+        ActionBarDrawerToggle drawerToggle = setupDrawerToggle();
+        mDrawerLayout.addDrawerListener(drawerToggle);
+        mDrawerView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Log.d(TAG, String.valueOf(ruuvMenuItems[position]));
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                Log.d(TAG, item.toString());
+                Intent mIntent = new Intent();
+               switch (item.getTitle().toString()) {
+                       case ("Roof List"):
+                           mIntent.setClass(MainActivity.this, RviewActivity.class);
+                           putIntentData(mIntent);
+                           mIntent.putExtra("authToken", authToken);
+                           mIntent.putExtra("baseUrl", baseUrl);
+                           putPrefsData();
+                           startActivity(mIntent);
+                           break;
+                       case ("Take Photo"):
+                           mIntent.setClass(MainActivity.this, CameraActivity.class);
+                           putIntentData(mIntent);
+                           mIntent.putExtra("authToken", authToken);
+                           mIntent.putExtra("baseUrl", baseUrl);
+                           putPrefsData();
+                           startActivity(mIntent);
+                           break;
+                       case ("Measure"):
+                           getMetric();
+                           mDrawerLayout.closeDrawers();
+                           break;
+                       case ("Client"):
+                           customerDialog();
+                           break;
+                       case ("Address"):
+                           addressDialog();
+                           break;
+                       case ("Get Location"):
+                           getGeoLocation();
+                           break;
+                       case ("Upload"):
+                           Log.d(TAG, "Upload to be implemented in MainActivity");
+                           break;
+                       case ("Clear"):
+                           clearValues();
+                           break;
+                       case ("Login"):
+                           loginDialog();
+                           break;
+                       case ("Logout"):
+                           Log.d(TAG, "Logout to be implemented in MainActivity");
+                           break;
+                       default:
+                           break;
+                   }
+//               }
+                return false;
             }
         });
+    }
 
-        MainActivity.this.getClass().get
-
-        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
-                mToolbar, R.string.OpenDrawer, R.string.CloseDrawer) {
-
-            /** Called when a drawer has settled in a completely closed state. */
-            public void onDrawerClosed(View view) {
-                super.onDrawerClosed(view);
-                if (mToolbar != null) mToolbar.setTitle("Ruviuz");
-
-                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
-            }
-
-            /** Called when a drawer has settled in a completely open state. */
-            public void onDrawerOpened(View drawerView) {
-                super.onDrawerOpened(drawerView);
-                if (mToolbar != null) mToolbar.setTitle("Choose Your Destiny.");
-                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
-            }
-
+    private ActionBarDrawerToggle setupDrawerToggle() {
+        return new ActionBarDrawerToggle(this, mDrawerLayout, mToolbar, R.string.OpenDrawer,  R.string.CloseDrawer) {
             @Override
             public void onDrawerSlide(View drawerView, float slideOffset) {
-                super.onDrawerSlide(drawerView, slideOffset);
                 mDrawerLayout.bringChildToFront(drawerView);
                 mDrawerLayout.requestLayout();
                 if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
@@ -409,19 +410,30 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
                 }
             }
 
+
+            @Override
+            public void onDrawerOpened(View drawerView) {
+                Log.d(TAG, "DRAWER OPENED!");
+                if (mToolbar != null) mToolbar.setTitle("Choose Your Destiny.");
+                if (!mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
+                    mDrawerLayout.openDrawer(GravityCompat.START);
+                    mDrawerLayout.setBackgroundColor(Color.TRANSPARENT);
+                    mDrawerLayout.bringToFront();
+                }
+            }
+
+            @Override
+            public void onDrawerClosed(View drawerView) {
+                if (mToolbar != null) mToolbar.setTitle("Ruviuz");
+                if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
+                    mDrawerLayout.closeDrawer(GravityCompat.START);
+                    mDrawerLayout.setBackgroundColor(Color.BLACK);
+                    sendViewToBack(mDrawerLayout);
+                }
+            }
         };
-
-        // Set the drawer toggle as the DrawerListener
-        mDrawerLayout.setDrawerListener(mDrawerToggle);
     }
 
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        // If the nav drawer is open, hide action items related to the content view
-        boolean drawerOpen = mDrawerLayout.isDrawerOpen(mDrawerList);
-        Log.d(TAG, "Drawer Open? => " + String.valueOf(drawerOpen));
-        return super.onPrepareOptionsMenu(menu);
-    }
 
     @Override
     public void onResume() {
@@ -430,10 +442,8 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
 
         if (getIntent() != null) {
             Intent xIntent = getIntent();
-//            getIntentData(xIntent);
 
             if (xIntent.hasExtra("uri")) {
-//                getIntentData(xIntent);
                 if (fileCount + 1 == 4) {
                     Toast.makeText(MainActivity.this, "You cannot add more photos", Toast.LENGTH_SHORT).show();
                 } else {
@@ -488,6 +498,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
     @Override
     public void onPause() {
         super.onPause();
+        if (mListener != null)
         mListener.disable();
         putPrefsData();
         if (rLocation != null) {
@@ -501,6 +512,17 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         putPrefsData();
     }
 
+    @Override
+    public void onAttachFragment(Fragment mFragment) {
+        super.onAttachFragment(mFragment);
+
+//        if (mFragment instanceof MetricFragment) {
+//            this.mListener.disable();
+//            this.mListener = null;
+//        }
+    }
+
+
     void setPremium(boolean checked) {
         this.premium = checked;
     }
@@ -508,7 +530,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
 
     BigDecimal calculatePrice() {
         try {
-            BigDecimal mPrice = new BigDecimal((length * width * (0.428 * slope)));
+            BigDecimal mPrice = new BigDecimal((length == 0 ? 1 : length * width == 0 ? 1 : width * (0.428 * slope == 0 ? 1 : slope)));
             if (premium) {
                 mPrice = mPrice.multiply(new BigDecimal(2));
             }
@@ -542,7 +564,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
     }
 
 
-    public static void addressDialog(FragmentManager fm, AddressFragment mAddressFrag) {
+    public void addressDialog() {
         FragmentManager fm = getFragmentManager();
         if (mAddressFrag == null) {
             mAddressFrag = new AddressFragment();
@@ -777,6 +799,9 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         photo2.setImageDrawable(null);
         photo3.setImageDrawable(null);
         addressBtn.setAlpha(0.2f);
+
+        if (getIntent().hasExtra("uri"))
+            getIntent().removeExtra("uri");
     }
 
 
@@ -793,7 +818,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        Log.d(TAG, item.getTitle().toString());
+        Log.d(TAG, item.toString());
         switch (item.getItemId()) {
             case android.R.id.home:
                 if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
@@ -875,18 +900,19 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         Log.d(TAG, data);
         if (data.equals("METRIC_SUCCESS")) {
             Log.d(TAG, "METRICFRAG_COMPLETE");
-            this.length = values[0];
+            MainActivity.this.length = values[0];
             roofLength.setValue(Math.round(values[0]));
-            this.width = values[1];
+            MainActivity.this.width = values[1];
             roofWidth.setValue(Math.round(values[1]));
-            this.slope = values[2];
-            roofSlope.setValue(Math.round(values[2]));
+            MainActivity.this.slope = values[2];
+            roofSlope.setValue((int)(MainActivity.this.slope));
 
             if (metricFrag != null && metricFrag.isAdded()) {
                 metricFrag.dismiss();
             }
+            putPrefsData();
 
-            customerDialog();
+//            customerDialog();
         }
     }
 

@@ -3,11 +3,20 @@ package stronglogic.ruviuz.fragments;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.Context;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.OrientationEventListener;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
+
+import java.math.BigDecimal;
 
 import me.angrybyte.numberpicker.listener.OnValueChangeListener;
 import stronglogic.ruviuz.R;
@@ -23,8 +32,7 @@ import stronglogic.ruviuz.R;
  */
 public class MetricFragment extends DialogFragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    private final static String TAG = "RUVIUZMETRICFRAGMENT";
 
     private static final int METRICFRAG_COMPLETE = 21;
 
@@ -36,7 +44,13 @@ public class MetricFragment extends DialogFragment {
 
     private OnFragmentInteractionListener mListener;
 
+    private OrientationEventListener angleListener;
+
+    private TextView slopeAngleText;
     private me.angrybyte.numberpicker.view.ActualNumberPicker roofLength, roofWidth, roofSlope;
+
+    private Button getAngle;
+
 
     public MetricFragment() {
         // Required empty public constructor
@@ -119,12 +133,68 @@ public class MetricFragment extends DialogFragment {
                 MetricFragment.this.values = getValues(MetricFragment.this.values);
                 mListener.metricfragInteraction(MetricFragment.this.values, "METRIC_SUCCESS");
 
-//                Intent intent = new Intent();
-//                intent.putExtra("MetricFrag", "success");
-//                getActivity().startActivityForResult(intent, METRICFRAG_COMPLETE);
-
             }
         });
+
+
+        final TextView slopeAngleText = (TextView) mView.findViewById(R.id.angleValue);
+
+
+        SensorManager sensorManager = (SensorManager) getActivity().getSystemService(Context.SENSOR_SERVICE);
+        sensorManager.registerListener(new SensorEventListener() {
+
+            @Override
+            public void onSensorChanged(SensorEvent event) {
+                double mDouble = (double)(36 * event.values[1]);
+                BigDecimal mSlope = new BigDecimal(mDouble).setScale(2, BigDecimal.ROUND_HALF_UP);
+                slopeAngleText.setText(String.valueOf(mSlope));
+            }
+
+            @Override
+            public void onAccuracyChanged(Sensor sensor, int accuracy) {
+                // TODO Auto-generated method stub
+
+            }
+        }, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_GAME);
+
+//
+//        OrientationEventListener xListener = new OrientationEventListener(getActivity(), SensorManager.SENSOR_DELAY_UI) {
+//            @Override
+//            public void onOrientationChanged(int orientation) {
+//                orientationText.setText(String.valueOf(orientation));
+//            }
+//        };
+
+//        final TextView mSlopeAngleText = (TextView) mView.findViewById(R.id.angleValue);
+//
+//        OrientationEventListener mAngleListener = (OrientationEventListener) new OrientationEventListener(getActivity(), SensorManager.SENSOR_DELAY_UI) {
+//            @Override
+//            public void onOrientationChanged(int orientation) {
+//                mSlopeAngleText.setText(String.valueOf(orientation));
+//            }
+//        };
+//
+        getAngle = (Button) mView.findViewById(R.id.setAngle);
+
+        getAngle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int slopeInt = Math.round(Float.valueOf(slopeAngleText.getText().toString()));
+
+                try {
+                    MetricFragment.this.roofSlope.setValue(slopeInt);
+                    MetricFragment.this.roofSlope.jumpDrawablesToCurrentState();
+                    Log.d(TAG, "Set Value on ROOF SLOPE PICKER\n" + "NEW_VALUE::" + String.valueOf(MetricFragment.this.roofSlope.getValue()));
+                } catch (Exception e) {
+                    Log.d(TAG, e.getMessage());
+                    e.printStackTrace();
+                }
+                Log.d(TAG, String.valueOf(slopeInt));
+
+                String jigga = "jigga";
+            }
+        });
+
 
         return mView;
     }
@@ -155,6 +225,7 @@ public class MetricFragment extends DialogFragment {
         super.onDetach();
         mListener = null;
     }
+
 
     /**
      * This interface must be implemented by activities that contain this
