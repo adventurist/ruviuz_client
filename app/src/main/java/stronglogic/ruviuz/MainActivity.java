@@ -11,7 +11,6 @@ import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
-import android.hardware.SensorManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -22,6 +21,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
@@ -38,16 +38,14 @@ import android.view.Display;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.OrientationEventListener;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.NumberPicker;
 import android.widget.Switch;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
@@ -75,38 +73,42 @@ import java.net.URL;
 import java.util.List;
 import java.util.Locale;
 
-import stronglogic.ruviuz.content.RuvMenuItem;
 import stronglogic.ruviuz.fragments.AddressFragment;
 import stronglogic.ruviuz.fragments.CustomerFragment;
 import stronglogic.ruviuz.fragments.LoginFragment;
+import stronglogic.ruviuz.fragments.MainFragment;
 import stronglogic.ruviuz.fragments.MetricFragment;
+import stronglogic.ruviuz.fragments.WelcomeFragment;
 import stronglogic.ruviuz.util.RuuvFile;
 import stronglogic.ruviuz.util.RuvLocation;
 
-public class MainActivity extends AppCompatActivity implements LoginFragment.LoginFragListener, AddressFragment.AddressFragListener, MetricFragment.OnFragmentInteractionListener, CustomerFragment.OnFragmentInteractionListener, Handler.Callback {
+public class MainActivity extends AppCompatActivity implements LoginFragment.LoginFragListener, MainFragment.MainfragListener, WelcomeFragment.WelcomeFragListener, AddressFragment.AddressFragListener, MetricFragment.OnFragmentInteractionListener, CustomerFragment.OnFragmentInteractionListener, Handler.Callback {
 
     private static final int CAMERA_PERMISSION = 6;
     private static final int RUVIUZ_DATA_PERSIST = 14;
     private static final int METRICFRAG_COMPLETE = 21;
+    private final static int CREATE_QUOTE = 33;
+    private final static int SEE_QUOTES = 34;
+    private final static int REQUEST_LOGIN = 35;
+    private final static int CREATE_ACCOUNT = 36;
 
     private android.support.v7.widget.Toolbar mToolbar;
 
     private LoginFragment mLoginFrag;
+    private MainFragment mainFragment;
     private AddressFragment mAddressFrag;
     private MetricFragment metricFrag;
     private CustomerFragment mCustomerFrag;
+    private WelcomeFragment mWelcomeFrag;
 
-    private OrientationEventListener mListener;
-
-    private NumberPicker roofLength, roofWidth, roofSlope;
+    private EditText roofLength, roofWidth, roofSlope, currentPrice;
     private Switch isFlat, premiumMaterial;
-    private TextView orientationText;
     private ImageView photo1, photo2, photo3;
-    private ImageButton photoBtn;
-    private Button ruuvBtn, addressBtn, clearBtn, metricBtn;
+    private ImageButton ruuvBtn, clearBtn, photoBtn, calculateBtn;
+    private Button addressBtn, metricBtn, draftBtn;
 
     private static final String TAG = "Ruviuz";
-//    private static final String baseUrl = "http://10.0.2.2:5000";
+    //    private static final String baseUrl = "http://10.0.2.2:5000";
     private static final String baseUrl = "http://52.43.250.94:5000";
 
     private String authToken;
@@ -119,24 +121,20 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
 
     private Geocoder geocoder;
 
-    int fileCount, currentRid;
-    float width, length, slope;
-    BigDecimal price;
-    String address, postal, city, province;
-    String[] fileUrls = new String[3];
-    boolean premium;
+    private int fileCount, currentRid, lastAction;
+    private float width, length, slope;
+    private BigDecimal price;
+    private String address, postal, city, province;
+    private String[] fileUrls = new String[3];
+    private boolean premium;
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
      */
     private GoogleApiClient mGoogleApi;
 
-
-    private RuvMenuItem[] ruuvMenuItems;
     private DrawerLayout mDrawerLayout;
-    private ActionBarDrawerToggle mDrawerToggle;
     private NavigationView mDrawerView;
-//    private ListView mDrawerList;
 
 
     @Override
@@ -163,7 +161,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         setSupportActionBar(mToolbar);
 
         if (getSupportActionBar()!= null) {
-            getSupportActionBar().setHomeAsUpIndicator(R.drawable.rlogo);
+            getSupportActionBar().setHomeAsUpIndicator(R.drawable.construction);
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setElevation(8f);
         }
@@ -205,34 +203,18 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
 //                    .build();
 //        }
 
-        roofLength = (NumberPicker) findViewById(R.id.roofLength);
-        roofWidth = (NumberPicker) findViewById(R.id.roofWidth);
-        roofSlope = (NumberPicker) findViewById(R.id.roofSlope);
+        roofLength = (EditText) findViewById(R.id.roofLength);
+        roofWidth = (EditText) findViewById(R.id.roofWidth);
+        roofSlope = (EditText) findViewById(R.id.roofSlope);
 
         //set Picker ranges
-        roofLength.setMinValue(0);
-        roofLength.setMaxValue(500);
-        roofLength.setValue(Math.round(length));
+        roofLength.setText(String.valueOf(length));
         if (prefs.contains("length")) {
-            roofLength.setValue(Math.round(prefs.getFloat("length", 0f)));
+            roofLength.setText(String.valueOf(prefs.getFloat("length", 0f)));
         }
 
-        roofLength.setWrapSelectorWheel(true);
-        roofLength.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
-            @Override
-            public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
-                Log.d(TAG, "Length set to " + String.valueOf(newVal));
-            }
-        });
-
-        roofWidth.setMinValue(0);
-        roofWidth.setMaxValue(500);
-        roofWidth.setValue(Math.round(width));
-        roofWidth.setWrapSelectorWheel(true);
-        roofSlope.setMinValue(0);
-        roofSlope.setMaxValue(360);
-        roofSlope.setValue(Math.round(MainActivity.this.slope));
-        roofSlope.setWrapSelectorWheel(true);
+        roofWidth.setText(String.valueOf(width));
+        roofSlope.setText(String.valueOf(MainActivity.this.slope));
 
         isFlat = (Switch) findViewById(R.id.roofFlat);
         premiumMaterial = (Switch) findViewById(R.id.premiumMaterial);
@@ -245,26 +227,18 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
             }
         });
 
-        orientationText = (TextView) findViewById(R.id.orientationText);
-
-        mListener = new OrientationEventListener(this, SensorManager.SENSOR_DELAY_UI) {
-            @Override
-            public void onOrientationChanged(int orientation) {
-                orientationText.setText(String.valueOf(orientation));
-            }
-        };
 
         mHandler = new IncomingHandler(this);
 
-        if (authToken == null) {
-            loginDialog();
-        }
+//        if (authToken == null) {
+//            loginDialog();
+//        }
 
         photo1 = (ImageView) findViewById(R.id.ruvPic1);
         photo2 = (ImageView) findViewById(R.id.ruvPic2);
         photo3 = (ImageView) findViewById(R.id.ruvPic3);
 
-        ruuvBtn = (Button) findViewById(R.id.ruuvSubmitBtn);
+        ruuvBtn = (ImageButton) findViewById(R.id.ruuvSubmitBtn);
 
         ruuvBtn.setOnClickListener(new View.OnClickListener() {
 
@@ -272,15 +246,18 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
             public void onClick(View v) {
                 if (address == null) {
                     addressDialog();
+                } else if (authToken == null) {
+                    Snackbar.make(MainActivity.this.findViewById(R.id.MainParentView), "You are not logged in", Snackbar.LENGTH_SHORT).show();
+                    loginDialog();
                 } else {
-                    if (roofLength.getValue() > -1 &&
-                            roofSlope != null &&
-                            roofWidth.getValue() > -1 &&
-                            address != null) {
+                    if (!roofLength.getText().toString().equals("")&&
+                            !roofSlope.getText().toString().equals("") &&
+                            !roofWidth.getText().toString().equals("") &&
+                            (address != null)) {
 
-                        slope = roofSlope.getValue();
-                        length = roofLength.getValue();
-                        width = roofWidth.getValue();
+                        slope = Float.parseFloat(String.valueOf(roofSlope.getText()));
+                        length = Float.parseFloat(String.valueOf(roofWidth.getText()));
+                        width = Float.parseFloat(String.valueOf(roofWidth.getText()));
 
                         Bundle mBundle = new Bundle();
                         mBundle.putString("address", address);
@@ -288,9 +265,11 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
                         mBundle.putString("city", city);
                         mBundle.putString("region", province);
                         mBundle.putString("price", calculatePrice().toString());
-                        mBundle.putFloat("width", roofWidth.getValue());
-                        mBundle.putFloat("length", roofLength.getValue());
-                        mBundle.putFloat("slope", roofSlope.getValue());
+                        mBundle.putFloat("width", Float.parseFloat(String.valueOf(roofWidth.getText())));
+                        mBundle.putFloat("length", Float.parseFloat(String.valueOf(roofLength.getText())));
+                        mBundle.putFloat("slope", Float.parseFloat(String.valueOf(roofSlope.getText())));
+                        String finalPrice = MainActivity.this.price.toString();
+                        MainActivity.this.currentPrice.setText(finalPrice);
                         RuuvThread ruuvThread = new RuuvThread((MainActivity) getParent(), mHandler, baseUrl, authToken, mBundle);
                         Thread submitThread = new Thread(ruuvThread);
                         submitThread.start();
@@ -320,7 +299,18 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
             }
         });
 
-        clearBtn = (Button) findViewById(R.id.clearBtn);
+        currentPrice = (EditText) findViewById(R.id.currentPrice);
+        calculateBtn = (ImageButton) findViewById(R.id.calculateBtn);
+        calculateBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String mPrice = "$" + calculatePrice().toString();
+                currentPrice.setText(mPrice);
+            }
+        });
+
+
+        clearBtn = (ImageButton) findViewById(R.id.clearBtn);
         clearBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -333,6 +323,8 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
 
         String[] menuItemsArray = getResources().getStringArray(R.array.ruvitems);
 
+        draftBtn = (Button) findViewById(R.id.quoteStatus);
+
         mDrawerLayout = (DrawerLayout) findViewById(R.id.side_menu);
         mDrawerView = (NavigationView) findViewById(R.id.left_drawer);
         ActionBarDrawerToggle drawerToggle = setupDrawerToggle();
@@ -343,7 +335,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
                 Log.d(TAG, item.toString());
                 Intent mIntent = new Intent();
                switch (item.getTitle().toString()) {
-                       case ("Roof List"):
+                         case ("Roof List"):
                            mIntent.setClass(MainActivity.this, RviewActivity.class);
                            putIntentData(mIntent);
                            mIntent.putExtra("authToken", authToken);
@@ -391,6 +383,9 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
                 return false;
             }
         });
+        if (authToken == null) {
+            welcomeDialog();
+        }
     }
 
     private ActionBarDrawerToggle setupDrawerToggle() {
@@ -438,7 +433,6 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
     @Override
     public void onResume() {
         super.onResume();
-        mListener.enable();
 
         if (getIntent() != null) {
             Intent xIntent = getIntent();
@@ -492,14 +486,14 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
             }
         }
         getPrefCreds();
+        draftCheck();
+        //TODO verify draft check is appropriate here
     }
 
 
     @Override
     public void onPause() {
         super.onPause();
-        if (mListener != null)
-        mListener.disable();
         putPrefsData();
         if (rLocation != null) {
             rLocation = null;
@@ -542,6 +536,23 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         }
     }
 
+    public void welcomeDialog() {
+        dismissAllDialogs();
+        FragmentManager fm = getFragmentManager();
+        if (mWelcomeFrag == null) {
+            mWelcomeFrag= new WelcomeFragment();
+            if (!mWelcomeFrag.isAdded()) {
+                mWelcomeFrag.show(fm, "Welcome to Ruviuz");
+            }
+        }
+        if (mWelcomeFrag != null) {
+            fm.beginTransaction().remove(mWelcomeFrag).commit();
+            mWelcomeFrag = null;
+            mWelcomeFrag = new WelcomeFragment();
+            mWelcomeFrag.show(fm, "Welcome to Ruviuz");
+        }
+    }
+
 
     public void loginDialog() {
 
@@ -562,6 +573,23 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
             mLoginFrag.show(fm, "Please Login");
         }
     }
+
+    public void mainDialog() {
+        FragmentManager fm = getFragmentManager();
+        if (mainFragment == null) {
+            mainFragment = new MainFragment();
+            if (!mainFragment.isAdded()) {
+                mainFragment.show(fm, "Choose an action");
+            }
+        }
+        if (mainFragment!= null) {
+            fm.beginTransaction().remove(mainFragment).commit();
+            mainFragment = null;
+            mainFragment = new MainFragment();
+            mainFragment.show(fm, "Choose an action");
+        }
+    }
+
 
 
     public void addressDialog() {
@@ -629,6 +657,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         if (mLoginFrag != null) {
             mLoginFrag.dismiss();
             getFragmentManager().beginTransaction().remove(mLoginFrag).commit();
+            mainDialog();
         }
     }
 
@@ -651,33 +680,39 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
     @Override
     public boolean handleMessage(Message inputMessage) {
         if (inputMessage.getData().getString("RuuvResponse") != null) {
-            Log.d(TAG, inputMessage.getData().getString("RuuvResponse"));
-            try {
-                JSONObject returnedJson = new JSONObject(inputMessage.getData().getString("RuuvResponse"));
-                if (returnedJson.has("Roof")) {
-                    JSONObject ruuvJson = new JSONObject(returnedJson.getString("Roof"));
-                    if (ruuvJson.getString("id") != null) {
-                        this.currentRid = Integer.valueOf(ruuvJson.getString("id"));
+            String response = inputMessage.getData().getString("RuuvResponse");
+            Log.d(TAG, response);
+            if (response.equals("Error")) {
+                Snackbar.make(MainActivity.this.findViewById(R.id.MainParentView), "Error submitting quote", Snackbar.LENGTH_SHORT).show();
+            } else {
+                try {
+                    JSONObject returnedJson = new JSONObject(response);
+                    if (returnedJson.has("Roof")) {
+                        JSONObject ruuvJson = new JSONObject(returnedJson.getString("Roof"));
+                        if (ruuvJson.getString("id") != null) {
+                            this.currentRid = Integer.valueOf(ruuvJson.getString("id"));
+                        }
+                        Toast.makeText(MainActivity.this, "Created Roof:: " + returnedJson.getString("Roof"), Toast.LENGTH_SHORT).show();
                     }
-                    Toast.makeText(MainActivity.this, "Created Roof:: " + returnedJson.getString("Roof"), Toast.LENGTH_SHORT).show();
-                }
-                if (returnedJson.has("File")) {
-                    Toast.makeText(MainActivity.this, "Created File:: " + returnedJson.getString("File"), Toast.LENGTH_SHORT).show();
-                }
+                    if (returnedJson.has("File")) {
+                        Toast.makeText(MainActivity.this, "Created File:: " + returnedJson.getString("File"), Toast.LENGTH_SHORT).show();
+                    }
 
-                if (fileCount > 0) {
-                    if (sendRuuvFiles() > 0) {
-                        fileCount = 0;
-                        fileUrls[0] = null;
-                        fileUrls[1] = null;
-                        fileUrls[2] = null;
+                    if (fileCount > 0) {
+                        if (sendRuuvFiles() > 0) {
+                            fileCount = 0;
+                            fileUrls[0] = null;
+                            fileUrls[1] = null;
+                            fileUrls[2] = null;
+                        }
                     }
+                    clearValues();
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
                 }
-            clearValues();
-            } catch (JSONException e) {
-                e.printStackTrace();
+                return true;
             }
-            return true;
         }
         return false;
     }
@@ -771,9 +806,9 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
     }
 
     public void updateValues() {
-        this.width = (float)roofWidth.getValue();
-        this.length = (float)roofLength.getValue();
-        this.slope = (float)roofSlope.getValue();
+        this.width = Float.parseFloat(String.valueOf(roofWidth.getText()));
+        this.length = Float.parseFloat(String.valueOf(roofLength.getText()));
+        this.slope = Float.parseFloat(String.valueOf(roofSlope.getText()));
     }
 
     public void clearValues() {
@@ -792,9 +827,10 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         putPrefsData();
 
         premiumMaterial.setChecked(false);
-        roofLength.setValue(0);
-        roofWidth.setValue(0);
-        roofSlope.setValue(0);
+        roofLength.setText("0");
+        roofWidth.setText("0");
+        roofSlope.setText("0");
+        currentPrice.setText(R.string.zero);
         photo1.setImageDrawable(null);
         photo2.setImageDrawable(null);
         photo3.setImageDrawable(null);
@@ -809,10 +845,8 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.ruviuz_menu, menu);
-        int color = ContextCompat.getColor(this, R.color.colorAccent);
-        updateMenuWithIcon(menu.findItem(R.id.loginAction), color);
-        updateMenuWithIcon(menu.findItem(R.id.geoLocate), color);
-//        updateMenuWithIcon(menu.findItem(R.id.side_menu), color);
+        updateMenuWithIcon(menu.findItem(R.id.loginAction), Color.WHITE);
+        updateMenuWithIcon(menu.findItem(R.id.geoLocate), Color.WHITE);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -901,15 +935,23 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         if (data.equals("METRIC_SUCCESS")) {
             Log.d(TAG, "METRICFRAG_COMPLETE");
             MainActivity.this.length = values[0];
-            roofLength.setValue(Math.round(values[0]));
+            roofLength.setText(String.valueOf(values[0]));
+            roofLength.jumpDrawablesToCurrentState();
             MainActivity.this.width = values[1];
-            roofWidth.setValue(Math.round(values[1]));
+            roofWidth.setText(String.valueOf(values[1]));
+            roofWidth.jumpDrawablesToCurrentState();
             MainActivity.this.slope = values[2];
-            roofSlope.setValue((int)(MainActivity.this.slope));
+            roofSlope.setText(String.valueOf(MainActivity.this.slope));
+            roofSlope.jumpDrawablesToCurrentState();
 
             if (metricFrag != null && metricFrag.isAdded()) {
                 metricFrag.dismiss();
             }
+
+            if (mainFragment != null && mainFragment.isAdded()) {
+                mainFragment.dismiss();
+            }
+
             putPrefsData();
 
 //            customerDialog();
@@ -919,6 +961,60 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
     @Override
     public void customerfragInteraction(Uri uri) {
         Log.d(TAG, "CUSTOMERFRAGINTERACTION");
+    }
+
+    @Override
+    public void welcomeInteraction(int action) {
+
+        Log.d(TAG, "welcomeInteraction");
+        if (mWelcomeFrag != null && mWelcomeFrag.isAdded()) {
+            mWelcomeFrag.dismiss();
+        }
+
+        if (action == REQUEST_LOGIN) {
+            loginDialog();
+        }
+
+        if (action == CREATE_ACCOUNT) {
+            //TODO CREATE ACCOUNT DIALOG
+        }
+    }
+
+    @Override
+    public void mainfragInteraction(int action) {
+        MainActivity.this.lastAction = action;
+
+        if (action == CREATE_QUOTE) {
+            if (authToken == null) {
+                Snackbar.make(MainActivity.this.findViewById(R.id.MainParentView), "You Must First Login", Snackbar.LENGTH_SHORT).show();
+                loginDialog();
+                mainFragment.dismiss();
+            } else {
+                getMetric();
+                mainFragment.dismiss();
+            }
+        }
+        if (action == SEE_QUOTES) {
+            if (authToken == null) {
+                Snackbar.make(MainActivity.this.findViewById(R.id.MainParentView), "You Must First Login", Snackbar.LENGTH_SHORT).show();
+                loginDialog();
+                mainFragment.dismiss();
+            } else {
+                Intent mIntent = new Intent(MainActivity.this, RviewActivity.class);
+                putIntentData(mIntent);
+                mIntent.putExtra("authToken", authToken);
+                mIntent.putExtra("baseUrl", baseUrl);
+                putPrefsData();
+                startActivity(mIntent);
+                mainFragment.dismiss();
+            }
+        }
+
+        if (MainActivity.this.lastAction == CREATE_QUOTE) {
+            if (mainFragment != null && mainFragment.isAdded()) {
+                mainFragment.dismiss();
+            }
+        }
     }
 
     static class IncomingHandler extends Handler {
@@ -934,6 +1030,22 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
             if (mainActivity != null) {
                 mainActivity.handleMessage(msg);
             }
+        }
+    }
+
+    private void draftCheck() {
+        Log.d(TAG,"draftCheck");
+        if ( MainActivity.this.address != null &&
+             MainActivity.this.postal != null &&
+             MainActivity.this.city  != null &&
+             MainActivity.this.province != null  &&
+             width > 0 && slope > 0 && length > 0 &&
+             !MainActivity.this.address.equals("") &&
+                !MainActivity.this.postal.equals("") &&
+                !MainActivity.this.city.equals("") &&
+                !MainActivity.this.province.equals("")) {
+            draftBtn.setText(R.string.ready);
+            draftBtn.setAlpha(1f);
         }
     }
 
@@ -1072,6 +1184,19 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
     }
 
 
+    /**
+     * Dismiss all DialogFragments added to given FragmentManager and child fragments
+     */
+    //TODO still not working consistently
+    public void dismissAllDialogs() {
+        if (mainFragment != null && mainFragment.isAdded()) mainFragment.dismiss();
+        if (mLoginFrag != null && mLoginFrag.isAdded()) mLoginFrag.dismiss();
+        if (mCustomerFrag != null && mCustomerFrag.isAdded()) mCustomerFrag.dismiss();
+        if (mAddressFrag != null && mAddressFrag.isAdded()) mAddressFrag.dismiss();
+        if (metricFrag != null && metricFrag.isAdded()) metricFrag.dismiss();
+    }
+
+
     private static class RuuvThread implements Runnable {
         private Handler mHandler;
         private WeakReference<MainActivity> mReference;
@@ -1082,7 +1207,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         private Bundle mBundle;
 
         private RuuvThread(MainActivity mActivity, Handler mHandler, String baseUrl, String authToken, Bundle mBundle) {
-            this.mReference = new WeakReference<MainActivity>(mActivity);
+            this.mReference = new WeakReference<>(mActivity);
             this.mHandler = mHandler;
             this.baseUrl = baseUrl;
             this.authToken = authToken;
@@ -1131,17 +1256,21 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
                     Writer writer = new BufferedWriter(new OutputStreamWriter(connection.getOutputStream(), "UTF-8"));
                     writer.write(ruuvJson.toString());
                     writer.close();
-                    Log.d(TAG, String.valueOf(connection.getResponseCode()));
-                    InputStream stream = connection.getInputStream();
-                    reader = new BufferedReader(new InputStreamReader(stream));
-                    StringBuilder bildr = new StringBuilder();
-                    String line;
+                    String respCode = String.valueOf(connection.getResponseCode());
+                    Log.d(TAG, respCode);
+                    if (respCode.equals("401") || respCode.equals("404")) {
+                        response = "Error";
+                    } else {
+                        InputStream stream = connection.getInputStream();
+                        reader = new BufferedReader(new InputStreamReader(stream));
+                        StringBuilder bildr = new StringBuilder();
+                        String line;
 
-                    while ((line = reader.readLine()) != null) {
-                        bildr.append(line);
+                        while ((line = reader.readLine()) != null) {
+                            bildr.append(line);
+                        }
+                        response = bildr.toString();
                     }
-
-                    response = bildr.toString();
 
                     if (!response.trim().isEmpty()) {
                         Bundle msgData = new Bundle();

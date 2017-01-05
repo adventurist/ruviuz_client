@@ -3,22 +3,25 @@ package stronglogic.ruviuz.fragments;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
-import android.util.Log;
+import android.os.Handler;
+import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
-import android.view.OrientationEventListener;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import java.math.BigDecimal;
 
-import me.angrybyte.numberpicker.listener.OnValueChangeListener;
 import stronglogic.ruviuz.R;
 
 
@@ -34,23 +37,19 @@ public class MetricFragment extends DialogFragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private final static String TAG = "RUVIUZMETRICFRAGMENT";
 
-    private static final int METRICFRAG_COMPLETE = 21;
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
     private Float[] values;
+
+    private static TextView slopeAngleText;
+
+    private me.angrybyte.numberpicker.view.ActualNumberPicker roofLengthFt, roofWidthFt, roofSlope;
+
+    private ImageButton getAngle;
 
     private OnFragmentInteractionListener mListener;
 
-    private OrientationEventListener angleListener;
+    private SensorManager sensorManager;
 
-    private TextView slopeAngleText;
-    private me.angrybyte.numberpicker.view.ActualNumberPicker roofLength, roofWidth, roofSlope;
-
-    private Button getAngle;
-
+    private SensorEventListener mSensorListener;
 
     public MetricFragment() {
         // Required empty public constructor
@@ -84,6 +83,7 @@ public class MetricFragment extends DialogFragment {
             values[2] = getArguments().getFloat("slope");
         }
 
+
     }
 
     @Override
@@ -95,38 +95,42 @@ public class MetricFragment extends DialogFragment {
         }
     }
 
+//    @Override
+//    public Dialog onCreateDialog(Bundle savedInstanceState) {
+//        Dialog dialog = super.onCreateDialog(savedInstanceState);
+//        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color
+//                .TRANSPARENT));
+//        return dialog;
+//    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View mView = inflater.inflate(R.layout.metricfragment, container, false);
+        final View mView = inflater.inflate(R.layout.metricfragment, container, false);
 
-        roofLength = (me.angrybyte.numberpicker.view.ActualNumberPicker) mView.findViewById(R.id.lengthPicker);
-        roofLength.setValue(Math.round(values[0]));
-        roofLength.setListener(new OnValueChangeListener() {
-            @Override
-            public void onValueChanged(int oldValue, int newValue) {
-//                mListener.metricfragInteraction(String.valueOf(newValue));
-            }
-        });
+//        mView.setAlpha(0.75f);
 
-        roofWidth = (me.angrybyte.numberpicker.view.ActualNumberPicker) mView.findViewById(R.id.widthPicker);
-        roofWidth.setValue(Math.round(values[1]));
+        roofLengthFt = (me.angrybyte.numberpicker.view.ActualNumberPicker) mView.findViewById(R.id.lengthPickerFt);
+        roofLengthFt.setValue(Math.round(values[0]));
+
+        roofWidthFt = (me.angrybyte.numberpicker.view.ActualNumberPicker) mView.findViewById(R.id.widthPickerFt);
+        roofWidthFt.setValue(Math.round(values[1]));
         roofSlope = (me.angrybyte.numberpicker.view.ActualNumberPicker) mView.findViewById(R.id.slopePicker);
         roofSlope.setValue(Math.round(values[2]));
-
-
-        Button backward = (Button) mView.findViewById(R.id.metricBack);
-
-        backward.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                MetricFragment.this.dismiss();
-            }
-        });
+        
+//        Button backward = (Button) mView.findViewById(R.id.metricBack);
+//        backward.getBackground().setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP);
+//
+//        backward.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                MetricFragment.this.dismiss();
+//            }
+//        });
 
         Button forward = (Button) mView.findViewById(R.id.metricForward);
-
+        forward.getBackground().setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP);
         forward.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -139,14 +143,10 @@ public class MetricFragment extends DialogFragment {
 
         final TextView slopeAngleText = (TextView) mView.findViewById(R.id.angleValue);
 
-
-        SensorManager sensorManager = (SensorManager) getActivity().getSystemService(Context.SENSOR_SERVICE);
-        sensorManager.registerListener(new SensorEventListener() {
-
+        mSensorListener = new SensorEventListener() {
             @Override
             public void onSensorChanged(SensorEvent event) {
-                double mDouble = (double)(36 * event.values[1]);
-                BigDecimal mSlope = new BigDecimal(mDouble).setScale(2, BigDecimal.ROUND_HALF_UP);
+                BigDecimal mSlope = new BigDecimal((double)(36 * event.values[1])).setScale(2, BigDecimal.ROUND_HALF_UP);
                 slopeAngleText.setText(String.valueOf(mSlope));
             }
 
@@ -155,43 +155,36 @@ public class MetricFragment extends DialogFragment {
                 // TODO Auto-generated method stub
 
             }
-        }, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_GAME);
+        };
 
-//
-//        OrientationEventListener xListener = new OrientationEventListener(getActivity(), SensorManager.SENSOR_DELAY_UI) {
-//            @Override
-//            public void onOrientationChanged(int orientation) {
-//                orientationText.setText(String.valueOf(orientation));
-//            }
-//        };
+        sensorManager = (SensorManager) getActivity().getSystemService(Context.SENSOR_SERVICE);
+        sensorManager.registerListener(mSensorListener, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_GAME);
 
-//        final TextView mSlopeAngleText = (TextView) mView.findViewById(R.id.angleValue);
-//
-//        OrientationEventListener mAngleListener = (OrientationEventListener) new OrientationEventListener(getActivity(), SensorManager.SENSOR_DELAY_UI) {
-//            @Override
-//            public void onOrientationChanged(int orientation) {
-//                mSlopeAngleText.setText(String.valueOf(orientation));
-//            }
-//        };
-//
-        getAngle = (Button) mView.findViewById(R.id.setAngle);
 
+        getAngle = (ImageButton) mView.findViewById(R.id.setAngle);
+        getAngle.getBackground().setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP);
         getAngle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int slopeInt = Math.round(Float.valueOf(slopeAngleText.getText().toString()));
+                int slopeInt = Math.round(Math.abs(Float.valueOf(slopeAngleText.getText().toString())));
+                MetricFragment.this.roofSlope.setValue(slopeInt);
+                int color = ContextCompat.getColor(getActivity(), R.color.ruvGreen);
+                slopeAngleText.setTextColor(color);
+                MetricFragment.this.roofSlope.jumpDrawablesToCurrentState();
+                MetricFragment.this.sensorManager.unregisterListener(mSensorListener);
 
-                try {
-                    MetricFragment.this.roofSlope.setValue(slopeInt);
-                    MetricFragment.this.roofSlope.jumpDrawablesToCurrentState();
-                    Log.d(TAG, "Set Value on ROOF SLOPE PICKER\n" + "NEW_VALUE::" + String.valueOf(MetricFragment.this.roofSlope.getValue()));
-                } catch (Exception e) {
-                    Log.d(TAG, e.getMessage());
-                    e.printStackTrace();
-                }
-                Log.d(TAG, String.valueOf(slopeInt));
+                Snackbar.make(mView, "Slope angle set to " + String.valueOf(slopeInt) + " degrees", Snackbar.LENGTH_SHORT).show();
+                final Handler xHandler = new Handler();
+                xHandler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        MetricFragment.this.sensorManager.registerListener(mSensorListener, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_GAME);
+                        slopeAngleText.setTextColor(Color.WHITE);
+                    }
+                }, 4000);
 
-                String jigga = "jigga";
+
+
             }
         });
 
@@ -199,15 +192,15 @@ public class MetricFragment extends DialogFragment {
         return mView;
     }
 
+
     public Float[] getValues(Float[] values) {
-        if (this.roofLength != null && this.roofWidth != null && this.roofSlope != null) {
-            values[0] = (float) roofLength.getValue();
-            values[1] = (float) roofWidth.getValue();
+        if (this.roofLengthFt != null && this.roofWidthFt != null && this.roofSlope != null) {
+            values[0] = (float) roofLengthFt.getValue();
+            values[1] = (float) roofWidthFt.getValue();
             values[2] = (float) roofSlope.getValue();
         }
         return values;
     }
-
 
     @Override
     public void onAttach(Context context) {
@@ -224,6 +217,7 @@ public class MetricFragment extends DialogFragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+        slopeAngleText = null;
     }
 
 

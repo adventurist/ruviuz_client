@@ -10,7 +10,7 @@
     android:paddingLeft="8dp"
     android:paddingRight="8dp"
     tools:context="stronglogic.ruviuz.MainActivity"
-    android:background="@color/material_grey_800">
+    android:background="#000000">
 
     <include
         layout="@layout/app_bar"/>
@@ -21,12 +21,12 @@
         android:title="@string/ruuvmenu"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#000000">
+        android:background="#212121">
         <!-- The main content view -->
-        <FrameLayout
-            android:id="@+id/menu_frame"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+        <!--<FrameLayout-->
+            <!--android:id="@+id/menu_frame"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="match_parent" />-->
         <android.support.design.widget.NavigationView
             android:id="@+id/left_drawer"
             android:layout_height="match_parent"
@@ -47,14 +47,34 @@
         android:layout_height="match_parent"
         android:layout_marginTop="?attr/actionBarSize">
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="24sp"
+            android:textAllCaps="true"
+            android:textStyle="bold"
+            android:textAlignment="center"
+            android:shadowColor="#000"
+            android:shadowDx="2"
+            android:shadowDy="2"
+            android:shadowRadius="5"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="12dp"
+            android:layout_centerHorizontal="true"
+            android:id="@+id/mainTitle"
+            android:text="@string/admin_ui"
+            android:textColor="@color/ruvGreen"
+            android:layout_alignParentTop="true"
+            />
+
+
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
+            android:layout_below="@id/mainTitle"
             android:layout_centerInParent="true"
             android:id="@+id/switchLayout"
-            android:layout_alignParentTop="true"
             android:padding="16dp">
             <Switch
                 android:layout_width="128dp"
@@ -79,30 +99,29 @@
             android:orientation="horizontal"
             android:id="@+id/numberContainer"
             android:layout_below="@id/switchLayout"
-            android:padding="12dp">
+            android:padding="12dp"
+            android:layout_marginTop="8dp">
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:id="@+id/numberText"
-                android:padding="16dp">
+                android:paddingTop="16dp">
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:id="@+id/rfLgText"
                     android:text="Length"
-                    android:layout_marginBottom="26dp"
-                    android:layout_marginTop="8dp"
-                    android:textColor="@color/material_deep_teal_200" />
+                    android:textColor="@color/material_deep_teal_200"
+                    android:paddingBottom="8dp" />
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:id="@+id/rfWdText"
                     android:text="Width"
-                    android:layout_marginTop="22dp"
-                    android:layout_marginBottom="28dp"
+                    android:layout_marginTop="16dp"
                     android:textColor="@color/material_deep_teal_200" />
 
                 <TextView
@@ -110,7 +129,15 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/rfSlText"
                     android:text="Slope"
-                    android:layout_marginTop="20dp"
+                    android:layout_marginTop="26dp"
+                    android:textColor="@color/material_deep_teal_200" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/calcTxt"
+                    android:text="@string/calculate"
+                    android:layout_marginTop="26dp"
                     android:textColor="@color/material_deep_teal_200" />
 
             </LinearLayout>
@@ -126,29 +153,70 @@
                     android:orientation="horizontal"
                     android:id="@+id/uiRow1"
                     android:layout_marginBottom="1dp"
-                    android:weightSum="1">
-                    <NumberPicker
+                    android:weightSum="1"
+                    android:layout_marginTop="6dp">
+                    <EditText
                         android:id="@+id/roofLength"
-                        android:layout_width="84dp"
-                        android:layout_height="64dp"
-                        android:theme="@style/AppTheme.Picker"
-                        android:solidColor="#a2b7d4"
-                        android:divider="@color/NumberSeparator" />
+                        android:layout_height="wrap_content"
+                        android:background="@color/ruvGreen"
+                        android:textAlignment="center"
+                        android:inputType="numberDecimal"
+                        android:layout_centerVertical="false"
+                        android:textColor="#000"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginStart="8dp"
+                        android:layout_width="48dp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/roofLengthFtTxt"
+                        android:text="@string/ft"
+                        android:textColor="#ffffff"
+                        android:textSize="16sp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginStart="8dp"
+                        android:layout_toEndOf="@+id/roofLength" />
+
+                    <EditText
+                        android:id="@+id/roofLengthIn"
+                        android:layout_height="wrap_content"
+                        android:background="@color/ruvGreen"
+                        android:textAlignment="center"
+                        android:inputType="numberDecimal"
+                        android:layout_centerVertical="false"
+                        android:textColor="#000"
+                        android:layout_marginTop="8dp"
+                        android:layout_toEndOf="@+id/roofLengthFtTxt"
+                        android:layout_width="48dp"
+                        android:layout_marginStart="8dp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/roofLengthInTxt"
+                        android:text="@string/inches"
+                        android:textColor="#ffffff"
+                        android:textSize="16sp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginStart="8dp"
+                        android:layout_toEndOf="@+id/roofLengthIn" />
+
                     <Button
                         android:layout_height="36dp"
                         android:id="@+id/addressGetDialog"
                         android:text="@string/address"
                         android:layout_gravity="end"
                         android:layout_alignWithParentIfMissing="true"
-                        android:background="@android:color/holo_green_light"
+                        android:background="@drawable/ruvbtn"
                         android:alpha="0.2"
-                        android:layout_marginTop="10dp"
                         android:textAlignment="center"
                         android:textAllCaps="false"
                         android:elevation="0dp"
                         android:drawableEnd="@drawable/address"
                         android:layout_width="108dp"
-                        android:layout_alignParentEnd="true" />
+                        android:layout_alignParentEnd="true"
+                        android:layout_marginBottom="2dp" />
 
                 </RelativeLayout>
                 <RelativeLayout
@@ -157,48 +225,151 @@
                     android:orientation="horizontal"
                     android:id="@+id/uiRow2"
                     android:layout_marginBottom="1dp">
-                    <!--<biz.kasual.materialnumberpicker.MaterialNumberPicker-->
+                   
 
-                        <!--android:id="@+id/roofWidth"-->
-                        <!--android:layout_width="84dp"-->
-                        <!--android:layout_height="64dp"-->
-                        <!--android:theme="@style/AppTheme.Picker"-->
-                        <!--android:background="@color/material_grey_300" />-->
-                    <NumberPicker
+                    <EditText
                         android:id="@+id/roofWidth"
-                        android:layout_width="84dp"
-                        android:layout_height="64dp"
-                        android:solidColor="#a2b7d4"
-                        android:theme="@style/AppTheme.Picker"
-                        />
-                    <ImageButton
+                        android:layout_width="48dp"
+                        android:layout_height="wrap_content"
+                        android:background="@color/ruvGreen"
+                        android:textAlignment="center"
+                        android:inputType="numberDecimal"
+                        android:layout_centerVertical="false"
+                        android:textColor="#000"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="12dp" />
+
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/roofWidthFtTxt"
+                        android:text="@string/ft"
+                        android:textColor="#ffffff"
+                        android:textSize="16sp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginStart="8dp"
+                        android:layout_toEndOf="@+id/roofWidth" />
+
+                    <EditText
+                        android:id="@+id/roofWidthIn"
+                        android:layout_width="48dp"
+                        android:layout_height="wrap_content"
+                        android:background="@color/ruvGreen"
+                        android:inputType="numberDecimal"
+                        android:textAlignment="center"
+                        android:layout_centerVertical="false"
+                        android:layout_toEndOf="@+id/roofWidthFtTxt"
+                        android:textColor="#000"
+                        android:layout_marginTop="12dp"
+                        android:layout_marginStart="8dp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/roofWidthInTxt"
+                        android:text="@string/inches"
+                        android:textColor="#ffffff"
+                        android:textSize="16sp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginStart="8dp"
+                        android:layout_toEndOf="@+id/roofWidthIn" />
+
+                    <Button
                         android:layout_height="36dp"
-                        android:id="@+id/takePhoto"
+                        android:id="@+id/clientGetDialog"
+                        android:text="@string/client_info"
                         android:layout_gravity="end"
                         android:layout_alignWithParentIfMissing="true"
-                        android:background="?attr/actionModeSplitBackground"
-                        android:layout_marginTop="10dp"
+                        android:background="@drawable/ruvbtn"
+                        android:alpha="0.2"
                         android:textAlignment="center"
                         android:textAllCaps="false"
                         android:elevation="0dp"
-                        android:src="@android:drawable/ic_menu_camera"
+                        android:drawableEnd="@drawable/customer"
                         android:layout_width="108dp"
-                        android:layout_alignParentEnd="true"/>
-
+                        android:layout_alignParentEnd="true"
+                        android:layout_marginTop="2dp" />
+                    
                 </RelativeLayout>
                 <RelativeLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:id="@+id/uiRow3">
-                    <NumberPicker
+
+                    <EditText
                         android:id="@+id/roofSlope"
-                        android:layout_width="84dp"
-                        android:layout_height="64dp"
-                        android:theme="@style/AppTheme.Picker"
-                        android:divider="@color/NumberSeparator"
-                        android:solidColor="#a2b7d4"
-                        android:showDividers="beginning" />
+                        android:layout_width="64dp"
+                        android:layout_height="wrap_content"
+                        android:background="@color/ruvGreen"
+                        android:textAlignment="center"
+                        android:inputType="numberDecimal"
+                        android:layout_centerVertical="false"
+                        android:textColor="#000"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="12dp" />
+
+                    <TextView
+                        android:id="@+id/slopeSymbol"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@android:color/transparent"
+                        android:layout_centerVertical="false"
+                        android:layout_toEndOf="@id/roofSlope"
+                        android:text="@string/degree_symbol"
+                        android:textColor="#fff"
+                        android:layout_marginTop="4dp"
+                        android:textSize="32dp"
+                        android:layout_marginStart="8dp" />
+
+                    <ImageButton
+                        android:layout_height="36dp"
+                        android:id="@+id/takePhoto"
+                        android:layout_gravity="end"
+                        android:layout_alignWithParentIfMissing="true"
+                        android:background="?attr/actionModeSplitBackground"
+                        android:textAlignment="center"
+                        android:textAllCaps="false"
+                        android:elevation="0dp"
+                        android:scaleType="fitCenter"
+                        android:src="@drawable/addphoto48"
+                        android:layout_width="108dp"
+                        android:layout_alignParentEnd="true"
+                        android:layout_marginTop="4dp" />
+
+                </RelativeLayout>
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:id="@+id/uiRow4">
+
+                    <ImageButton
+                        android:id="@+id/calculateBtn"
+                        android:layout_height="32dp"
+                        android:layout_alignParentStart="true"
+                        android:padding="4dp"
+                        android:scaleType="fitCenter"
+                        android:src="@drawable/calculate"
+                        android:background="@drawable/ruvbtn"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_width="48dp" />
+
+                    <EditText
+                        android:id="@+id/currentPrice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@android:color/transparent"
+                        android:layout_centerVertical="false"
+                        android:layout_toEndOf="@id/calculateBtn"
+                        android:text="@string/no_price"
+                        android:textColor="#fff"
+                        android:textStyle="bold"
+                        android:layout_marginTop="14dp"
+                        android:layout_marginStart="8dp"
+                        android:textSize="16sp" />
 
                     <Button
                         android:layout_height="36dp"
@@ -207,34 +378,22 @@
                         android:layout_alignParentEnd="true"
                         android:layout_centerInParent="true"
                         android:layout_gravity="end"
-                        android:layout_marginTop="10dp"
+                        android:layout_marginTop="8dp"
                         android:elevation="0dp"
                         android:textAlignment="center"
                         android:textAllCaps="false"
                         android:background="@drawable/metric"
                         android:layout_width="108dp" />
+                    
                 </RelativeLayout>
             </LinearLayout>
         </LinearLayout>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/angleContainer"
-            android:layout_below="@id/numberContainer">
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/orientationText"
-                android:text="@string/_0_00000"
-                android:textAlignment="center"
-                android:textColor="@color/colorAccent"
-                android:textSize="36dp" />
-        </LinearLayout>
         <RelativeLayout
             android:layout_height="wrap_content"
             android:layout_width="match_parent"
-            android:layout_below="@id/angleContainer">
+            android:layout_below="@id/numberContainer"
+            android:layout_marginTop="8dp">
             <ImageView
                 android:layout_width="72dp"
                 android:layout_height="wrap_content"
@@ -264,45 +423,72 @@
 
         </RelativeLayout>
 
-        <Button
-            android:id="@+id/clearBtn"
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginStart="8dp"
+            android:id="@+id/clearBtnTxt"
             android:text="@string/clear"
-            android:textColor="#FFFFFF"
-            android:layout_height="36dp"
-            android:layout_width="96dp"
-            android:background="@drawable/clearbtn"
-            android:shadowColor="#A8A8A8"
-            android:shadowDx="0"
-            android:shadowDy="0"
-            android:shadowRadius="5"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentBottom="true"/>
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="@color/ruvGreen"
+            android:layout_alignParentStart="false"
+            android:layout_alignParentBottom="true"
+            />
 
-        <Button
-            android:layout_width="128dp"
+        <ImageButton
+            android:id="@+id/clearBtn"
+            android:src="@drawable/restart"
+            android:background="@drawable/ruvbtn"
+            android:scaleType="fitXY"
+            android:layout_alignParentBottom="false"
+            android:layout_alignWithParentIfMissing="false"
+            android:padding="4dp"
+            android:layout_above="@+id/clearBtnTxt"
+            android:layout_width="48dp"
             android:layout_height="48dp"
+            android:layout_marginBottom="4dp"
+            android:layout_marginStart="4dp" />
+
+
+        <ImageButton
+            android:layout_height="48dp"
+            android:scaleType="fitCenter"
             android:id="@+id/ruuvSubmitBtn"
-            android:background="@android:color/black"
             android:layout_marginTop="8dp"
             android:layout_centerHorizontal="true"
+            android:src="@drawable/upload"
+            android:padding="4dp"
             android:text="@string/send"
             android:textColorLink="?android:attr/colorFocusedHighlight"
-            android:textColor="@android:color/holo_green_light"
-            android:textColorHint="@android:color/holo_green_light"
+            android:textColor="@color/ruvSelected"
             android:textColorHighlight="@color/colorAccent"
-            android:backgroundTint="@android:color/black"
             android:elevation="0dp"
-            android:layout_marginBottom="24dp"
             android:textSize="18sp"
-            android:layout_alignParentBottom="true"/>
+            android:layout_above="@+id/sendTxt"
+            android:background="@drawable/ruvbtn"
+            android:layout_width="112dp"
+            android:layout_marginBottom="4dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_centerHorizontal="true"
+            android:id="@+id/sendTxt"
+            android:text="@string/send"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="@color/ruvGreen"
+            android:layout_alignParentBottom="true"
+            />
 
         <Button
-            android:layout_height="36dp"
-            android:layout_width="96dp"
             android:id="@+id/quoteStatus"
             android:text="@string/draft"
-            android:layout_alignBottom="@id/ruuvSubmitBtn"
-            android:background="@android:color/holo_green_light"
+            android:background="@color/ruvGreen"
             android:alpha="0.2"
             android:layout_marginTop="36dp"
             android:textAlignment="center"
@@ -316,7 +502,10 @@
             android:layout_centerVertical="false"
             android:layout_alignParentStart="false"
             android:layout_alignParentTop="false"
-            android:layout_alignParentBottom="true" />
+            android:layout_alignParentBottom="true"
+            android:layout_height="48dp"
+            android:textSize="12sp"
+            android:layout_width="64dp" />
 
     </RelativeLayout>
 

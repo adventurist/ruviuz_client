@@ -2,7 +2,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#3c3c3c"
+    android:background="@color/ruvGrey"
+
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context="stronglogic.ruviuz.fragments.MetricFragment">
 
@@ -17,7 +18,7 @@
         android:layout_centerHorizontal="true"
         android:id="@+id/metricWelcome"
         android:text="@string/metrics"
-        android:textColor="#ffffff"
+        android:textColor="#000"
         android:layout_centerInParent="false" />
 
     <TextView
@@ -32,13 +33,11 @@
         android:textColor="#ffffff" />
 
     <me.angrybyte.numberpicker.view.ActualNumberPicker
-        android:id="@+id/lengthPicker"
+        android:id="@+id/lengthPickerFt"
         android:layout_width="wrap_content"
-        android:layout_height="48dp"
-        android:layout_centerHorizontal="true"
-        android:layout_marginStart="36dp"
-        android:layout_marginEnd="36dp"
-        android:background="#fc0"
+        android:layout_centerHorizontal="false"
+        android:layout_marginStart="12dp"
+        android:background="#ffc400"
         app:bar_color="@android:color/white"
         app:bar_width="2dp"
         app:bars_count="26"
@@ -46,20 +45,82 @@
         app:draw_over_controls="true"
         app:draw_over_text="false"
         app:fast_controls_color="@android:color/darker_gray"
-        app:highlight_color="#009dff"
+        app:highlight_color="#263238"
         app:max_value="500"
         app:min_value="0"
-        app:selection_color="#00ff23"
+        app:selection_color="#fff"
         app:show_bars="true"
         app:show_controls="true"
-        app:show_fast_controls="true"
+        app:show_fast_controls="false"
         app:show_highlight="true"
         app:show_text="true"
-        app:text_color="@android:color/holo_red_dark"
+        app:text_color="#000"
         app:text_size="20sp"
-        app:value="50"
+        app:value="0"
         android:layout_below="@id/lengthPickTv"
-        android:layout_marginTop="12dp" />
+        android:layout_marginTop="12dp"
+        android:layout_height="48dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/ft"
+        android:textColor="#ffffff"
+        android:textSize="16sp"
+        android:layout_marginTop="32dp"
+        android:layout_below="@id/lengthPickTv"
+        android:layout_toStartOf="@+id/lengthAnchor"
+        android:layout_toEndOf="@+id/lengthPickerFt"
+        android:layout_marginStart="8dp" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:orientation="horizontal"
+        android:id="@+id/lengthAnchor"
+        android:layout_below="@+id/lengthPickTv" />
+
+    <me.angrybyte.numberpicker.view.ActualNumberPicker
+        android:id="@+id/lengthPickerIn"
+        android:layout_width="wrap_content"
+        android:layout_toEndOf="@id/lengthAnchor"
+        android:layout_marginStart="12dp"
+        android:background="#ffc400"
+        app:bar_color="@android:color/white"
+        app:bar_width="2dp"
+        app:bars_count="26"
+        app:controls_color="@android:color/white"
+        app:draw_over_controls="true"
+        app:fast_controls_color="@android:color/darker_gray"
+        app:highlight_color="#263238"
+        app:max_value="500"
+        app:min_value="0"
+        app:selection_color="#fff"
+        app:show_bars="true"
+        app:show_controls="true"
+        app:show_fast_controls="false"
+        app:show_highlight="true"
+        app:show_text="true"
+        app:text_color="#000"
+        app:text_size="20sp"
+        app:value="0"
+        android:layout_below="@id/lengthPickTv"
+        android:layout_marginTop="12dp"
+        android:layout_height="48dp"
+        app:draw_over_text="false" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/inches"
+        android:textColor="#ffffff"
+        android:textSize="16sp"
+        android:layout_marginTop="32dp"
+        android:layout_below="@id/lengthPickTv"
+        android:layout_toEndOf="@+id/lengthPickerIn"
+        android:layout_marginStart="8dp" />
+
 
     <TextView
         android:layout_width="wrap_content"
@@ -67,20 +128,17 @@
         android:textSize="20sp"
         android:id="@+id/widthPickerTv"
         android:layout_centerHorizontal="true"
-        android:layout_below="@id/lengthPicker"
+        android:layout_below="@id/lengthPickerFt"
         android:text="@string/width"
         android:layout_marginTop="12dp"
         android:textColor="#ffffff" />
 
     <me.angrybyte.numberpicker.view.ActualNumberPicker
-        android:id="@+id/widthPicker"
+        android:id="@+id/widthPickerFt"
         android:layout_width="wrap_content"
-        android:layout_height="48dp"
-        android:layout_gravity="center"
-        android:layout_marginStart="36dp"
-        android:layout_marginEnd="36dp"
-        android:layout_marginTop="12dp"
-        android:background="#fc0"
+        android:layout_centerHorizontal="false"
+        android:layout_marginStart="12dp"
+        android:background="#ffc400"
         app:bar_color="@android:color/white"
         app:bar_width="2dp"
         app:bars_count="26"
@@ -88,23 +146,81 @@
         app:draw_over_controls="true"
         app:draw_over_text="false"
         app:fast_controls_color="@android:color/darker_gray"
-        app:highlight_color="#009dff"
+        app:highlight_color="#263238"
         app:max_value="500"
         app:min_value="0"
-        app:selection_color="#00ff23"
+        app:selection_color="#fff"
         app:show_bars="true"
         app:show_controls="true"
-        app:show_fast_controls="true"
+        app:show_fast_controls="false"
         app:show_highlight="true"
         app:show_text="true"
-        app:text_color="@android:color/holo_red_dark"
+        app:text_color="#000"
         app:text_size="20sp"
-        app:value="50"
-        android:layout_alignParentBottom="false"
-        android:layout_centerVertical="false"
-        android:layout_below="@id/widthPickerTv"
-        android:layout_centerHorizontal="true" />
+        app:value="0"
+        android:layout_below="@+id/widthPickerTv"
+        android:layout_marginTop="12dp"
+        android:layout_height="48dp" />
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/ft"
+        android:textColor="#ffffff"
+        android:textSize="16sp"
+        android:layout_marginTop="32dp"
+        android:layout_below="@+id/widthPickerTv"
+        android:layout_toStartOf="@+id/widthAnchor"
+        android:layout_toEndOf="@+id/widthPickerFt"
+        android:layout_marginStart="8dp" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:orientation="horizontal"
+        android:id="@+id/widthAnchor"
+        android:layout_below="@+id/widthPickerTv" />
+
+    <me.angrybyte.numberpicker.view.ActualNumberPicker
+        android:id="@+id/widthPickerIn"
+        android:layout_width="wrap_content"
+        android:layout_toEndOf="@id/widthAnchor"
+        android:layout_marginStart="12dp"
+        android:background="#ffc400"
+        app:bar_color="@android:color/white"
+        app:bar_width="2dp"
+        app:bars_count="26"
+        app:controls_color="@android:color/white"
+        app:draw_over_controls="true"
+        app:draw_over_text="false"
+        app:fast_controls_color="@android:color/darker_gray"
+        app:highlight_color="#263238"
+        app:max_value="500"
+        app:min_value="0"
+        app:selection_color="#fff"
+        app:show_bars="true"
+        app:show_controls="true"
+        app:show_fast_controls="false"
+        app:show_highlight="true"
+        app:show_text="true"
+        app:text_color="#000"
+        app:text_size="20sp"
+        app:value="0"
+        android:layout_below="@+id/widthPickerTv"
+        android:layout_marginTop="12dp"
+        android:layout_height="48dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/inches"
+        android:textColor="#ffffff"
+        android:textSize="16sp"
+        android:layout_marginTop="32dp"
+        android:layout_below="@+id/widthPickerTv"
+        android:layout_toEndOf="@+id/widthPickerIn"
+        android:layout_marginStart="8dp" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -112,7 +228,7 @@
         android:textSize="20sp"
         android:layout_marginTop="12dp"
         android:layout_centerHorizontal="true"
-        android:layout_below="@id/widthPicker"
+        android:layout_below="@+id/widthPickerFt"
         android:text="@string/slope"
         android:textColor="#ffffff"
         android:id="@+id/slopePickerTv" />
@@ -126,7 +242,7 @@
     android:layout_marginStart="36dp"
     android:layout_marginEnd="36dp"
     android:layout_below="@id/slopePickerTv"
-    android:background="#fc0"
+    android:background="#ffc400"
     app:bar_color="@android:color/white"
     app:bar_width="2dp"
     app:bars_count="26"
@@ -135,37 +251,38 @@
     app:draw_over_controls="true"
     app:draw_over_text="false"
     app:fast_controls_color="@android:color/darker_gray"
-    app:highlight_color="#009dff"
-    app:max_value="500"
+    app:highlight_color="#263238"
+    app:max_value="360"
     app:min_value="0"
-    app:selection_color="#00ff23"
+    app:selection_color="#fff"
     app:show_bars="true"
-    app:show_controls="true"
-    app:show_fast_controls="true"
+    app:show_controls="false"
+    app:show_fast_controls="false"
     app:show_highlight="true"
     app:show_text="true"
-    app:text_color="@android:color/holo_red_dark"
+    app:text_color="#000"
     app:text_size="20sp"
-    app:value="50"
+    app:value="0"
     android:layout_marginTop="12dp" />
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/metricBack"
-        android:background="@drawable/ic_keyboard_arrow_left_black_24dp"
-        android:text="@string/previous"
-        android:layout_marginBottom="36dp"
-        android:layout_marginStart="24dp"
-        android:layout_alignParentStart="false"
-        android:layout_alignParentBottom="true"
-        android:paddingTop="48dp" />
+    <!--<Button-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:id="@+id/metricBack"-->
+        <!--android:background="@drawable/ic_keyboard_arrow_left_black_24dp"-->
+        <!--android:text="@string/previous"-->
+        <!--android:textColor="#fff"-->
+        <!--android:layout_marginBottom="36dp"-->
+        <!--android:layout_marginStart="24dp"-->
+        <!--android:layout_alignParentStart="false"-->
+        <!--android:layout_alignParentBottom="true"-->
+        <!--android:paddingTop="48dp" />-->
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/previousDetail"
-        android:layout_alignBottom="@id/metricBack"/>
+    <!--<TextView-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:id="@+id/previousDetail"-->
+        <!--android:layout_alignBottom="@id/metricBack"/>-->
 
     <Button
         android:layout_width="wrap_content"
@@ -173,6 +290,7 @@
         android:id="@+id/metricForward"
         android:background="@drawable/ic_keyboard_arrow_right_black_24dp"
         android:text="@string/next"
+        android:textColor="#fff"
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="36dp"
         android:layout_marginEnd="24dp"
@@ -184,11 +302,21 @@
         android:layout_height="wrap_content"
         android:layout_alignBottom="@id/metricForward"
         android:id="@+id/nextDetail"/>
-
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="48dp"
+        android:text="@string/angle_symbol"
+        android:textColor="#ffffff"
+        android:textSize="48sp"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="12dp"
+        android:layout_below="@id/slopePicker"
+        android:layout_centerHorizontal="false"
+        android:layout_toStartOf="@+id/angleValue" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="48sp"
         android:id="@+id/angleValue"
         android:layout_centerHorizontal="true"
         android:text="@string/zero"
@@ -197,16 +325,40 @@
         android:textColor="#ffffff"
         android:layout_below="@id/slopePicker" />
 
-    <Button
+    <TextView
         android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/degree_symbol"
+        android:textColor="#ffffff"
+        android:textSize="48sp"
+        android:layout_marginTop="32dp"
+        android:layout_below="@id/slopePicker"
+        android:layout_toEndOf="@+id/angleValue"
+        android:layout_marginStart="8dp" />
+
+    <ImageButton
         android:id="@+id/setAngle"
-        android:background="@drawable/write64"
-        android:text="@string/getvalue"
-        android:textSize="12sp"
+        android:text="@string/set_value"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:textColor="#ffc400"
+        android:scaleType="fitXY"
         android:layout_centerHorizontal="true"
         android:layout_below="@id/angleValue"
-        android:paddingTop="36dp"
-        android:layout_marginTop="12dp"
-        android:layout_height="wrap_content" />
+        android:layout_marginTop="24dp"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:background="@drawable/target" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/setAngle"
+        android:layout_centerHorizontal="true"
+        android:text="@string/set_value"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:textColor="#ffc400"
+        />
 
 </RelativeLayout>

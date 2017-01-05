@@ -13,19 +13,19 @@
             android:id="@+id/currentQuote"
             android:title="Current Quote">
             <menu>
-                <item android:title="Measure"
+                <item android:title="@string/measure"
                     android:icon="@drawable/metric"/>
                 <item android:title="Client"
                     android:icon="@drawable/customer"/>
-                <item android:title="Address"
+                <item android:title="@string/address"
                     android:icon="@drawable/address"/>
                 <item android:title="Get Location"
                     android:icon="@drawable/geolocate"/>
-                <item android:title="Upload"
+                <item android:title="Upload File"
                     android:icon="@drawable/getimg"/>
-                <item android:title="Take Photo"
+                <item android:title="@string/take_pic"
                     android:icon="@android:drawable/ic_menu_camera"/>
-                <item android:title="Clear"
+                <item android:title="@string/clear"
                     android:icon="@drawable/destroy"/>
             </menu>
         </item>
@@ -33,7 +33,7 @@
             android:id="@+id/session"
             android:title="Session">
             <menu>
-                <item android:title="Login"
+                <item android:title="@string/login"
                     android:icon="@drawable/login2"/>
                 <item android:title="Logout"
                     android:icon="@drawable/logout"/>

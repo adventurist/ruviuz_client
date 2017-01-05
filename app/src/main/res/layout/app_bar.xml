@@ -3,19 +3,11 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/app_bar"
-    android:navigationIcon="@drawable/rlogo"
-    android:logo="@drawable/rlogo"
 
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/background_floating_material_dark"
     app:popupTheme="@style/ThemeOverlay.AppCompat.Dark"
     app:titleTextAppearance="@style/Toolbar.TitleText">
-
-    <!--<Spinner xmlns:android="http://schemas.android.com/apk/res/android"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:background="@drawable/ic_menu_refresh"-->
-        <!--android:entries="@array/order" />-->
 
 </android.support.v7.widget.Toolbar>
