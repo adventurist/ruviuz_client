@@ -97,6 +97,13 @@
     <string name="calculate">Calculate</string>
     <string name="create_account">Create Account</string>
     <string name="ruv_action">Ruviuz Actions</string>
+    <string name="slope_measure">Measure Slope</string>
+    <string name="current_value">Current Value</string>
+    <string name="start">Start</string>
+    <string name="set_values">Set your values</string>
+    <string name="street">Street</string>
+    <string name="overview">Quote Overview</string>
+    <string name="enter_address">Enter Address</string>
 
 
 </resources>

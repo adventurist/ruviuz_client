@@ -44,7 +44,7 @@ public class RviewActivity extends AppCompatActivity implements RuvFragment.RuvF
 
     private int currentRid, fileCount, reopenDialog;
     private float slope, width, length;
-    private boolean premium;
+    private boolean premium, ready;
     private String address;
     private String[] fileUrls = new String[3];
 
@@ -307,6 +307,7 @@ public class RviewActivity extends AppCompatActivity implements RuvFragment.RuvF
         this.currentRid = intent.getIntExtra("currentRid", -1);
         this.fileCount = intent.getIntExtra("fileCount", 0);
         this.fileUrls = intent.getStringArrayExtra("fileUrls");
+        this.ready = intent.getBooleanExtra("ready", false);
     }
 
     public void putPrefsData() {

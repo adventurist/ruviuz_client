@@ -2,6 +2,10 @@
 
     <group android:checkableBehavior="single">
         <item
+            android:id="@+id/goHome"
+            android:icon="@drawable/home"
+            android:title="@string/start" />
+        <item
             android:id="@+id/resources"
             android:title="Resources">
             <menu>

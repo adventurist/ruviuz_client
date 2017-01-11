@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 
+import stronglogic.ruviuz.MainActivity;
 import stronglogic.ruviuz.R;
 
 /**
@@ -54,9 +55,10 @@ public class WelcomeFragment extends DialogFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        if (getArguments() != null) {
-//
-//        }
+        ((MainActivity)getActivity()).dismissOtherDialogs(WelcomeFragment.this.getClass());
+        if (!((MainActivity) getActivity()).readyStatus()) {
+            ((MainActivity)getActivity()).hideActivity();
+        }
     }
 
 //    @Override
@@ -82,7 +84,7 @@ public class WelcomeFragment extends DialogFragment {
         // Inflate the layout for this fragment
         View mView = inflater.inflate(R.layout.welcomefragment, container, false);
 
-        mView.setAlpha(0.8f);
+        mView.setAlpha(0.92f);
 
         loginBtn = (ImageButton) mView.findViewById(R.id.loginBtn);
 

@@ -35,12 +35,17 @@
         android:id="@+id/textureview"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
-    <Button
+    <ImageButton
         android:id="@+id/getpicture"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:text="getPicture"/>
+        android:layout_marginBottom="32dp"
+        android:layout_marginStart="72dp"
+        android:layout_marginEnd="72dp"
+        android:src="@drawable/takephoto"
+        android:text="getPicture"
+        android:background="@drawable/ruvbtn_wt" />
 
 </RelativeLayout>
 

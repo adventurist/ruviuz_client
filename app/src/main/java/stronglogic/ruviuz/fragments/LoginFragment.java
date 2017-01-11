@@ -13,6 +13,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import stronglogic.ruviuz.MainActivity;
 import stronglogic.ruviuz.R;
 import stronglogic.ruviuz.tasks.LoginTask;
 
@@ -53,6 +54,10 @@ public class LoginFragment extends DialogFragment {
                 login[0] = getArguments().getString("email");
                 login[1] = getArguments().getString("password");
             }
+        }
+        if (!((MainActivity) getActivity()).readyStatus()) {
+            ((MainActivity)getActivity()).hideActivity();
+            ((MainActivity)getActivity()).dismissOtherDialogs(LoginFragment.this.getClass());
         }
     }
 

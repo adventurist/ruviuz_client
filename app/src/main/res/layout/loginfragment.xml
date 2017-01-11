@@ -5,7 +5,8 @@
     android:id="@+id/loginFragment"
     android:background="@color/material_blue_grey_800"
     android:orientation="vertical"
-    tools:context=".LoginFragment">
+    style="@style/RuvFullFrag"
+    tools:context="stronglogic.ruviuz.fragments.LoginFragment">
 
     <!-- TODO: Update blank fragment layout -->
     <LinearLayout

@@ -3,19 +3,27 @@ package stronglogic.ruviuz.fragments;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.Context;
-import android.net.Uri;
+import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 
+import stronglogic.ruviuz.MainActivity;
 import stronglogic.ruviuz.R;
+import stronglogic.ruviuz.RviewActivity;
 
 /**
  * A simple {@link DialogFragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link CustomerFragment.OnFragmentInteractionListener} interface
+ * {@link CustomerFragment.CustomerFragListener} interface
  * to handle interaction events.
  * Use the {@link CustomerFragment#newInstance} factory method to
  * create an instance of this fragment.
@@ -26,7 +34,15 @@ public class CustomerFragment extends DialogFragment {
     private final static String TAG = "RUVIUZCUSTOMERFRAGMENT";
     Button customerBtn;
 
-    private OnFragmentInteractionListener mListener;
+    private CustomerFragListener mListener;
+
+    private Toolbar mToolbar;
+    
+    private MainActivity mActivity;
+
+    private String firstName, lastName, email, phone;
+
+    private EditText firstEt, lastEt, emailEt, phoneeT;
 
     public CustomerFragment() {
         // Required empty public constructor
@@ -51,16 +67,26 @@ public class CustomerFragment extends DialogFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
+            this.firstName = getArguments().getString("firstName");
+            this.lastName = getArguments().getString("lastName");
+            this.email = getArguments().getString("email");
+            this.phone = getArguments().getString("phone");
         }
+        if (!mActivity.readyStatus()) {
+            mActivity.hideActivity();
+            mActivity.dismissOtherDialogs(CustomerFragment.this.getClass());
+        }
+        setStyle(DialogFragment.STYLE_NORMAL, R.style.RuvFullFrag);
     }
-
 
     @Override
     public void onStart() {
         super.onStart();
-        Dialog dialog = super.getDialog();
-        if (dialog != null) {
-            dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        Dialog d = getDialog();
+        if (d != null) {
+            int width = ViewGroup.LayoutParams.MATCH_PARENT;
+            int height = ViewGroup.LayoutParams.MATCH_PARENT;
+            d.getWindow().setLayout(width, height);
         }
     }
 
@@ -68,31 +94,94 @@ public class CustomerFragment extends DialogFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View mView = inflater.inflate(R.layout.fragment_customer, container, false);
+        View mView = inflater.inflate(R.layout.customerfragment, container, false);
 
+        mToolbar = (Toolbar) mView.findViewById(R.id.ruvFragToolbar);
+
+        mToolbar.inflateMenu(R.menu.ruviuz_menu);
+
+        firstEt = (EditText) mView.findViewById(R.id.customerFirst);
+        if (firstName != null) firstEt.setText(firstName);
+        lastEt = (EditText) mView.findViewById(R.id.customerLast);
+        if (lastName != null) lastEt.setText(lastName);
+        emailEt = (EditText) mView.findViewById(R.id.email);
+        if (email != null) emailEt.setText(email);
+        phoneeT = (EditText) mView.findViewById(R.id.phone);
+        if (phone != null) phoneeT.setText(phone);
+
+        if (mToolbar != null) {
+            mToolbar.setNavigationIcon(R.drawable.construction);
+            mToolbar.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.ruvGreen));
+            mToolbar.setElevation(8f);
+            mToolbar.setTitle(getActivity().getResources().getString(R.string.app_name));
+            mToolbar.setTitleTextColor(Color.BLACK);
+//            mToolbar.setTitleTextColor(ContextCompat.getColor(mActivity, R.color.ruvGreen));
+            mToolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+                @Override
+                public boolean onMenuItemClick(MenuItem item) {
+                    Log.d(TAG, item.toString());
+                    switch (item.getItemId()) {
+
+                        case R.id.actionfragTitle:
+                            Log.d(TAG, "ACTIONFRAGTITLE");
+                            break;
+                        case R.id.roofView:
+                            Intent rviewIntent = new Intent(mActivity, RviewActivity.class);
+                            mActivity.putIntentData(rviewIntent);
+                            mActivity.putPrefsData();
+                            Log.d(TAG, "Implement this through MainActivity");
+//                            rviewIntent.putExtra("baseUrl", mActivity.);
+                            mActivity.startActivity(rviewIntent);
+                            CustomerFragment.this.dismiss();
+                            break;
+                        case R.id.loginAction:
+                            Log.d(TAG, "Login action!!");
+                            mActivity.loginDialog();
+                            CustomerFragment.this.dismiss();
+                            break;
+                        case R.id.geoLocate:
+                            Log.d(TAG, "GEOLOCATION REQUEST");
+                            mActivity.getGeoLocation();
+                            break;
+                        case R.id.goHome:
+                            Log.d(TAG, "Going HOME");
+                            mActivity.welcomeDialog();
+                            CustomerFragment.this.dismiss();
+                            break;
+                    }
+
+                    return true;
+
+                }
+            });
+        }
         customerBtn = (Button) mView.findViewById(R.id.customerBtn);
 
         customerBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                CustomerFragment.this.dismiss();
+                String[] customerName = new String[2];
+                customerName[0] = firstEt.getText().toString();
+                customerName[1] = lastEt.getText().toString();
+                String email = emailEt.getText().toString();
+                String phone = phoneeT.getText().toString();
+                //TODO add email and phone
+
+                mListener.customerfragInteraction(customerName, email, phone, false);
             }
         });
 
         return mView;
     }
 
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.customerfragInteraction(uri);
-        }
-    }
-
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
+        if (context instanceof MainActivity) {
+            this.mActivity = (MainActivity) context;
+        }
+        if (context instanceof CustomerFragListener) {
+            mListener = (CustomerFragListener) context;
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");
@@ -115,8 +204,8 @@ public class CustomerFragment extends DialogFragment {
      * "http://developer.android.com/training/basics/fragments/communicating.html"
      * >Communicating with Other Fragments</a> for more information.
      */
-    public interface OnFragmentInteractionListener {
+    public interface CustomerFragListener {
         // TODO: Update argument type and name
-        void customerfragInteraction(Uri uri);
+        void customerfragInteraction(String[] name, String email, String phone, boolean married);
     }
 }

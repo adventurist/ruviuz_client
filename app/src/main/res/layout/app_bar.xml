@@ -3,11 +3,14 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/app_bar"
-
+    android:background="@color/ruvGreen"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/background_floating_material_dark"
-    app:popupTheme="@style/ThemeOverlay.AppCompat.Dark"
-    app:titleTextAppearance="@style/Toolbar.TitleText">
+    app:titleTextColor="#000"
+    android:title="@string/app_name"
+    style="@style/RuvFullFrag"
+    app:theme="@style/RuvFragActionBar"
+    app:popupTheme="@style/RuvFragActionBar"
+    >
 
 </android.support.v7.widget.Toolbar>

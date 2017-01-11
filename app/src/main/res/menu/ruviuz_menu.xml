@@ -8,6 +8,11 @@
         android:text="@string/login"
         ruviuz:showAsAction="ifRoom" />
     <item
+        android:id="@+id/goHome"
+        ruviuz:showAsAction="never"
+        android:icon="@drawable/home32"
+        android:title="@string/start" />
+    <item
         android:id="@+id/loginAction"
         ruviuz:showAsAction="never"
         android:icon="@drawable/login2"
@@ -17,4 +22,25 @@
         ruviuz:showAsAction="never"
         android:icon="@drawable/geolocate"
         android:title="@string/geolocation"/>
+
+    <item
+        android:id="@+id/currentQuote"
+        android:title="Current Quote">
+        <menu>
+            <item android:title="@string/measure"
+                android:icon="@drawable/metric"/>
+            <item android:title="Client"
+                android:icon="@drawable/customer"/>
+            <item android:title="@string/address"
+                android:icon="@drawable/address"/>
+            <item android:title="Get Location"
+                android:icon="@drawable/geolocate"/>
+            <item android:title="Upload File"
+                android:icon="@drawable/getimg"/>
+            <item android:title="@string/take_pic"
+                android:icon="@android:drawable/ic_menu_camera"/>
+            <item android:title="@string/clear"
+                android:icon="@drawable/destroy"/>
+        </menu>
+    </item>
 </menu>

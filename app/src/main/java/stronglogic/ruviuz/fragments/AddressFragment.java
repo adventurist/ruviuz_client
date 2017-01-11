@@ -1,17 +1,24 @@
 package stronglogic.ruviuz.fragments;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import stronglogic.ruviuz.MainActivity;
 import stronglogic.ruviuz.R;
 
 /**
@@ -25,7 +32,11 @@ public class AddressFragment extends DialogFragment {
 
     private AddressFragListener addressFragListener;
 
+    private Toolbar mToolbar;
+
     private String address, city, province, postal;
+
+    private MainActivity mActivity;
 
     public static RuvFragment newInstance(String param1, String param2) {
         RuvFragment fragment = new RuvFragment();
@@ -43,15 +54,73 @@ public class AddressFragment extends DialogFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (!mActivity.readyStatus()) {
+            mActivity.hideActivity();
+            mActivity.dismissOtherDialogs(AddressFragment.this.getClass());
+        }
+        setStyle(DialogFragment.STYLE_NORMAL, R.style.RuvFullFrag);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        Dialog d = getDialog();
+        if (d != null) {
+            int width = ViewGroup.LayoutParams.MATCH_PARENT;
+            int height = ViewGroup.LayoutParams.MATCH_PARENT;
+            d.getWindow().setLayout(width, height);
+        }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup parent,
                              Bundle savedInstanceState) {
 
-        View view = inflater.inflate(R.layout.addressfragment, parent, false);
+        final View view = inflater.inflate(R.layout.addressfragment, parent, false);
 
         SharedPreferences mPrefs = getActivity().getSharedPreferences("RuviuzApp", Context.MODE_PRIVATE);
+
+        mToolbar = (Toolbar) view.findViewById(R.id.ruvFragToolbar);
+
+        mToolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                // Handle the menu item
+                return true;
+            }
+        });
+        mToolbar.inflateMenu(R.menu.ruviuz_menu);
+
+        if (mToolbar != null) {
+            mToolbar.setNavigationIcon(R.drawable.construction);
+            mToolbar.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.ruvGreen));
+            mToolbar.setElevation(8f);
+            mToolbar.setTitle(getActivity().getResources().getString(R.string.app_name));
+            mToolbar.setTitleTextColor(Color.BLACK);
+//            mToolbar.setTitleTextColor(ContextCompat.getColor(mActivity, R.color.ruvGreen));
+            mToolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+                @Override
+                public boolean onMenuItemClick(MenuItem item) {
+                    Log.d(TAG, item.toString());
+                    switch (item.getItemId()) {
+
+                        case R.id.actionfragTitle:
+                            Log.d(TAG, "ACTIONFRAGTITLE");
+                            break;
+                        case R.id.geoLocate:
+                            if (mActivity != null) {
+                                mActivity.getGeoLocation();
+                                String[] newAddress = mActivity.getAddress();
+                                cityEt.setText(newAddress[0]);
+                                provinceEt.setText(newAddress[1]);
+                            }
+                            break;
+                    }
+                    return true;
+
+                }
+            });
+        }
 
         addressEt = (EditText)view.findViewById(R.id.addressText);
         postalEt = (EditText)view.findViewById(R.id.postalCode);
@@ -83,7 +152,7 @@ public class AddressFragment extends DialogFragment {
                     province = provinceEt.getText().toString();
                     buttonClicked(v);
                 } else {
-                    Toast.makeText(getActivity(), "Enter Complete Address, bitch", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), "Please enter complete address", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -95,6 +164,10 @@ public class AddressFragment extends DialogFragment {
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
+
+        if (activity instanceof MainActivity)
+        this.mActivity = (MainActivity) activity;
+
         try {
             if (activity != null) {
                 addressFragListener = (AddressFragListener) activity;

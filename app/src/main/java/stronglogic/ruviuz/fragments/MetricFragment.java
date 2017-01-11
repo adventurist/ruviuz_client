@@ -3,26 +3,26 @@ package stronglogic.ruviuz.fragments;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
-import android.os.Handler;
-import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
-import java.math.BigDecimal;
-
+import stronglogic.ruviuz.MainActivity;
 import stronglogic.ruviuz.R;
+import stronglogic.ruviuz.RviewActivity;
 
 
 /**
@@ -41,7 +41,9 @@ public class MetricFragment extends DialogFragment {
 
     private static TextView slopeAngleText;
 
-    private me.angrybyte.numberpicker.view.ActualNumberPicker roofLengthFt, roofWidthFt, roofSlope;
+    private me.angrybyte.numberpicker.view.ActualNumberPicker roofLengthFt, roofWidthFt;
+
+    private TextView roofSlope;
 
     private ImageButton getAngle;
 
@@ -50,6 +52,10 @@ public class MetricFragment extends DialogFragment {
     private SensorManager sensorManager;
 
     private SensorEventListener mSensorListener;
+
+    private Toolbar mToolbar;
+    
+    private MainActivity mActivity;
 
     public MetricFragment() {
         // Required empty public constructor
@@ -83,15 +89,22 @@ public class MetricFragment extends DialogFragment {
             values[2] = getArguments().getFloat("slope");
         }
 
-
+        if (!((MainActivity) getActivity()).readyStatus()) {
+            ((MainActivity)getActivity()).hideActivity();
+            ((MainActivity)getActivity()).dismissOtherDialogs(MetricFragment.this.getClass());
+        }
+        setStyle(DialogFragment.STYLE_NORMAL, R.style.RuvFullFrag);
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        Dialog dialog = super.getDialog();
-        if (dialog != null) {
-            dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        Dialog d = getDialog();
+        if (d != null) {
+            int width = ViewGroup.LayoutParams.MATCH_PARENT;
+            int height = ViewGroup.LayoutParams.MATCH_PARENT;
+            d.getWindow().setLayout(width, height);
+
         }
     }
 
@@ -109,28 +122,89 @@ public class MetricFragment extends DialogFragment {
         // Inflate the layout for this fragment
         final View mView = inflater.inflate(R.layout.metricfragment, container, false);
 
-//        mView.setAlpha(0.75f);
+//        mToolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+//            @Override
+//            public boolean onMenuItemClick(MenuItem item) {if (!((MainActivity) getActivity()).readyStatus()) {
+//                ((MainActivity)getActivity()).hideActivity();
+//            }
+//                // Handle the menu item
+//                return true;
+//            }
+//        });
+
+        mToolbar = (Toolbar) mView.findViewById(R.id.ruvFragToolbar);
+
+        mToolbar.inflateMenu(R.menu.ruviuz_menu);
+
+        if (mToolbar != null) {
+            mToolbar.setNavigationIcon(R.drawable.construction);
+            mToolbar.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.ruvGreen));
+            mToolbar.setElevation(8f);
+            mToolbar.setTitle(getActivity().getResources().getString(R.string.app_name));
+            mToolbar.setTitleTextColor(Color.BLACK);
+//            mToolbar.setTitleTextColor(ContextCompat.getColor(mActivity, R.color.ruvGreen));
+            mToolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+                @Override
+                public boolean onMenuItemClick(MenuItem item) {
+                    Log.d(TAG, item.toString());
+                    switch (item.getItemId()) {
+
+                        case R.id.actionfragTitle:
+                            Log.d(TAG, "ACTIONFRAGTITLE");
+                            break;
+                        case R.id.roofView:
+                            Intent rviewIntent = new Intent(mActivity, RviewActivity.class);
+                            mActivity.putIntentData(rviewIntent);
+                            mActivity.putPrefsData();
+                            Log.d(TAG, "Implement this through MainActivity");
+//                            rviewIntent.putExtra("baseUrl", mActivity.);
+                            mActivity.startActivity(rviewIntent);
+                            MetricFragment.this.dismiss();
+                            break;
+                        case R.id.loginAction:
+                            Log.d(TAG, "Login action!!");
+                            mActivity.loginDialog();
+                            MetricFragment.this.dismiss();
+                            break;
+                        case R.id.geoLocate:
+                            Log.d(TAG, "GEOLOCATION REQUEST");
+                            mActivity.getGeoLocation();
+                            break;
+                        case R.id.goHome:
+                            Log.d(TAG, "Going HOME");
+                            mActivity.welcomeDialog();
+                            MetricFragment.this.dismiss();
+                            break;
+
+                    }
+                    return true;
+
+                }
+            });
+        }
 
         roofLengthFt = (me.angrybyte.numberpicker.view.ActualNumberPicker) mView.findViewById(R.id.lengthPickerFt);
         roofLengthFt.setValue(Math.round(values[0]));
 
         roofWidthFt = (me.angrybyte.numberpicker.view.ActualNumberPicker) mView.findViewById(R.id.widthPickerFt);
         roofWidthFt.setValue(Math.round(values[1]));
-        roofSlope = (me.angrybyte.numberpicker.view.ActualNumberPicker) mView.findViewById(R.id.slopePicker);
-        roofSlope.setValue(Math.round(values[2]));
-        
-//        Button backward = (Button) mView.findViewById(R.id.metricBack);
-//        backward.getBackground().setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP);
-//
-//        backward.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
+//        roofSlope = (TextView) mView.findViewById(R.id.slopePicker);
+//        roofSlope.setText(String.valueOf(values[2]));
+
+        Button backward = (Button) mView.findViewById(R.id.metricBack);
+        backward.getBackground().setColorFilter(Color.BLACK, PorterDuff.Mode.SRC_ATOP);
+
+        backward.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mListener.metricfragInteraction(MetricFragment.this.values, "BACK_TO_ADDRESS");
+
 //                MetricFragment.this.dismiss();
-//            }
-//        });
+            }
+        });
 
         Button forward = (Button) mView.findViewById(R.id.metricForward);
-        forward.getBackground().setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP);
+        forward.getBackground().setColorFilter(Color.BLACK, PorterDuff.Mode.SRC_ATOP);
         forward.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -141,52 +215,54 @@ public class MetricFragment extends DialogFragment {
         });
 
 
-        final TextView slopeAngleText = (TextView) mView.findViewById(R.id.angleValue);
-
-        mSensorListener = new SensorEventListener() {
-            @Override
-            public void onSensorChanged(SensorEvent event) {
-                BigDecimal mSlope = new BigDecimal((double)(36 * event.values[1])).setScale(2, BigDecimal.ROUND_HALF_UP);
-                slopeAngleText.setText(String.valueOf(mSlope));
-            }
-
-            @Override
-            public void onAccuracyChanged(Sensor sensor, int accuracy) {
-                // TODO Auto-generated method stub
-
-            }
-        };
-
-        sensorManager = (SensorManager) getActivity().getSystemService(Context.SENSOR_SERVICE);
-        sensorManager.registerListener(mSensorListener, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_GAME);
-
-
-        getAngle = (ImageButton) mView.findViewById(R.id.setAngle);
-        getAngle.getBackground().setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP);
-        getAngle.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                int slopeInt = Math.round(Math.abs(Float.valueOf(slopeAngleText.getText().toString())));
-                MetricFragment.this.roofSlope.setValue(slopeInt);
-                int color = ContextCompat.getColor(getActivity(), R.color.ruvGreen);
-                slopeAngleText.setTextColor(color);
-                MetricFragment.this.roofSlope.jumpDrawablesToCurrentState();
-                MetricFragment.this.sensorManager.unregisterListener(mSensorListener);
-
-                Snackbar.make(mView, "Slope angle set to " + String.valueOf(slopeInt) + " degrees", Snackbar.LENGTH_SHORT).show();
-                final Handler xHandler = new Handler();
-                xHandler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        MetricFragment.this.sensorManager.registerListener(mSensorListener, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_GAME);
-                        slopeAngleText.setTextColor(Color.WHITE);
-                    }
-                }, 4000);
-
-
-
-            }
-        });
+//        final TextView slopeAngleText = (TextView) mView.findViewById(R.id.angleValue);
+//
+//        mSensorListener = new SensorEventListener() {
+//            @Override
+//            public void onSensorChanged(SensorEvent event) {
+//                BigDecimal mSlope = new BigDecimal((double)(36 * event.values[1])).setScale(2, BigDecimal.ROUND_HALF_UP);
+//                slopeAngleText.setText(String.valueOf(mSlope));
+//            }
+//
+//            @Override
+//            public void onAccuracyChanged(Sensor sensor, int accuracy) {
+//                // TODO Auto-generated method stub
+//
+//            }
+//        };
+//
+//        sensorManager = (SensorManager) getActivity().getSystemService(Context.SENSOR_SERVICE);
+//        sensorManager.registerListener(mSensorListener, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_GAME);
+//
+//
+//        getAngle = (ImageButton) mView.findViewById(R.id.setAngle);
+//        getAngle.getBackground().setColorFilter(Color.BLACK, PorterDuff.Mode.SRC_ATOP);
+//        getAngle.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                float slopeValue = Math.abs(Float.valueOf(slopeAngleText.getText().toString()));
+//                MetricFragment.this.roofSlope.setText(String.valueOf(slopeValue));
+//                int color = ContextCompat.getColor(getActivity(), R.color.ruvGreen);
+//                slopeAngleText.setTextAppearance(getActivity(), R.style.RuvShadowText);
+//                slopeAngleText.setTextColor(color);
+//                MetricFragment.this.roofSlope.jumpDrawablesToCurrentState();
+//                MetricFragment.this.sensorManager.unregisterListener(mSensorListener);
+//
+//                Snackbar.make(mView, "Slope angle set to " + String.valueOf(slopeValue ) + " degrees", Snackbar.LENGTH_SHORT).show();
+//                final Handler xHandler = new Handler();
+//                xHandler.postDelayed(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        MetricFragment.this.sensorManager.registerListener(mSensorListener, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_GAME);
+//                        slopeAngleText.setTextColor(Color.BLACK);
+//
+//                    }
+//                }, 4000);
+//
+//
+//
+//            }
+//        });
 
 
         return mView;
@@ -194,10 +270,10 @@ public class MetricFragment extends DialogFragment {
 
 
     public Float[] getValues(Float[] values) {
-        if (this.roofLengthFt != null && this.roofWidthFt != null && this.roofSlope != null) {
+        if (this.roofLengthFt != null && this.roofWidthFt != null) {
             values[0] = (float) roofLengthFt.getValue();
             values[1] = (float) roofWidthFt.getValue();
-            values[2] = (float) roofSlope.getValue();
+//            values[2] = Float.valueOf(roofSlope.getText().toString());
         }
         return values;
     }
@@ -205,6 +281,9 @@ public class MetricFragment extends DialogFragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+        if (context instanceof MainActivity) {
+            this.mActivity = (MainActivity) context;
+        }
         if (context instanceof OnFragmentInteractionListener) {
             mListener = (OnFragmentInteractionListener) context;
         } else {

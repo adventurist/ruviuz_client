@@ -5,31 +5,23 @@
     android:orientation="vertical"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="#000"
-    android:layout_marginTop="?attr/actionBarSize"
-    style="@style/RuvFullFrag"
     tools:context="stronglogic.ruviuz.fragments.MainFragment">
-
-
-    <!--<include-->
-        <!--layout="@layout/app_bar"/>-->
+    <!--style="@style/RuvFullFrag"-->
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/ruvFragToolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="?attr/colorPrimary"
         android:minHeight="?attr/actionBarSize"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"/>
+        android:theme="@style/RuvFragActionBar"
+        app:popupTheme="@style/RuvFragActionBar"/>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:padding="8dp"
         android:id="@+id/actionUI"
         android:orientation="vertical"
-        android:background="@color/material_blue_grey_800">
+        android:background="@color/colorRow">
 
     <TextView
         android:layout_width="wrap_content"
@@ -43,7 +35,7 @@
         android:layout_gravity="center_horizontal"
         android:id="@+id/actionfragTitle"
         android:text="@string/ruv_action"
-        android:textColor="@color/ruvGreen"
+        android:textColor="#000"
         />
 
     <ImageButton
@@ -57,13 +49,14 @@
         android:background="@drawable/ruvbtn_wt"
         android:scaleType="fitCenter"
         android:src="@drawable/create_new"
-        android:layout_margin="8dp"/>
+        android:layout_margin="20dp" />
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/create_new_quote"
+        android:textSize="18sp"
         android:layout_gravity="center_horizontal"
-        android:layout_marginBottom="8dp"
+        android:layout_marginBottom="24dp"
         android:textColor="#000"
         />
     <ImageButton
@@ -84,6 +77,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/see_quotes"
+        android:textSize="18sp"
         android:layout_gravity="center_horizontal"
         android:layout_marginBottom="8dp"
         android:textColor="#000"

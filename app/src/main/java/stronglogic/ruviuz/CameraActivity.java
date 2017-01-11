@@ -36,7 +36,7 @@ import android.util.SparseIntArray;
 import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
-import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.google.android.gms.appindexing.Action;
@@ -73,7 +73,7 @@ public class CameraActivity extends AppCompatActivity {
 
     private int currentRid, fileCount;
     private float slope, width, length;
-    private boolean premium;
+    private boolean premium, ready;
     private String address, region, city, postal;
     private String[] fileUrls = new String[3];
 
@@ -93,7 +93,7 @@ public class CameraActivity extends AppCompatActivity {
 
 
     private TextureView textureView;
-    private Button cameraBtn;
+    private ImageButton cameraBtn;
 
     private Handler mBackgroundHandler;
     private HandlerThread mBackgroundThread;
@@ -214,7 +214,7 @@ public class CameraActivity extends AppCompatActivity {
             int rotation = getWindowManager().getDefaultDisplay().getRotation();
             captureBuilder.set(CaptureRequest.JPEG_ORIENTATION, ORIENTATIONS.get(rotation));
             if (isExternalStorageWritable()) {
-                Snackbar.make(fab, "External readable and writEablez, bitches..", Snackbar.LENGTH_LONG)
+                Snackbar.make(fab, "External is readable and writable..", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
                 String ruvAlbumDir = getAlbumStorageDir("Ruviuz").toString();
                 Log.d(TAG, ruvAlbumDir);
@@ -446,7 +446,7 @@ public class CameraActivity extends AppCompatActivity {
         setContentView(R.layout.activity_camera);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         textureView = (TextureView) findViewById(R.id.textureview);
-        cameraBtn= (Button) findViewById(R.id.getpicture);
+        cameraBtn = (ImageButton) findViewById(R.id.getpicture);
 
         if (getIntent() != null) {
             getIntentData(getIntent());
@@ -522,6 +522,7 @@ public class CameraActivity extends AppCompatActivity {
         intent.putExtra("currentRid", this.currentRid);
         intent.putExtra("fileCount", this.fileCount);
         intent.putExtra("fileUrls", this.fileUrls);
+        intent.putExtra("ready", this.ready);
     }
 
     public void getIntentData(Intent intent) {
@@ -539,7 +540,7 @@ public class CameraActivity extends AppCompatActivity {
         this.fileCount = intent.getIntExtra("fileCount", 0);
         this.fileUrls = intent.getStringArrayExtra("fileUrls");
         this.callingClass = intent.getStringExtra("callingClass");
-        String jigga = "jigga";
+        this.ready = intent.getBooleanExtra("ready", false);
     }
 
     @Override

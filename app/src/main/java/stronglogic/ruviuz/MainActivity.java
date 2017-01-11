@@ -9,7 +9,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
-import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.location.Address;
 import android.location.Geocoder;
@@ -34,12 +33,12 @@ import android.text.Spanned;
 import android.text.style.ImageSpan;
 import android.util.Base64;
 import android.util.Log;
-import android.view.Display;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
@@ -73,17 +72,21 @@ import java.net.URL;
 import java.util.List;
 import java.util.Locale;
 
+import stronglogic.ruviuz.content.Customer;
 import stronglogic.ruviuz.fragments.AddressFragment;
 import stronglogic.ruviuz.fragments.CustomerFragment;
 import stronglogic.ruviuz.fragments.LoginFragment;
 import stronglogic.ruviuz.fragments.MainFragment;
 import stronglogic.ruviuz.fragments.MetricFragment;
+import stronglogic.ruviuz.fragments.SlopeFragment;
 import stronglogic.ruviuz.fragments.WelcomeFragment;
 import stronglogic.ruviuz.util.RuuvFile;
 import stronglogic.ruviuz.util.RuvLocation;
 
-public class MainActivity extends AppCompatActivity implements LoginFragment.LoginFragListener, MainFragment.MainfragListener, WelcomeFragment.WelcomeFragListener, AddressFragment.AddressFragListener, MetricFragment.OnFragmentInteractionListener, CustomerFragment.OnFragmentInteractionListener, Handler.Callback {
+public class MainActivity extends AppCompatActivity implements LoginFragment.LoginFragListener, MainFragment.MainfragListener, WelcomeFragment.WelcomeFragListener, AddressFragment.AddressFragListener, MetricFragment.OnFragmentInteractionListener, SlopeFragment.SlopeFragListener, CustomerFragment.CustomerFragListener, Handler.Callback {
 
+    private static final String TAG = "RuviuzMAINACTIVITY";
+    
     private static final int CAMERA_PERMISSION = 6;
     private static final int RUVIUZ_DATA_PERSIST = 14;
     private static final int METRICFRAG_COMPLETE = 21;
@@ -91,6 +94,9 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
     private final static int SEE_QUOTES = 34;
     private final static int REQUEST_LOGIN = 35;
     private final static int CREATE_ACCOUNT = 36;
+    private final static int SLOPE_FRAG_SUCCESS = 39;
+
+    private static final String baseUrl = "http://52.43.250.94:5000";
 
     private android.support.v7.widget.Toolbar mToolbar;
 
@@ -98,6 +104,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
     private MainFragment mainFragment;
     private AddressFragment mAddressFrag;
     private MetricFragment metricFrag;
+    private SlopeFragment slopeFrag;
     private CustomerFragment mCustomerFrag;
     private WelcomeFragment mWelcomeFrag;
 
@@ -105,11 +112,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
     private Switch isFlat, premiumMaterial;
     private ImageView photo1, photo2, photo3;
     private ImageButton ruuvBtn, clearBtn, photoBtn, calculateBtn;
-    private Button addressBtn, metricBtn, draftBtn;
-
-    private static final String TAG = "Ruviuz";
-    //    private static final String baseUrl = "http://10.0.2.2:5000";
-    private static final String baseUrl = "http://52.43.250.94:5000";
+    private Button addressBtn, metricBtn, draftBtn, clientBtn;
 
     private String authToken;
 
@@ -126,7 +129,8 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
     private BigDecimal price;
     private String address, postal, city, province;
     private String[] fileUrls = new String[3];
-    private boolean premium;
+    private Customer mCustomer;
+    private boolean premium, ready;
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -141,14 +145,19 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        Display display = getWindowManager().getDefaultDisplay();
-        Point size = new Point();
-        display.getSize(size);
-
-        Log.d(TAG, "This device has the following screen size: \n" + String.valueOf(size.x) + "x\n" + String.valueOf(size.y) + "y");
+        Window w = getWindow();
+        View decorView = w.getDecorView();
+        // Show Status Bar.
+        decorView.setSystemUiVisibility(
+                View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
 
         mToolbar = (Toolbar) findViewById(R.id.app_bar);
+
+        MainActivity.this.findViewById(R.id.MainParentView).setPadding(0, getStatusBarHeight(MainActivity.this), 0, 0);
+
+        w.setStatusBarColor(ContextCompat.getColor(MainActivity.this, R.color.ruvGreenStatus));
 
         if (getIntent() != null) {
             getIntentData(getIntent());
@@ -183,7 +192,6 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
                             intent.putExtra("callingClass", MainActivity.this.getClass().getSimpleName());
                             putPrefsData();
                             setResult(RUVIUZ_DATA_PERSIST);
-//                            startActivityForResult(intent, RUVIUZ_DATA_PERSIST);
                             startActivity(intent);
                         } else {
                             Log.d(TAG, "No Camera Hardware on Device");
@@ -216,7 +224,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         roofWidth.setText(String.valueOf(width));
         roofSlope.setText(String.valueOf(MainActivity.this.slope));
 
-        isFlat = (Switch) findViewById(R.id.roofFlat);
+//        isFlat = (Switch) findViewById(R.id.roofFlat);
         premiumMaterial = (Switch) findViewById(R.id.premiumMaterial);
         premiumMaterial.setChecked(premium);
 
@@ -309,6 +317,18 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
             }
         });
 
+        clientBtn = (Button) findViewById(R.id.clientBtn);
+        clientBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                customerDialog();
+            }
+        });
+
+
+        if (mCustomer != null) {
+            clientBtn.setAlpha(1f);
+        }
 
         clearBtn = (ImageButton) findViewById(R.id.clearBtn);
         clearBtn.setOnClickListener(new View.OnClickListener() {
@@ -320,8 +340,6 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         mGoogleApi = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
-
-        String[] menuItemsArray = getResources().getStringArray(R.array.ruvitems);
 
         draftBtn = (Button) findViewById(R.id.quoteStatus);
 
@@ -376,6 +394,10 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
                        case ("Logout"):
                            Log.d(TAG, "Logout to be implemented in MainActivity");
                            break;
+                        case ("Start"):
+                           Log.d(TAG, "Going HOME");
+                           welcomeDialog();
+                            break;
                        default:
                            break;
                    }
@@ -383,7 +405,11 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
                 return false;
             }
         });
+//        if (!ready) {
+//            hideActivity();
+//        }
         if (authToken == null) {
+            hideActivity();
             welcomeDialog();
         }
     }
@@ -396,7 +422,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
                 mDrawerLayout.requestLayout();
                 if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
                     mDrawerLayout.closeDrawer(GravityCompat.START);
-                    mDrawerLayout.setBackgroundColor(Color.BLACK);
+                    mDrawerLayout.setBackgroundColor(ContextCompat.getColor(MainActivity.this, R.color.colorRow));
                     sendViewToBack(mDrawerLayout);
                 } else {
                     mDrawerLayout.openDrawer(GravityCompat.START);
@@ -409,7 +435,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
             @Override
             public void onDrawerOpened(View drawerView) {
                 Log.d(TAG, "DRAWER OPENED!");
-                if (mToolbar != null) mToolbar.setTitle("Choose Your Destiny.");
+//                if (mToolbar != null) mToolbar.setTitle("Choose Your Destiny.");
                 if (!mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
                     mDrawerLayout.openDrawer(GravityCompat.START);
                     mDrawerLayout.setBackgroundColor(Color.TRANSPARENT);
@@ -419,10 +445,10 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
 
             @Override
             public void onDrawerClosed(View drawerView) {
-                if (mToolbar != null) mToolbar.setTitle("Ruviuz");
+//                if (mToolbar != null) mToolbar.setTitle("Ruviuz");
                 if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
                     mDrawerLayout.closeDrawer(GravityCompat.START);
-                    mDrawerLayout.setBackgroundColor(Color.BLACK);
+                    mDrawerLayout.setBackgroundColor(ContextCompat.getColor(MainActivity.this, R.color.colorRow));
                     sendViewToBack(mDrawerLayout);
                 }
             }
@@ -487,6 +513,11 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         }
         getPrefCreds();
         draftCheck();
+        if (authToken == null) {
+            hideActivity();
+            dismissAllDialogs();
+            welcomeDialog();
+        }
         //TODO verify draft check is appropriate here
     }
 
@@ -524,7 +555,8 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
 
     BigDecimal calculatePrice() {
         try {
-            BigDecimal mPrice = new BigDecimal((length == 0 ? 1 : length * width == 0 ? 1 : width * (0.428 * slope == 0 ? 1 : slope)));
+            BigDecimal mPrice = new BigDecimal((double)(length == 0 ? 1 : length * width == 0 ? 1 : width * (0.428 * slope == 0 ? 1 : slope))).setScale(2, BigDecimal.ROUND_HALF_UP);
+
             if (premium) {
                 mPrice = mPrice.multiply(new BigDecimal(2));
             }
@@ -578,6 +610,9 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         FragmentManager fm = getFragmentManager();
         if (mainFragment == null) {
             mainFragment = new MainFragment();
+            Bundle fragBundle = new Bundle();
+            fragBundle.putString("baseUrl", baseUrl);
+            mainFragment.setArguments(fragBundle);
             if (!mainFragment.isAdded()) {
                 mainFragment.show(fm, "Choose an action");
             }
@@ -610,8 +645,18 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
 
     public void customerDialog() {
         FragmentManager fm = getFragmentManager();
+
+        Bundle args = new Bundle();
+        if (mCustomer != null) {
+            args.putString("firstName", mCustomer.getFirstname());
+            args.putString("lastName", mCustomer.getLastname());
+            args.putString("email", mCustomer.getEmail());
+            args.putString("phone", mCustomer.getPhone());
+        }
+
         if (mCustomerFrag == null) {
             mCustomerFrag = new CustomerFragment();
+            mCustomerFrag.setArguments(args);
             if (!mCustomerFrag .isAdded()) {
                 mCustomerFrag.show(fm, "Please Enter Address");
             }
@@ -620,6 +665,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
             fm.beginTransaction().remove(mCustomerFrag ).commit();
             mCustomerFrag = null;
             mCustomerFrag = new CustomerFragment();
+            mCustomerFrag.setArguments(args);
             mCustomerFrag.show(fm, "Please Enter Address");
         }
     }
@@ -644,6 +690,28 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
             metricFrag = new MetricFragment();
             metricFrag.setArguments(mBundle);
             metricFrag.show(fm, "Please Enter Metrics");
+        }
+    }
+
+
+    public void slopeDialog() {
+        updateValues();
+        Bundle mBundle = new Bundle();
+        mBundle.putFloat("slope", slope);
+
+        FragmentManager fm = getFragmentManager();
+        if (slopeFrag == null) {
+            slopeFrag = new SlopeFragment();
+            slopeFrag.setArguments(mBundle);
+            if (!slopeFrag.isAdded()) {
+                slopeFrag.show(fm, "Please Enter Slope");
+            }
+        } else {
+            fm.beginTransaction().remove(slopeFrag).commit();
+            slopeFrag = null;
+            slopeFrag = new SlopeFragment();
+            slopeFrag.setArguments(mBundle);
+            slopeFrag.show(fm, "Please Enter Slope");
         }
     }
 
@@ -675,6 +743,8 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
             mAddressFrag.dismiss();
             getFragmentManager().beginTransaction().remove(mAddressFrag).commit();
         }
+        if (!ready)
+        getMetric();
     }
 
     @Override
@@ -788,7 +858,20 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         prefEdit.putFloat("length", length);
         prefEdit.putFloat("slope", slope);
         prefEdit.putBoolean("premium", premium);
-        prefEdit.putInt("currentRid", currentRid);;
+        prefEdit.putInt("currentRid", currentRid);
+        if (mCustomer != null) {
+            try {
+                JSONObject customerJson = new JSONObject();
+                customerJson.put("firstName", mCustomer.getFirstname());
+                customerJson.put("lastName", mCustomer.getLastname());
+                customerJson.put("email", mCustomer.getEmail());
+                customerJson.put("phone", mCustomer.getPhone());
+                customerJson.put("married", mCustomer.getMarried());
+                prefEdit.putString("customer", customerJson.toString());
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
         prefEdit.commit();
     }
 
@@ -803,6 +886,17 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         this.slope = mPrefs.getFloat("slope", 0f);
         this.premium = mPrefs.getBoolean("premium", false);
         this.currentRid = mPrefs.getInt("currentRid", 0);
+        try {
+            JSONObject customerJson = new JSONObject(mPrefs.getString("customer", ""));
+            if (this.mCustomer == null) this.mCustomer = new Customer();
+            this.mCustomer.setFirstname(customerJson.get("firstName").toString());
+            this.mCustomer.setLastname(customerJson.get("lastName").toString());
+            this.mCustomer.setEmail(customerJson.get("email").toString());
+            this.mCustomer.setPhone(customerJson.get("phone").toString());
+            this.mCustomer.setMarried(Boolean.valueOf(customerJson.get("married").toString()));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     public void updateValues() {
@@ -823,6 +917,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         this.premium = false;
         this.currentRid = 0;
         this.fileCount = 0;
+        this.mCustomer = null;
 
         putPrefsData();
 
@@ -835,6 +930,9 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         photo2.setImageDrawable(null);
         photo3.setImageDrawable(null);
         addressBtn.setAlpha(0.2f);
+        clientBtn.setAlpha(0.2f);
+        draftBtn.setAlpha(0.2f);
+        draftBtn.setText("Draft");
 
         if (getIntent().hasExtra("uri"))
             getIntent().removeExtra("uri");
@@ -847,6 +945,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         inflater.inflate(R.menu.ruviuz_menu, menu);
         updateMenuWithIcon(menu.findItem(R.id.loginAction), Color.WHITE);
         updateMenuWithIcon(menu.findItem(R.id.geoLocate), Color.WHITE);
+        updateMenuWithIcon(menu.findItem(R.id.goHome), Color.WHITE);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -879,6 +978,11 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
                 Log.d(TAG, "GEOLOCATION REQUEST");
                 getGeoLocation();
                 break;
+            case R.id.goHome:
+                Log.d(TAG, "Going HOME");
+                dismissAllDialogs();
+                hideActivity();
+                welcomeDialog();
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -909,11 +1013,22 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
                     for (Address address : addresses) {
                         Log.d(TAG, "Address => " + address.toString());
                         String locality = address.getLocality();
-                        String addressLine1 = address.getAddressLine(1).substring(0, address.getAddressLine(1).indexOf(","));
                         Log.d(TAG, "Locality = " + locality);
-                        Log.d(TAG, "AddressLn1 = " + addressLine1);
+                        String addressLine1 = null;
+                        if (address.getAddressLine(1) != null) {
+                            addressLine1 = address.getAddressLine(1).contains(",") ? address.getAddressLine(1).substring(0, address.getAddressLine(1).indexOf(",")) : address.getAddressLine(1);
+                            Log.d(TAG, "AddressLn1 = " + addressLine1);
+                        } else if (address.getAddressLine(0) != null && address.getAdminArea() == null) {
+                            String country = "COUNTRY::" + address.getAddressLine(0);
+                            MainActivity.this.city = "NoLocality";
+                            MainActivity.this.province = country;
+                        } else {
+                            Snackbar.make(findViewById(R.id.MainParentView), "Unable to get GeoLocation", Snackbar.LENGTH_SHORT).show();
+                        }
+                        if (MainActivity.this.city == null)
                         MainActivity.this.city = locality == null ? addressLine1 : locality;
-                        MainActivity.this.province = RuvLocation.provinceMap.get(address.getAdminArea());
+                        if (MainActivity.this.province == null)
+                        MainActivity.this.province = address.getAdminArea() == null ? "NoRegion" : RuvLocation.provinceMap.get(address.getAdminArea());
                     }
                     MainActivity.this.putPrefsData();
                 } catch (IOException e) {
@@ -929,6 +1044,19 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         return false;
     }
 
+
+    public String[] getAddress() {
+        String[] mAddress = new String[2];
+        mAddress[0] = city;
+        mAddress[1] = province;
+
+        return mAddress;
+    }
+
+    public boolean readyStatus() {
+        return this.ready;
+    }
+
     @Override
     public void metricfragInteraction(Float[] values, String data) {
         Log.d(TAG, data);
@@ -936,13 +1064,13 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
             Log.d(TAG, "METRICFRAG_COMPLETE");
             MainActivity.this.length = values[0];
             roofLength.setText(String.valueOf(values[0]));
-            roofLength.jumpDrawablesToCurrentState();
+//            roofLength.jumpDrawablesToCurrentState();
             MainActivity.this.width = values[1];
             roofWidth.setText(String.valueOf(values[1]));
-            roofWidth.jumpDrawablesToCurrentState();
+//            roofWidth.jumpDrawablesToCurrentState();
             MainActivity.this.slope = values[2];
             roofSlope.setText(String.valueOf(MainActivity.this.slope));
-            roofSlope.jumpDrawablesToCurrentState();
+//            roofSlope.jumpDrawablesToCurrentState();
 
             if (metricFrag != null && metricFrag.isAdded()) {
                 metricFrag.dismiss();
@@ -953,14 +1081,41 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
             }
 
             putPrefsData();
+            
+            slopeDialog();
 
-//            customerDialog();
+        }
+
+        if (data.equals("BACK_TO_ADDRESS")) {
+
+            addressDialog();
+
+            if (metricFrag != null && metricFrag.isAdded()) {
+                metricFrag.dismiss();
+            }
+
+            if (mainFragment != null && mainFragment.isAdded()) {
+                mainFragment.dismiss();
+            }
+
         }
     }
 
     @Override
-    public void customerfragInteraction(Uri uri) {
+    public void customerfragInteraction(String[] name, String email, String phone,boolean married) {
         Log.d(TAG, "CUSTOMERFRAGINTERACTION");
+        if (mCustomer == null) mCustomer = new Customer();
+
+        mCustomer.setFirstname(name[0]);
+        mCustomer.setLastname(name[1]);
+        mCustomer.setEmail(email);
+        mCustomer.setPhone(phone);
+        mCustomer.setMarried(married);
+        clientBtn.setAlpha(1f);
+        if (mCustomerFrag != null && mCustomerFrag.isAdded()) {
+            mCustomerFrag.dismiss();
+        }
+        revealActivity();
     }
 
     @Override
@@ -972,6 +1127,10 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         }
 
         if (action == REQUEST_LOGIN) {
+            if (mWelcomeFrag != null && mWelcomeFrag.isAdded()) {
+                mWelcomeFrag.dismiss();
+            }
+
             loginDialog();
         }
 
@@ -985,16 +1144,19 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         MainActivity.this.lastAction = action;
 
         if (action == CREATE_QUOTE) {
+            hideActivity();
+            MainActivity.this.ready = false;
             if (authToken == null) {
                 Snackbar.make(MainActivity.this.findViewById(R.id.MainParentView), "You Must First Login", Snackbar.LENGTH_SHORT).show();
                 loginDialog();
                 mainFragment.dismiss();
             } else {
-                getMetric();
+                addressDialog();
                 mainFragment.dismiss();
             }
         }
         if (action == SEE_QUOTES) {
+            revealActivity();
             if (authToken == null) {
                 Snackbar.make(MainActivity.this.findViewById(R.id.MainParentView), "You Must First Login", Snackbar.LENGTH_SHORT).show();
                 loginDialog();
@@ -1014,6 +1176,24 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
             if (mainFragment != null && mainFragment.isAdded()) {
                 mainFragment.dismiss();
             }
+        }
+    }
+
+    @Override
+    public void slopeFragInteraction(float value, int result) {
+        if (result == SLOPE_FRAG_SUCCESS) {
+            MainActivity.this.slope = value;
+            revealActivity();
+            roofSlope.setText(String.valueOf(MainActivity.this.slope));
+
+            draftCheck();
+
+            if (slopeFrag != null && slopeFrag.isAdded()) {
+                slopeFrag.dismiss();
+            }
+
+        } else {
+            slopeFrag.dismiss();
         }
     }
 
@@ -1046,6 +1226,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
                 !MainActivity.this.province.equals("")) {
             draftBtn.setText(R.string.ready);
             draftBtn.setAlpha(1f);
+            MainActivity.this.ready = true;
         }
     }
 
@@ -1077,7 +1258,79 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
             item.setTitle(builder);
         }
     }
+    
+    public void hideActivity() {
+        Log.d(TAG, "COLOR: " + String.valueOf(MainActivity.this.getWindow().getDecorView().getRootView().getSolidColor()));
+        if (MainActivity.this.findViewById(R.id.MainParentView) != null) {
+            MainActivity.this.getWindow().getDecorView().getRootView().setBackgroundColor(Color.BLACK);
+            MainActivity.this.findViewById(R.id.MainParentView).setVisibility(View.INVISIBLE);
+            MainActivity.this.findViewById(R.id.side_menu).setVisibility(View.INVISIBLE);
+        }
+        if (roofLength != null)
+        roofLength.setVisibility(View.INVISIBLE);
+        if (roofWidth != null)
+        roofWidth.setVisibility(View.INVISIBLE);
+        if (roofSlope != null)
+        roofSlope.setVisibility(View.INVISIBLE);
+        if (currentPrice != null)
+        currentPrice.setVisibility(View.INVISIBLE);
+        if (addressBtn != null)
+        addressBtn.setVisibility(View.INVISIBLE);
+        if (metricBtn != null)
+        metricBtn.setVisibility(View.INVISIBLE);
+        if (draftBtn != null)
+        draftBtn.setVisibility(View.INVISIBLE);
+        if (ruuvBtn != null)
+        ruuvBtn.setVisibility(View.INVISIBLE);
+        if (clearBtn != null)
+        clearBtn.setVisibility(View.INVISIBLE);
+        if (photoBtn != null)
+        photoBtn.setVisibility(View.INVISIBLE);
+        if (calculateBtn != null)
+        calculateBtn.setVisibility(View.INVISIBLE);
+        if (roofLength != null)
+        roofLength.setVisibility(View.INVISIBLE);
+        if (roofWidth != null)
+            roofWidth.setVisibility(View.INVISIBLE);
+        if (roofSlope != null)
+            roofSlope.setVisibility(View.INVISIBLE);
+        if (premiumMaterial != null)
+            premiumMaterial.setVisibility(View.INVISIBLE);
+    }
 
+    
+    private void revealActivity() {
+        MainActivity.this.findViewById(R.id.MainParentView).setVisibility(View.VISIBLE);
+        MainActivity.this.findViewById(R.id.side_menu).setVisibility(View.VISIBLE);
+        roofLength.setVisibility(View.VISIBLE);
+        roofWidth.setVisibility(View.VISIBLE);
+        roofSlope.setVisibility(View.VISIBLE);
+        currentPrice.setVisibility(View.VISIBLE);
+        if (currentPrice != null)
+            currentPrice.setVisibility(View.VISIBLE);
+        if (addressBtn != null)
+            addressBtn.setVisibility(View.VISIBLE);
+        if (metricBtn != null)
+            metricBtn.setVisibility(View.VISIBLE);
+        if (draftBtn != null)
+            draftBtn.setVisibility(View.VISIBLE);
+        if (ruuvBtn != null)
+            ruuvBtn.setVisibility(View.VISIBLE);
+        if (clearBtn != null)
+            clearBtn.setVisibility(View.VISIBLE);
+        if (photoBtn != null)
+            photoBtn.setVisibility(View.VISIBLE);
+        if (calculateBtn != null)
+            calculateBtn.setVisibility(View.VISIBLE);
+        if (roofLength != null)
+            roofLength.setVisibility(View.VISIBLE);
+        if (roofWidth != null)
+            roofWidth.setVisibility(View.VISIBLE);
+        if (roofSlope != null)
+            roofSlope.setVisibility(View.VISIBLE);
+        if (premiumMaterial != null)
+            premiumMaterial.setVisibility(View.VISIBLE);
+    }
 
     public void putIntentData(Intent intent) {
         updateValues();
@@ -1093,6 +1346,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         intent.putExtra("currentRid", this.currentRid);
         intent.putExtra("fileCount", this.fileCount);
         intent.putExtra("fileUrls", this.fileUrls);
+        this.ready = intent.getBooleanExtra("ready", false);
 
     }
     
@@ -1100,6 +1354,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         if (!intent.hasExtra("fileCount")) {
             Log.d(TAG, "NO FILE COUNT LINE 715 MAIN");
         }
+        this.ready = intent.getBooleanExtra("ready", false);
         this.authToken = intent.getStringExtra("authToken");
         this.slope = intent.getFloatExtra("slope", 0);
         this.width = intent.getFloatExtra("width", 0);
@@ -1194,8 +1449,26 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         if (mCustomerFrag != null && mCustomerFrag.isAdded()) mCustomerFrag.dismiss();
         if (mAddressFrag != null && mAddressFrag.isAdded()) mAddressFrag.dismiss();
         if (metricFrag != null && metricFrag.isAdded()) metricFrag.dismiss();
+        if (slopeFrag != null && slopeFrag.isAdded()) slopeFrag.dismiss();
     }
 
+    public void dismissOtherDialogs(Class mClass) {
+        if (mainFragment != null && mainFragment.isAdded() && mainFragment.getClass() != mClass) mainFragment.dismiss();
+        if (mLoginFrag != null && mLoginFrag.isAdded() && mLoginFrag.getClass() != mClass) mLoginFrag.dismiss();
+        if (mCustomerFrag != null && mCustomerFrag.isAdded() && mCustomerFrag.getClass() != mClass) mCustomerFrag.dismiss();
+        if (mAddressFrag != null && mAddressFrag.isAdded() && mAddressFrag.getClass() != mClass) mAddressFrag.dismiss();
+        if (metricFrag != null && metricFrag.isAdded() && metricFrag.getClass() != mClass) metricFrag.dismiss();
+        if (slopeFrag != null && slopeFrag.isAdded() && slopeFrag.getClass() != mClass) slopeFrag.dismiss();
+    }
+
+    public static int getStatusBarHeight(Activity a) {
+        int result = 0;
+        int resourceId = a.getResources().getIdentifier("status_bar_height", "dimen", "android");
+        if (resourceId > 0) {
+            result = a.getResources().getDimensionPixelSize(resourceId);
+        }
+        return result;
+    }
 
     private static class RuuvThread implements Runnable {
         private Handler mHandler;
