@@ -44,6 +44,9 @@ import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.appindexing.Thing;
 import com.google.android.gms.common.api.GoogleApiClient;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -55,6 +58,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+
+import stronglogic.ruviuz.content.Customer;
 
 public class CameraActivity extends AppCompatActivity {
     private static final String TAG = "RuviuzCAMERAACTIVITY";
@@ -77,6 +82,7 @@ public class CameraActivity extends AppCompatActivity {
     private String address, region, city, postal;
     private String[] fileUrls = new String[3];
 
+    private Customer mCustomer;
     private File file;
 
     private CameraDevice cameraDevice;
@@ -523,6 +529,19 @@ public class CameraActivity extends AppCompatActivity {
         intent.putExtra("fileCount", this.fileCount);
         intent.putExtra("fileUrls", this.fileUrls);
         intent.putExtra("ready", this.ready);
+        if (mCustomer != null) {
+            try {
+                JSONObject customerJson = new JSONObject();
+                customerJson.put("firstName", mCustomer.getFirstname());
+                customerJson.put("lastName", mCustomer.getLastname());
+                customerJson.put("email", mCustomer.getEmail());
+                customerJson.put("phone", mCustomer.getPhone());
+                customerJson.put("married", mCustomer.getMarried());
+                intent.putExtra("customer", customerJson.toString());
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public void getIntentData(Intent intent) {
@@ -541,6 +560,17 @@ public class CameraActivity extends AppCompatActivity {
         this.fileUrls = intent.getStringArrayExtra("fileUrls");
         this.callingClass = intent.getStringExtra("callingClass");
         this.ready = intent.getBooleanExtra("ready", false);
+        try {
+            JSONObject customerJson = new JSONObject(intent.getStringExtra("customer"));
+            if (this.mCustomer == null) this.mCustomer = new Customer();
+            this.mCustomer.setFirstname(customerJson.get("firstName").toString());
+            this.mCustomer.setLastname(customerJson.get("lastName").toString());
+            this.mCustomer.setEmail(customerJson.get("email").toString());
+            this.mCustomer.setPhone(customerJson.get("phone").toString());
+            this.mCustomer.setMarried(Boolean.valueOf(customerJson.get("married").toString()));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

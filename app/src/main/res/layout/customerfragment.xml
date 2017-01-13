@@ -21,15 +21,15 @@
         android:theme="@style/RuvFragActionBar"
         app:popupTheme="@style/RuvFragActionBar"/>
 
-    <RelativeLayout
+    <android.support.percent.PercentRelativeLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/colorRow">
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_height="114dp"
             android:textSize="24sp"
             android:textAllCaps="true"
             android:textStyle="bold"
@@ -37,9 +37,17 @@
             android:layout_marginTop="8dp"
             android:layout_marginBottom="32dp"
             android:layout_centerHorizontal="true"
-            android:id="@+id/customerFragTitle"
             android:text="@string/client_info"
             android:textColor="#000"
+            android:id="@+id/customerFragTitle"
+            android:inputType="textPostalAddress|textMultiLine"
+            android:layout_gravity="center_vertical"
+            android:hint="@string/street"
+            android:selectAllOnFocus="true"
+            android:layout_marginStart="2dp"
+            android:layout_marginEnd="2dp"
+            android:gravity="center"
+            android:background="#fff"
             />
 
 
@@ -53,6 +61,7 @@
 
         <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
+            app:layout_widthPercent="50%"
             android:layout_height="wrap_content"
             android:layout_below="@id/ruvLogo"
             android:id="@+id/customerFirstWrap"
@@ -65,7 +74,7 @@
                 android:layout_margin="8dp"
                 android:inputType="textPersonName"
                 android:hint="@string/first_name"
-                android:background="#46ffcb"
+                android:background="#fff"
                 android:textColor="#000"
                 android:textSize="20sp"
                 android:id="@+id/customerFirst"/>
@@ -73,9 +82,10 @@
         </android.support.design.widget.TextInputLayout>
 
         <android.support.design.widget.TextInputLayout
-            android:layout_width="match_parent"
+            app:layout_widthPercent="50%"
             android:layout_height="wrap_content"
-            android:layout_below="@id/customerFirstWrap"
+            android:layout_below="@id/ruvLogo"
+            android:layout_toEndOf="@id/customerFirstWrap"
             android:id="@+id/customerLastWrap"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp">
@@ -86,7 +96,7 @@
                 android:layout_margin="8dp"
                 android:inputType="textPersonName"
                 android:hint="@string/last_name"
-                android:background="#46ffcb"
+                android:background="#fff"
                 android:textColor="#000"
                 android:textSize="20sp"
                 android:id="@+id/customerLast"
@@ -112,7 +122,7 @@
                     android:layout_margin="8dp"
                     android:layout_alignParentStart="true"
                     android:inputType="textEmailAddress"
-                    android:background="#46ffcb"
+                    android:background="#fff"
                     android:textColor="#000"
                     android:textSize="20sp"
                     android:hint="@string/email" />
@@ -129,7 +139,7 @@
                     android:layout_margin="8dp"
                     android:layout_alignParentEnd="true"
                     android:inputType="phone"
-                    android:background="#46ffcb"
+                    android:background="#fff"
                     android:textColor="#000"
                     android:textSize="20sp"
                     android:hint="@string/phone_number" />
@@ -137,22 +147,21 @@
 
         </LinearLayout>
 
-        <android.support.v7.widget.AppCompatButton
+        <Button
             android:id="@+id/customerBtn"
+            style="?android:attr/buttonStyleSmall"
             android:layout_below="@id/customerDetails"
             android:layout_centerHorizontal="true"
-            style="?android:attr/buttonStyleSmall"
-            android:layout_width="160dp"
+            android:layout_width="match_parent"
             android:layout_height="56dp"
-            android:background="@color/common_google_signin_btn_text_dark_disabled"
-            android:textColor="#fff"
-            android:textSize="22sp"
-            android:layout_marginTop="24dp"
-            android:layout_marginBottom="24dp"
-            android:padding="12dp"
-            android:text="@string/submit"
-            android:backgroundTint="@color/colorRow" />
-    </RelativeLayout>
+            android:textSize="24sp"
+            android:background="@drawable/ruvbtn_bl"
+            android:hint="@string/submit"
+            android:textColorHint="#fff"
+            android:layout_marginStart="1dp"
+            android:layout_marginEnd="1dp"
+            android:layout_marginBottom="1.5dp" />
+    </android.support.percent.PercentRelativeLayout>
 
     </LinearLayout>
 </ScrollView>

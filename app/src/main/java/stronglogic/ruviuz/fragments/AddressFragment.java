@@ -23,6 +23,7 @@ import stronglogic.ruviuz.R;
 
 /**
  * Created by logicp on 3/22/16.
+ * Fragment for procuring address information for a roof quote
  */
 public class AddressFragment extends DialogFragment {
 

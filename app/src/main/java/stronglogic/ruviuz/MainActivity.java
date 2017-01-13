@@ -95,6 +95,14 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
     private final static int REQUEST_LOGIN = 35;
     private final static int CREATE_ACCOUNT = 36;
     private final static int SLOPE_FRAG_SUCCESS = 39;
+    private static final int WELCOME_REQUEST = 60;
+    private static final int LOGIN_REQUEST = 61;
+    private static final int CLEAR_REQUEST = 62;
+    private static final int ADDRESS_REQUEST = 63;
+    private static final int CUSTOMER_REQUEST = 64;
+    private static final int METRIC_REQUEST = 65;
+    private static final int CAMERA_REQUEST = 66;
+    private static final int GEOLOCATION_REQUEST = 67;
 
     private static final String baseUrl = "http://52.43.250.94:5000";
 
@@ -956,10 +964,8 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
             case android.R.id.home:
                 if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
                     mDrawerLayout.closeDrawer(GravityCompat.START);
-//                    sendViewToBack(mDrawerLayout);
                 } else {
                     mDrawerLayout.openDrawer(GravityCompat.START);
-//                    mDrawerLayout.bringToFront();
                 }
                 break;
             case R.id.roofView:
@@ -1347,12 +1353,25 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         intent.putExtra("fileCount", this.fileCount);
         intent.putExtra("fileUrls", this.fileUrls);
         this.ready = intent.getBooleanExtra("ready", false);
+        if (mCustomer != null) {
+            try {
+                JSONObject customerJson = new JSONObject();
+                customerJson.put("firstName", mCustomer.getFirstname());
+                customerJson.put("lastName", mCustomer.getLastname());
+                customerJson.put("email", mCustomer.getEmail());
+                customerJson.put("phone", mCustomer.getPhone());
+                customerJson.put("married", mCustomer.getMarried());
+                intent.putExtra("customer", customerJson.toString());
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
 
     }
     
     public void getIntentData(Intent intent) {
-        if (!intent.hasExtra("fileCount")) {
-            Log.d(TAG, "NO FILE COUNT LINE 715 MAIN");
+        if (!intent.hasExtra("REQUEST")) {
+            handleRequest(intent.getIntExtra("REQUEST", 0));
         }
         this.ready = intent.getBooleanExtra("ready", false);
         this.authToken = intent.getStringExtra("authToken");
@@ -1367,6 +1386,18 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         this.currentRid = intent.getIntExtra("currentRid", -1);
         this.fileCount = intent.getIntExtra("fileCount", 0);
         this.fileUrls = intent.getStringArrayExtra("fileUrls");
+        if (intent.hasExtra("customer"))
+            try {
+                JSONObject customerJson = new JSONObject(intent.getStringExtra("customer"));
+                if (this.mCustomer == null) this.mCustomer = new Customer();
+                this.mCustomer.setFirstname(customerJson.get("firstName").toString());
+                this.mCustomer.setLastname(customerJson.get("lastName").toString());
+                this.mCustomer.setEmail(customerJson.get("email").toString());
+                this.mCustomer.setPhone(customerJson.get("phone").toString());
+                this.mCustomer.setMarried(Boolean.valueOf(customerJson.get("married").toString()));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
     }
 
 
@@ -1383,6 +1414,34 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
 //        bundle.putExtra("fileUrls", this.fileUrls);
     }
 
+    public void handleRequest(int request) {
+        Log.d(TAG, "Rview REQUEST:: " + request);
+
+        if (request == WELCOME_REQUEST) {
+
+        }
+        if (request == LOGIN_REQUEST) {
+
+        }
+        if (request == CLEAR_REQUEST) {
+
+        }
+        if (request == ADDRESS_REQUEST) {
+
+        }
+        if (request == CUSTOMER_REQUEST) {
+
+        }
+        if (request == CAMERA_REQUEST) {
+
+        }
+        if (request == METRIC_REQUEST) {
+
+        }
+        if (request == GEOLOCATION_REQUEST) {
+
+        }
+    }
 
 
     @Override

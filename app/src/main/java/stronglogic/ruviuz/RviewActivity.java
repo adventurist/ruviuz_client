@@ -3,10 +3,15 @@ package stronglogic.ruviuz;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.NavigationView;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -18,6 +23,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.Window;
 import android.widget.Toast;
 
 import org.json.JSONArray;
@@ -27,15 +34,27 @@ import org.json.JSONObject;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 
+import stronglogic.ruviuz.content.Customer;
 import stronglogic.ruviuz.content.Roof;
 import stronglogic.ruviuz.fragments.RuvFragment;
 import stronglogic.ruviuz.tasks.RviewTask;
 import stronglogic.ruviuz.views.RuvAdapter;
 
+import static stronglogic.ruviuz.MainActivity.getStatusBarHeight;
+import static stronglogic.ruviuz.MainActivity.sendViewToBack;
+
 public class RviewActivity extends AppCompatActivity implements RuvFragment.RuvFragListener {
 
     private static final String TAG = "RuviuzRVIEWACTIVITY";
     private static final int RUVIUZ_CAMERA = 15;
+    private static final int WELCOME_REQUEST = 60;
+    private static final int LOGIN_REQUEST = 61;
+    private static final int CLEAR_REQUEST = 62;
+    private static final int ADDRESS_REQUEST = 63;
+    private static final int CUSTOMER_REQUEST = 64;
+    private static final int METRIC_REQUEST = 65;
+    private static final int CAMERA_REQUEST = 66;
+    private static final int GEOLOCATION_REQUEST = 67;
 
     private android.support.v7.widget.Toolbar mToolbar;
 
@@ -45,14 +64,16 @@ public class RviewActivity extends AppCompatActivity implements RuvFragment.RuvF
     private int currentRid, fileCount, reopenDialog;
     private float slope, width, length;
     private boolean premium, ready;
-    private String address;
+    private String address, city, region, postal;
     private String[] fileUrls = new String[3];
+
+    private Customer mCustomer;
 
     private ArrayList<Roof> roofArrayList;
     public RecyclerView rv;
-//    private RuvAdapter ruvAdapter;
-//
-//    private Bundle mBundle;
+
+    private DrawerLayout mDrawerLayout;
+    private NavigationView mDrawerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,13 +82,26 @@ public class RviewActivity extends AppCompatActivity implements RuvFragment.RuvF
 
         getPrefsData();
 
+        Window w = getWindow();
+        View decorView = w.getDecorView();
+        // Show Status Bar.
+        decorView.setSystemUiVisibility(
+                View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+
+        RviewActivity.this.findViewById(R.id.activity_rview).setPadding(0, getStatusBarHeight(RviewActivity.this), 0, 0);
+
+        w.setStatusBarColor(ContextCompat.getColor(RviewActivity.this, R.color.ruvGreenStatus));
+
         mToolbar = (Toolbar) findViewById(R.id.app_bar);
         setSupportActionBar(mToolbar);
 
+        setSupportActionBar(mToolbar);
+
         if (getSupportActionBar()!= null) {
-            getSupportActionBar().setDisplayShowHomeEnabled(true);
-            getSupportActionBar().setLogo(R.drawable.rlogo);
-            getSupportActionBar().setDisplayShowTitleEnabled(false);
+            getSupportActionBar().setHomeAsUpIndicator(R.drawable.construction);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setElevation(8f);
         }
 
@@ -109,8 +143,109 @@ public class RviewActivity extends AppCompatActivity implements RuvFragment.RuvF
             }
         });
         rviewTask.execute();
+
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.side_menu);
+        mDrawerView = (NavigationView) findViewById(R.id.left_drawer);
+        ActionBarDrawerToggle drawerToggle = setupDrawerToggle();
+        mDrawerLayout.addDrawerListener(drawerToggle);
+        mDrawerView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                Log.d(TAG, item.toString());
+                Intent mIntent = new Intent();
+                switch (item.getTitle().toString()) {
+                    case ("Roof List"):
+                        Intent reloadIntent = new Intent();
+                        finish();
+                        startActivity(reloadIntent);
+                        break;
+                    case ("Take Photo"):
+                        goToMain(CAMERA_REQUEST);
+                        break;
+                    case ("Measure"):
+                        goToMain(METRIC_REQUEST);
+//                        mDrawerLayout.closeDrawers();
+                        break;
+                    case ("Client"):
+                        goToMain(CUSTOMER_REQUEST);
+                        break;
+                    case ("Address"):
+                        goToMain(ADDRESS_REQUEST);
+                    case ("Get Location"):
+                        goToMain(GEOLOCATION_REQUEST);
+                        break;
+                    case ("Upload"):
+                        Log.d(TAG, "Upload to be implemented in MainActivity");
+                        break;
+                    case ("Clear"):
+                        goToMain(CLEAR_REQUEST);
+                        break;
+                    case ("Login"):
+                        goToMain(LOGIN_REQUEST);
+                        break;
+                    case ("Logout"):
+                        Log.d(TAG, "Logout to be implemented in MainActivity");
+                        break;
+                    case ("Start"):
+                        Log.d(TAG, "Going HOME");
+                        goToMain(WELCOME_REQUEST);
+                        break;
+                    default:
+                        break;
+                }
+//               }
+                return false;
+            }
+        });
     }
 
+
+    private ActionBarDrawerToggle setupDrawerToggle() {
+        return new ActionBarDrawerToggle(this, mDrawerLayout, mToolbar, R.string.OpenDrawer,  R.string.CloseDrawer) {
+            @Override
+            public void onDrawerSlide(View drawerView, float slideOffset) {
+                mDrawerLayout.bringChildToFront(drawerView);
+                mDrawerLayout.requestLayout();
+                if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
+                    mDrawerLayout.closeDrawer(GravityCompat.START);
+                    mDrawerLayout.setBackgroundColor(ContextCompat.getColor(RviewActivity.this, R.color.colorRow));
+                    sendViewToBack(mDrawerLayout);
+                } else {
+                    mDrawerLayout.openDrawer(GravityCompat.START);
+                    mDrawerLayout.setBackgroundColor(Color.TRANSPARENT);
+                    mDrawerLayout.bringToFront();
+                }
+            }
+
+
+            @Override
+            public void onDrawerOpened(View drawerView) {
+                Log.d(TAG, "DRAWER OPENED!");
+//                if (mToolbar != null) mToolbar.setTitle("Choose Your Destiny.");
+                if (!mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
+                    mDrawerLayout.openDrawer(GravityCompat.START);
+                    mDrawerLayout.setBackgroundColor(Color.TRANSPARENT);
+                    mDrawerLayout.bringToFront();
+                }
+            }
+
+            @Override
+            public void onDrawerClosed(View drawerView) {
+//                if (mToolbar != null) mToolbar.setTitle("Ruviuz");
+                if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
+                    mDrawerLayout.closeDrawer(GravityCompat.START);
+                    mDrawerLayout.setBackgroundColor(ContextCompat.getColor(RviewActivity.this, R.color.colorRow));
+                    sendViewToBack(mDrawerLayout);
+                }
+            }
+        };
+    }
+
+    public void goToMain(int request) {
+        Intent mIntent = new Intent(RviewActivity.this, MainActivity.class);
+        mIntent.putExtra("REQUEST", request);
+        startActivity(mIntent);
+    }
 
     public boolean parseData(String data) {
 
@@ -187,15 +322,23 @@ public class RviewActivity extends AppCompatActivity implements RuvFragment.RuvF
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.ruviuz_menu, menu);
-        int color = ContextCompat.getColor(this, R.color.colorAccent);
-        updateMenuWithIcon(menu.findItem(R.id.loginAction), color);
-        updateMenuWithIcon(menu.findItem(R.id.geoLocate), color);
+        updateMenuWithIcon(menu.findItem(R.id.goHome), Color.WHITE);
+        updateMenuWithIcon(menu.findItem(R.id.loginAction), Color.WHITE);
+        updateMenuWithIcon(menu.findItem(R.id.geoLocate), Color.WHITE);
         return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        Log.d(TAG, "MENU ITEM ID::" + String.valueOf(item.getItemId()));
         switch (item.getItemId()) {
+            case android.R.id.home:
+                if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
+                    mDrawerLayout.closeDrawer(GravityCompat.START);
+                } else {
+                    mDrawerLayout.openDrawer(GravityCompat.START);
+                }
+                break;
             case R.id.roofView:
                 Intent rviewIntent = new Intent(this, RviewActivity.class);
                 rviewIntent.putExtra("authToken", authToken);
@@ -286,14 +429,32 @@ public class RviewActivity extends AppCompatActivity implements RuvFragment.RuvF
 
     public void putIntentData(Intent intent) {
         intent.putExtra("authToken", this.authToken);
+        intent.putExtra("baseUrl", this.baseUrl);
         intent.putExtra("slope", this.slope);
         intent.putExtra("width", this.width);
         intent.putExtra("length", this.length);
         intent.putExtra("address", this.address);
+        intent.putExtra("city", this.city);
+        intent.putExtra("region", this.region);
+        intent.putExtra("postal", this.postal);
         intent.putExtra("premium", this.premium);
         intent.putExtra("currentRid", this.currentRid);
         intent.putExtra("fileCount", this.fileCount);
         intent.putExtra("fileUrls", this.fileUrls);
+        intent.putExtra("ready", this.ready);
+        if (mCustomer != null) {
+            try {
+                JSONObject customerJson = new JSONObject();
+                customerJson.put("firstName", mCustomer.getFirstname());
+                customerJson.put("lastName", mCustomer.getLastname());
+                customerJson.put("email", mCustomer.getEmail());
+                customerJson.put("phone", mCustomer.getPhone());
+                customerJson.put("married", mCustomer.getMarried());
+                intent.putExtra("customer", customerJson.toString());
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public void getIntentData(Intent intent) {
@@ -303,11 +464,26 @@ public class RviewActivity extends AppCompatActivity implements RuvFragment.RuvF
         this.width = intent.getFloatExtra("width", 0);
         this.length = intent.getFloatExtra("length", 0);
         this.address = intent.getStringExtra("address");
+        this.postal = intent.getStringExtra("postal");
+        this.city = intent.getStringExtra("city");
+        this.region = intent.getStringExtra("region");
         this.premium = intent.getBooleanExtra("premium", false);
         this.currentRid = intent.getIntExtra("currentRid", -1);
         this.fileCount = intent.getIntExtra("fileCount", 0);
         this.fileUrls = intent.getStringArrayExtra("fileUrls");
         this.ready = intent.getBooleanExtra("ready", false);
+        if (intent.hasExtra("customer"))
+        try {
+            JSONObject customerJson = new JSONObject(intent.getStringExtra("customer"));
+            if (this.mCustomer == null) this.mCustomer = new Customer();
+            this.mCustomer.setFirstname(customerJson.get("firstName").toString());
+            this.mCustomer.setLastname(customerJson.get("lastName").toString());
+            this.mCustomer.setEmail(customerJson.get("email").toString());
+            this.mCustomer.setPhone(customerJson.get("phone").toString());
+            this.mCustomer.setMarried(Boolean.valueOf(customerJson.get("married").toString()));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     public void putPrefsData() {
