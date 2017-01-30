@@ -40,11 +40,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
-import android.widget.CompoundButton;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
@@ -75,6 +74,9 @@ import java.util.Locale;
 import stronglogic.ruviuz.content.Customer;
 import stronglogic.ruviuz.fragments.AddressFragment;
 import stronglogic.ruviuz.fragments.CustomerFragment;
+import stronglogic.ruviuz.fragments.EditFragment;
+import stronglogic.ruviuz.fragments.FileFragment;
+import stronglogic.ruviuz.fragments.ImageEditFragment;
 import stronglogic.ruviuz.fragments.LoginFragment;
 import stronglogic.ruviuz.fragments.MainFragment;
 import stronglogic.ruviuz.fragments.MetricFragment;
@@ -83,28 +85,35 @@ import stronglogic.ruviuz.fragments.WelcomeFragment;
 import stronglogic.ruviuz.util.RuuvFile;
 import stronglogic.ruviuz.util.RuvLocation;
 
-public class MainActivity extends AppCompatActivity implements LoginFragment.LoginFragListener, MainFragment.MainfragListener, WelcomeFragment.WelcomeFragListener, AddressFragment.AddressFragListener, MetricFragment.OnFragmentInteractionListener, SlopeFragment.SlopeFragListener, CustomerFragment.CustomerFragListener, Handler.Callback {
+public class MainActivity extends AppCompatActivity implements LoginFragment.LoginFragListener, MainFragment.MainfragListener, WelcomeFragment.WelcomeFragListener, AddressFragment.AddressFragListener, MetricFragment.OnFragmentInteractionListener, SlopeFragment.SlopeFragListener, FileFragment.FileFragListener, CustomerFragment.CustomerFragListener, EditFragment.EditFragListener, ImageEditFragment.ImageFragListener, Handler.Callback {
 
     private static final String TAG = "RuviuzMAINACTIVITY";
     
     private static final int CAMERA_PERMISSION = 6;
     private static final int RUVIUZ_DATA_PERSIST = 14;
     private static final int METRICFRAG_COMPLETE = 21;
+    private static final int CURATION_MODE = 32;
     private final static int CREATE_QUOTE = 33;
     private final static int SEE_QUOTES = 34;
     private final static int REQUEST_LOGIN = 35;
     private final static int CREATE_ACCOUNT = 36;
+    private final static int FILE_ADD_MODE = 37;
     private final static int SLOPE_FRAG_SUCCESS = 39;
-    private static final int WELCOME_REQUEST = 60;
-    private static final int LOGIN_REQUEST = 61;
-    private static final int CLEAR_REQUEST = 62;
-    private static final int ADDRESS_REQUEST = 63;
-    private static final int CUSTOMER_REQUEST = 64;
-    private static final int METRIC_REQUEST = 65;
-    private static final int CAMERA_REQUEST = 66;
-    private static final int GEOLOCATION_REQUEST = 67;
+    public static final int WELCOME_REQUEST = 60;
+    public static final int LOGIN_REQUEST = 61;
+    public static final int CLEAR_REQUEST = 62;
+    public static final int ADDRESS_REQUEST = 63;
+    public static final int CUSTOMER_REQUEST = 64;
+    public static final int METRIC_REQUEST = 65;
+    public static final int CAMERA_REQUEST = 66;
+    public static final int GEOLOCATION_REQUEST = 67;
+    public static final int RUV_EDIT_MODE = 70;
+    public static final int RUV_IMAGE_EDIT = 71;
+    public static final int RUV_FINISH_EDIT = 72;
+    public static final int RUV_IMGEDIT_DELETE = 73;
+    public static final int RUV_EDIT_OFF = 79;
 
-    private static final String baseUrl = "http://52.43.250.94:5000";
+    public static final String baseUrl = "http://52.43.250.94:5000";
 
     private android.support.v7.widget.Toolbar mToolbar;
 
@@ -113,14 +122,18 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
     private AddressFragment mAddressFrag;
     private MetricFragment metricFrag;
     private SlopeFragment slopeFrag;
+    private FileFragment fileFrag;
     private CustomerFragment mCustomerFrag;
     private WelcomeFragment mWelcomeFrag;
+    private EditFragment editFrag;
+    private ImageEditFragment imgEditFrag;
 
-    private EditText roofLength, roofWidth, roofSlope, currentPrice;
+    private TextView addressTv, nameTv, phoneTv, emailTv, roofLength, roofWidth, roofSlope, currentPrice, materialTv;
     private Switch isFlat, premiumMaterial;
     private ImageView photo1, photo2, photo3;
-    private ImageButton ruuvBtn, clearBtn, photoBtn, calculateBtn;
-    private Button addressBtn, metricBtn, draftBtn, clientBtn;
+    private ImageButton ruuvBtn, calculateBtn;
+    private Button addressBtn, metricBtn, draftBtn, editBtn;
+    private ImageButton clearBtn, photoBtn, clientBtn;
 
     private String authToken;
 
@@ -135,10 +148,21 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
     private int fileCount, currentRid, lastAction;
     private float width, length, slope;
     private BigDecimal price;
-    private String address, postal, city, province;
+    private String material, address, postal, city, region;
     private String[] fileUrls = new String[3];
     private Customer mCustomer;
-    private boolean premium, ready;
+    private boolean premium, ready, editing;
+
+    private Bundle editFragArgs;
+    private int editMode = RUV_EDIT_OFF;
+
+    public void saveEditFragState(Bundle args) {
+        editFragArgs = args;
+    }
+
+    public Bundle getSavedEditFragState() {
+        return editFragArgs;
+    }
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -147,7 +171,6 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
 
     private DrawerLayout mDrawerLayout;
     private NavigationView mDrawerView;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -167,13 +190,9 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
 
         w.setStatusBarColor(ContextCompat.getColor(MainActivity.this, R.color.ruvGreenStatus));
 
-        if (getIntent() != null) {
-            getIntentData(getIntent());
-        }
-
         this.prefs = MainActivity.this.getSharedPreferences("RuviuzApp", Context.MODE_PRIVATE);
-
         getPrefsData();
+
 
         setSupportActionBar(mToolbar);
 
@@ -183,33 +202,33 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
             getSupportActionBar().setElevation(8f);
         }
 
-        if (checkCameraHardware(this)) {
-            photoBtn = (ImageButton) findViewById(R.id.takePhoto);
-            photoBtn.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.CAMERA)
-                            != PackageManager.PERMISSION_GRANTED) {
-                        ActivityCompat.requestPermissions(MainActivity.this,
-                                new String[]{Manifest.permission.CAMERA}, CAMERA_PERMISSION);
-                    } else {
-                        if (checkCameraHardware(MainActivity.this)) {
-                            Intent intent = new Intent(MainActivity.this, CameraActivity.class);
-                            putIntentData(intent);
-                            intent.putExtra("authToken", authToken);
-                            intent.putExtra("callingClass", MainActivity.this.getClass().getSimpleName());
-                            putPrefsData();
-                            setResult(RUVIUZ_DATA_PERSIST);
-                            startActivity(intent);
-                        } else {
-                            Log.d(TAG, "No Camera Hardware on Device");
-                        }
-                    }
-                }
-            });
-        } else {
-            Log.d(TAG, "Camera Not Available");
-        }
+//        if (checkCameraHardware(this)) {
+//            photoBtn = (ImageButton) findViewById(R.id.takePhoto);
+//            photoBtn.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.CAMERA)
+//                            != PackageManager.PERMISSION_GRANTED) {
+//                        ActivityCompat.requestPermissions(MainActivity.this,
+//                                new String[]{Manifest.permission.CAMERA}, CAMERA_PERMISSION);
+//                    } else {
+//                        if (checkCameraHardware(MainActivity.this)) {
+//                            Intent intent = new Intent(MainActivity.this, CameraActivity.class);
+//                            putIntentData(intent);
+//                            intent.putExtra("authToken", authToken);
+//                            intent.putExtra("callingClass", MainActivity.this.getClass().getSimpleName());
+//                            putPrefsData();
+//                            setResult(RUVIUZ_DATA_PERSIST);
+//                            startActivity(intent);
+//                        } else {
+//                            Log.d(TAG, "No Camera Hardware on Device");
+//                        }
+//                    }
+//                }
+//            });
+//        } else {
+//            Log.d(TAG, "Camera Not Available");
+//        }
 
 //        if (mGoogleApi == null) {
 //            mGoogleApi = new GoogleApiClient.Builder(this)
@@ -219,29 +238,47 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
 //                    .build();
 //        }
 
-        roofLength = (EditText) findViewById(R.id.roofLength);
-        roofWidth = (EditText) findViewById(R.id.roofWidth);
-        roofSlope = (EditText) findViewById(R.id.roofSlope);
+        roofLength = (TextView) findViewById(R.id.roofLength);
+        roofWidth = (TextView) findViewById(R.id.roofWidth);
+        roofSlope = (TextView) findViewById(R.id.roofSlope);
 
         //set Picker ranges
         roofLength.setText(String.valueOf(length));
-        if (prefs.contains("length")) {
-            roofLength.setText(String.valueOf(prefs.getFloat("length", 0f)));
-        }
+//        if (prefs.contains("length")) {
+//            roofLength.setText(String.valueOf(prefs.getFloat("length", 0f)));
+//        }
 
         roofWidth.setText(String.valueOf(width));
         roofSlope.setText(String.valueOf(MainActivity.this.slope));
 
-//        isFlat = (Switch) findViewById(R.id.roofFlat);
-        premiumMaterial = (Switch) findViewById(R.id.premiumMaterial);
-        premiumMaterial.setChecked(premium);
+        addressTv = (TextView) findViewById(R.id.addressTv);
+        String addressString = address + "\n" + city + ", " + region + "\n" + postal;
+        addressTv.setText(addressString);
+        nameTv = (TextView) findViewById(R.id.nameTv);
+        emailTv = (TextView) findViewById(R.id.emailTv);
+        phoneTv = (TextView) findViewById(R.id.phoneTv);
 
-        premiumMaterial.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                setPremium(isChecked);
-            }
-        });
+        if (mCustomer != null) {
+            String nameString = mCustomer.getPrefix() + " " + mCustomer.getFirstname() + " " + mCustomer.getLastname();
+            nameTv.setText(nameString);
+            emailTv.setText(mCustomer.getEmail());
+            phoneTv.setText(mCustomer.getPhone());
+        }
+        materialTv = (TextView) findViewById(R.id.materialTv);
+//        premiumMaterial = (Switch) findViewById(R.id.premiumMaterial);
+//        premiumMaterial.setChecked(premium);
+//
+//        premiumMaterial.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+//            @Override
+//            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+//                if (isChecked) {
+//                    premiumMaterial.setTextColor(ContextCompat.getColor(MainActivity.this, R.color.colorPrimaryDark));
+//                } else {
+//                    premiumMaterial.setTextColor(ContextCompat.getColor(MainActivity.this, R.color.ruvMatGreen));
+//                }
+//                setPremium(isChecked);
+//            }
+//        });
 
 
         mHandler = new IncomingHandler(this);
@@ -279,11 +316,17 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
                         mBundle.putString("address", address);
                         mBundle.putString("postal", postal);
                         mBundle.putString("city", city);
-                        mBundle.putString("region", province);
+                        mBundle.putString("region", region);
                         mBundle.putString("price", calculatePrice().toString());
                         mBundle.putFloat("width", Float.parseFloat(String.valueOf(roofWidth.getText())));
                         mBundle.putFloat("length", Float.parseFloat(String.valueOf(roofLength.getText())));
                         mBundle.putFloat("slope", Float.parseFloat(String.valueOf(roofSlope.getText())));
+                        mBundle.putString("firstName", mCustomer.getFirstname());
+                        mBundle.putString("lastName", mCustomer.getLastname());
+                        mBundle.putString("email", mCustomer.getEmail());
+                        mBundle.putString("phone", mCustomer.getPhone());
+                        mBundle.putString("prefix", mCustomer.getPrefix());
+
                         String finalPrice = MainActivity.this.price.toString();
                         MainActivity.this.currentPrice.setText(finalPrice);
                         RuuvThread ruuvThread = new RuuvThread((MainActivity) getParent(), mHandler, baseUrl, authToken, mBundle);
@@ -294,28 +337,39 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
             }
         });
 
-        addressBtn = (Button) findViewById(R.id.addressGetDialog);
-        addressBtn.setOnClickListener(new View.OnClickListener() {
+        editBtn = (Button) findViewById(R.id.editQuote);
+        editBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                addressDialog();
+                MainActivity.this.editing = true;
+                editDialog();
+                hideActivity();
             }
         });
+//        addressBtn = (Button) findViewById(R.id.addressGetDialog);
+//        addressBtn.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                addressDialog();
+//            }
+//        });
+//
+//        if (!address.equals("")) {
+//            addressBtn.setAlpha(1f);
+//        }
+//
+//        metricBtn = (Button) findViewById(R.id.metricfragOpen);
+//
+//        metricBtn.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                getMetric();
+//            }
+//        });
 
-        if (!address.equals("")) {
-            addressBtn.setAlpha(1f);
-        }
-
-        metricBtn = (Button) findViewById(R.id.metricfragOpen);
-
-        metricBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getMetric();
-            }
-        });
-
-        currentPrice = (EditText) findViewById(R.id.currentPrice);
+        currentPrice = (TextView) findViewById(R.id.currentPrice);
+        String mPrice = "$" + calculatePrice().toString();
+        currentPrice.setText(mPrice);
         calculateBtn = (ImageButton) findViewById(R.id.calculateBtn);
         calculateBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -325,31 +379,31 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
             }
         });
 
-        clientBtn = (Button) findViewById(R.id.clientBtn);
-        clientBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                customerDialog();
-            }
-        });
+//        clientBtn = (ImageButton) findViewById(R.id.clientBtn);
+//        clientBtn.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                customerDialog();
+//            }
+//        });
+//
+//
+//        if (mCustomer != null) {
+//            clientBtn.setAlpha(1f);
+//        }
 
-
-        if (mCustomer != null) {
-            clientBtn.setAlpha(1f);
-        }
-
-        clearBtn = (ImageButton) findViewById(R.id.clearBtn);
-        clearBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                clearValues();
-            }
-        });
+//        clearBtn = (ImageButton) findViewById(R.id.clearBtn);
+//        clearBtn.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                clearValues();
+//            }
+//        });
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         mGoogleApi = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
 
-        draftBtn = (Button) findViewById(R.id.quoteStatus);
+//        draftBtn = (Button) findViewById(R.id.quoteStatus);
 
         mDrawerLayout = (DrawerLayout) findViewById(R.id.side_menu);
         mDrawerView = (NavigationView) findViewById(R.id.left_drawer);
@@ -360,22 +414,42 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 Log.d(TAG, item.toString());
                 Intent mIntent = new Intent();
-               switch (item.getTitle().toString()) {
-                         case ("Roof List"):
-                           mIntent.setClass(MainActivity.this, RviewActivity.class);
-                           putIntentData(mIntent);
-                           mIntent.putExtra("authToken", authToken);
-                           mIntent.putExtra("baseUrl", baseUrl);
-                           putPrefsData();
-                           startActivity(mIntent);
-                           break;
-                       case ("Take Photo"):
-                           mIntent.setClass(MainActivity.this, CameraActivity.class);
-                           putIntentData(mIntent);
-                           mIntent.putExtra("authToken", authToken);
-                           mIntent.putExtra("baseUrl", baseUrl);
-                           putPrefsData();
-                           startActivity(mIntent);
+                switch (item.getTitle().toString()) {
+                    case ("Roof List"):
+                        mIntent.setClass(MainActivity.this, IndexViewActivity.class);
+                        putIntentData(mIntent);
+                        mIntent.putExtra("authToken", authToken);
+                        mIntent.putExtra("baseUrl", baseUrl);
+                        putPrefsData();
+                        startActivity(mIntent);
+                        break;
+                    case ("Take Photo"):
+                        Log.d(TAG, "Getting da camera goin");
+                        if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                            Log.d(TAG, "Need camera permission");
+                            ActivityCompat.requestPermissions(MainActivity.this,
+                            new String[]{Manifest.permission.CAMERA}, CAMERA_PERMISSION);
+                        } else {
+                            if (checkCameraHardware(MainActivity.this)) {
+                                Log.d(TAG, "Starting Camera Intent");
+                                Intent intent = new Intent(MainActivity.this, CameraActivity.class);
+                                putIntentData(intent);
+                                intent.putExtra("authToken", authToken);
+                                intent.putExtra("callingClass", MainActivity.this.getClass().getSimpleName());
+                                putPrefsData();
+                                setResult(RUVIUZ_DATA_PERSIST);
+                                startActivity(intent);
+                            } else {
+                                Log.d(TAG, "No Camera Hardware on Device");
+                            }
+                        }
+//
+//                           mIntent.setClass(MainActivity.this, CameraActivity.class);
+//                           putIntentData(mIntent);
+//                           mIntent.putExtra("authToken", authToken);
+//                           mIntent.putExtra("baseUrl", baseUrl);
+//                           putPrefsData();
+//                           startActivity(mIntent);
                            break;
                        case ("Measure"):
                            getMetric();
@@ -418,7 +492,10 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
 //        }
         if (authToken == null) {
             hideActivity();
-            welcomeDialog();
+            customerDialog();
+        }
+        if (getIntent() != null && getIntent().hasExtra("PERSIST")) {
+            getIntentData(getIntent());
         }
     }
 
@@ -468,8 +545,19 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
     public void onResume() {
         super.onResume();
 
+        if (this.prefs == null)
+            this.prefs = MainActivity.this.getSharedPreferences("RuviuzApp", Context.MODE_PRIVATE);
+
         if (getIntent() != null) {
             Intent xIntent = getIntent();
+
+            if (fileUrls != null && (fileUrls.length > 0 || fileCount == 0)) {
+                int realCount = 0;
+                for (int i = fileUrls.length; i > 0; i--) {
+                    realCount = !fileUrls[i-1].equals("") ? realCount + 1 : realCount;
+                }
+                this.fileCount = realCount;
+            }
 
             if (xIntent.hasExtra("uri")) {
                 if (fileCount + 1 == 4) {
@@ -494,7 +582,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
                 if (fileUrls[0] != null && photo1.getDrawable() == null) {
                     Glide.with(MainActivity.this)
                             .load(fileUrls[0])
-                            .override(72, 54)
+                            .override(92, 68)
                             .fitCenter()
                             .diskCacheStrategy(DiskCacheStrategy.RESULT)
                             .into(photo1);
@@ -503,7 +591,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
                     photo2 = (ImageView) findViewById(R.id.ruvPic2);
                     Glide.with(MainActivity.this)
                             .load(fileUrls[1])
-                            .override(72, 54)
+                            .override(92, 68)
                             .fitCenter()
                             .diskCacheStrategy(DiskCacheStrategy.RESULT)
                             .into(photo2);
@@ -512,21 +600,32 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
                     photo3 = (ImageView) findViewById(R.id.ruvPic3);
                     Glide.with(MainActivity.this)
                             .load(fileUrls[2])
-                            .override(72, 54)
+                            .override(92, 68)
                             .fitCenter()
                             .diskCacheStrategy(DiskCacheStrategy.RESULT)
                             .into(photo3);
                 }
             }
+        } else {
+            refreshUi();
         }
-        getPrefCreds();
         draftCheck();
         if (authToken == null) {
             hideActivity();
             dismissAllDialogs();
             welcomeDialog();
+        } else {
+            dismissAllDialogs();
         }
-        //TODO verify draft check is appropriate here
+
+        if ((mainFragment == null || !mainFragment.isAdded()) && (mLoginFrag == null || !mLoginFrag.isAdded()) && (mCustomerFrag == null || !mCustomerFrag.isAdded()) && (metricFrag == null || !metricFrag.isAdded()) && (slopeFrag == null || !slopeFrag.isAdded()) && (mWelcomeFrag == null || !mWelcomeFrag.isAdded())) {
+            revealActivity();
+        }
+
+        if (isEditing()) {
+            hideActivity();
+            editDialog();
+        }
     }
 
 
@@ -543,6 +642,9 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
     public void onDestroy() {
         super.onDestroy();
         putPrefsData();
+        if (getIntent().hasExtra("uri"))
+            getIntent().removeExtra("uri");
+        dismissAllDialogs();
     }
 
     @Override
@@ -596,15 +698,27 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
 
     public void loginDialog() {
 
+        FragmentManager fm = getFragmentManager();
         if (mLoginFrag == null) {
             mLoginFrag = new LoginFragment();
-        }
+            if (!mLoginFrag.isAdded()) {
 
-        if (!mLoginFrag.isAdded()) {
-            FragmentManager fm = getFragmentManager();
+                Bundle args = new Bundle();
+                args.putString("baseUrl", MainActivity.baseUrl);
+                if (getPrefCreds() != null) {
+                    args.putString("email", prefs.getString("email", "Email"));
+                    args.putString("password", prefs.getString("password", "Password"));
+                }
+                mLoginFrag.setArguments(args);
+                mLoginFrag.show(fm, "Please Login");
+            }
 
+        } else {
+            fm.beginTransaction().remove(mLoginFrag).commit();
+            mLoginFrag = null;
+            mLoginFrag = new LoginFragment();
             Bundle args = new Bundle();
-            args.putString("baseUrl", baseUrl);
+            args.putString("baseUrl", MainActivity.baseUrl);
             if (getPrefCreds() != null) {
                 args.putString("email", prefs.getString("email", "Email"));
                 args.putString("password", prefs.getString("password", "Password"));
@@ -615,6 +729,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
     }
 
     public void mainDialog() {
+        dismissAllDialogs();
         FragmentManager fm = getFragmentManager();
         if (mainFragment == null) {
             mainFragment = new MainFragment();
@@ -636,6 +751,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
 
 
     public void addressDialog() {
+        dismissAllDialogs();
         FragmentManager fm = getFragmentManager();
         if (mAddressFrag == null) {
             mAddressFrag = new AddressFragment();
@@ -652,6 +768,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
     }
 
     public void customerDialog() {
+        dismissAllDialogs();
         FragmentManager fm = getFragmentManager();
 
         Bundle args = new Bundle();
@@ -660,6 +777,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
             args.putString("lastName", mCustomer.getLastname());
             args.putString("email", mCustomer.getEmail());
             args.putString("phone", mCustomer.getPhone());
+            args.putString("prefix", mCustomer.getPrefix());
         }
 
         if (mCustomerFrag == null) {
@@ -680,11 +798,12 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
 
     public void getMetric() {
         updateValues();
+        dismissAllDialogs();
         Bundle mBundle = new Bundle();
         mBundle.putFloat("length", length);
         mBundle.putFloat("width", width);
         mBundle.putFloat("slope", slope);
-
+        
         FragmentManager fm = getFragmentManager();
         if (metricFrag == null) {
             metricFrag = new MetricFragment();
@@ -701,6 +820,52 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         }
     }
 
+
+    public void editDialog() {
+        updateValues();
+        dismissAllDialogs();
+        Bundle mBundle = new Bundle();
+        mBundle.putInt("editMode", editMode);
+        mBundle.putFloat("length", length);
+        mBundle.putFloat("width", width);
+        mBundle.putFloat("slope", slope);
+        mBundle.putString("material", material);
+        mBundle.putString("address", address);
+        mBundle.putString("city", city);
+        mBundle.putString("region", region);
+        mBundle.putString("postal", postal);
+        mBundle.putString("price", String.valueOf(price));
+        mBundle.putInt("fileCount", fileCount);
+        if (fileUrls != null && fileUrls.length > 0) {
+//            ArrayList<String> editFiles = new ArrayList<String>();
+//            for (String fileUrl : fileUrls) {
+//                editFiles.add(fileUrl);
+//            }
+        mBundle.putStringArray("fileUrls", fileUrls);
+        }
+        if (mCustomer != null) {
+            mBundle.putString("firstName", mCustomer.getFirstname());
+            mBundle.putString("lastName", mCustomer.getLastname());
+            mBundle.putString("email", mCustomer.getEmail());
+            mBundle.putString("phone", mCustomer.getPhone());
+            mBundle.putString("prefix", mCustomer.getPrefix());
+        }
+        saveEditFragState(mBundle);
+        FragmentManager fm = getFragmentManager();
+        if (editFrag == null) {
+            editFrag= new EditFragment();
+            editFrag.setArguments(mBundle);
+            if (!editFrag.isAdded()) {
+                editFrag.show(fm, "Please Enter Metrics");
+            }
+        } else {
+            fm.beginTransaction().remove(editFrag).commit();
+            editFrag= null;
+            editFrag = new EditFragment();
+            editFrag.setArguments(mBundle);
+            editFrag.show(fm, "Please Enter Metrics");
+        }
+    }
 
     public void slopeDialog() {
         updateValues();
@@ -723,6 +888,44 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         }
     }
 
+    public void fileDialog() {
+        FragmentManager fm = getFragmentManager();
+        Bundle mBundle = new Bundle();
+        mBundle.putStringArray("fileUrls", fileUrls);
+        mBundle.putInt("fileCount", fileCount);
+
+        if (fileFrag == null) {
+            fileFrag = new FileFragment();
+            fileFrag.setArguments(mBundle);
+            if (!fileFrag.isAdded()) {
+                fileFrag.show(fm, "Add Images");
+            }
+        } else {
+            fm.beginTransaction().remove(fileFrag).commit();
+            fileFrag = null;
+            fileFrag = new FileFragment();
+            fileFrag.setArguments(mBundle);
+            fileFrag.show(fm, "Add Images");
+        }
+    }
+
+    public void editImgDialog(Bundle mBundle) {
+        FragmentManager fm = getFragmentManager();
+        if (imgEditFrag == null) {
+            imgEditFrag = new ImageEditFragment();
+            imgEditFrag.setArguments(mBundle);
+            if (!imgEditFrag.isAdded()) {
+                imgEditFrag.show(fm, "Edit Image");
+            }
+        } else {
+            fm.beginTransaction().remove(imgEditFrag).commit();
+            imgEditFrag = null;
+            imgEditFrag = new ImageEditFragment();
+            imgEditFrag.setArguments(mBundle);
+            imgEditFrag.show(fm, "Please Enter Metrics");
+        }
+    }
+
 
     @Override
     public void loginFragInteraction(String output) {
@@ -739,13 +942,17 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
 
 
     @Override
-    public void addressFragInteraction(String address, String postal, String city, String province) {
+    public void addressFragInteraction(String address, String postal, String city, String region) {
         this.address = address;
         this.postal = postal;
         this.city = city;
-        this.province = province;
+        this.region = region;
+        String addressString = address + "\n" + city + ", " + region + "\n" + postal;
+
+        this.addressTv.setText(addressString);
+
         Toast.makeText(this, this.address, Toast.LENGTH_SHORT).show();
-        addressBtn.setAlpha(1f);
+//        addressBtn.setAlpha(1f);
 
         if (mAddressFrag != null) {
             mAddressFrag.dismiss();
@@ -753,6 +960,293 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         }
         if (!ready)
         getMetric();
+    }
+
+
+    @Override
+    public void metricfragInteraction(Float[] values, String data) {
+        Log.d(TAG, data);
+        if (data.equals("METRIC_SUCCESS")) {
+            Log.d(TAG, "METRICFRAG_COMPLETE");
+            MainActivity.this.length = values[0];
+            roofLength.setText(String.valueOf(values[0]));
+//            roofLength.jumpDrawablesToCurrentState();
+            MainActivity.this.width = values[1];
+            roofWidth.setText(String.valueOf(values[1]));
+//            roofWidth.jumpDrawablesToCurrentState();
+            MainActivity.this.slope = values[2];
+            roofSlope.setText(String.valueOf(MainActivity.this.slope));
+//            roofSlope.jumpDrawablesToCurrentState();
+
+            if (metricFrag != null && metricFrag.isAdded()) {
+                metricFrag.dismiss();
+            }
+
+            if (mainFragment != null && mainFragment.isAdded()) {
+                mainFragment.dismiss();
+            }
+
+            putPrefsData();
+
+            slopeDialog();
+
+        }
+
+        if (data.equals("BACK_TO_ADDRESS")) {
+
+            addressDialog();
+
+            if (metricFrag != null && metricFrag.isAdded()) {
+                metricFrag.dismiss();
+            }
+
+            if (mainFragment != null && mainFragment.isAdded()) {
+                mainFragment.dismiss();
+            }
+
+        }
+    }
+
+    @Override
+    public void customerfragInteraction(String[] name, String email, String phone,boolean married, String prefix) {
+        Log.d(TAG, "CUSTOMERFRAGINTERACTION");
+        if (mCustomer == null) mCustomer = new Customer();
+
+        mCustomer.setFirstname(name[0]);
+        mCustomer.setLastname(name[1]);
+        mCustomer.setEmail(email);
+        mCustomer.setPhone(phone);
+        mCustomer.setMarried(married);
+        mCustomer.setPrefix(prefix);
+
+        String nameString = prefix + name[0] + " " + name[1];
+        MainActivity.this.nameTv.setText(nameString);
+        MainActivity.this.emailTv.setText(email);
+        MainActivity.this.phoneTv.setText(phone);
+
+        if (mCustomerFrag != null && mCustomerFrag.isAdded()) {
+            mCustomerFrag.dismiss();
+        }
+        addressDialog();
+    }
+
+    @Override
+    public void welcomeInteraction(int action) {
+
+        Log.d(TAG, "welcomeInteraction");
+        if (mWelcomeFrag != null && mWelcomeFrag.isAdded()) {
+            mWelcomeFrag.dismiss();
+        }
+
+        if (action == REQUEST_LOGIN) {
+            if (mWelcomeFrag != null && mWelcomeFrag.isAdded()) {
+                mWelcomeFrag.dismiss();
+            }
+
+            loginDialog();
+        }
+
+        if (action == CREATE_ACCOUNT) {
+            //TODO CREATE ACCOUNT DIALOG
+        }
+    }
+
+    @Override
+    public void mainfragInteraction(int action) {
+        MainActivity.this.lastAction = action;
+
+        if (action == CREATE_QUOTE) {
+            hideActivity();
+            MainActivity.this.ready = false;
+            if (authToken == null) {
+                Snackbar.make(MainActivity.this.findViewById(R.id.MainParentView), "You Must First Login", Snackbar.LENGTH_SHORT).show();
+                loginDialog();
+                mainFragment.dismiss();
+            } else {
+                customerDialog();
+                mainFragment.dismiss();
+            }
+        }
+        if (action == SEE_QUOTES) {
+            revealActivity();
+            if (authToken == null) {
+                Snackbar.make(MainActivity.this.findViewById(R.id.MainParentView), "You Must First Login", Snackbar.LENGTH_SHORT).show();
+                loginDialog();
+                mainFragment.dismiss();
+            } else {
+                Intent mIntent = new Intent(MainActivity.this, RviewActivity.class);
+                putIntentData(mIntent);
+                mIntent.putExtra("authToken", authToken);
+                mIntent.putExtra("baseUrl", MainActivity.baseUrl);
+                putPrefsData();
+                startActivity(mIntent);
+                mainFragment.dismiss();
+            }
+        }
+
+        if (MainActivity.this.lastAction == CREATE_QUOTE) {
+            if (mainFragment != null && mainFragment.isAdded()) {
+                mainFragment.dismiss();
+            }
+        }
+    }
+
+    @Override
+    public void slopeFragInteraction(float value, int result) {
+        if (result == SLOPE_FRAG_SUCCESS) {
+            MainActivity.this.slope = value;
+            roofSlope.setText(String.valueOf(MainActivity.this.slope));
+
+            draftCheck();
+
+            if (slopeFrag != null && slopeFrag.isAdded()) {
+                slopeFrag.dismiss();
+            }
+            fileDialog();
+        } else {
+            slopeFrag.dismiss();
+            getMetric();
+        }
+    }
+
+    @Override
+    public void fileFragInteraction(String[] newFileUrls, int newFileCount, int result) {
+        if (result == 0) {
+            MainActivity.this.fileUrls = newFileUrls;
+            MainActivity.this.fileCount = newFileCount;
+            refreshUi();
+            revealActivity();
+
+            if (fileFrag != null && fileFrag.isAdded()) {
+                fileFrag.dismiss();
+            }
+        } else {
+            fileFrag.dismiss();
+            revealActivity();
+        }
+    }
+
+    @Override
+    public void editFragInteraction(Bundle bundle, int request) {
+        Log.d(TAG, "Edit Frag Interaction received");
+        if (request == RUV_IMAGE_EDIT) {
+            editImgDialog(bundle);
+        } else if (request == RUV_FINISH_EDIT) {
+            this.length = bundle.getFloat("length");
+            this.width = bundle.getFloat("width");
+            this.slope = bundle.getFloat("slope");
+            this.material = bundle.getString("material");
+            this.address = bundle.getString("address");
+            this.city = bundle.getString("city");
+            this.region = bundle.getString("region");
+            this.postal = bundle.getString("postal");
+
+            if (this.mCustomer == null) this.mCustomer = new Customer();
+
+            this.mCustomer.setFirstname(bundle.getString("firstName"));
+            this.mCustomer.setLastname(bundle.getString("lastName"));
+            this.mCustomer.setEmail(bundle.getString("email"));
+            this.mCustomer.setPhone(bundle.getString("phone"));
+            this.mCustomer.setPrefix(bundle.getString("prefix"));
+
+            String nameString = mCustomer.getPrefix() + " " + mCustomer.getFirstname() + " " + mCustomer.getLastname();
+            MainActivity.this.nameTv.setText(nameString);
+            MainActivity.this.emailTv.setText(mCustomer.getEmail());
+            MainActivity.this.phoneTv.setText(mCustomer.getPhone());
+
+            roofLength.setText(String.valueOf(length));
+            roofWidth.setText(String.valueOf(width));
+            roofSlope.setText(String.valueOf(slope));
+
+            this.materialTv.setText(this.material);
+
+            String addressString = address + "\n" + city + ", " + region + "\n" + postal;
+            addressTv.setText(addressString);
+            String priceString = bundle.getString("price").substring(1).replaceAll(",", "");
+            this.price = new BigDecimal(priceString);
+            this.fileCount = bundle.getInt("fileCount", 0);
+            this.editMode = bundle.getInt("editMode", RUV_EDIT_OFF);
+//        if (bundle.getStringArrayList("fileUrls") != null) {
+//            ArrayList<String> fileUrls = bundle.getStringArrayList("fileUrls");
+//            if (this.fileUrls == null) this.fileUrls = new String[3];
+//
+//            for (int i = fileUrls.size() - 1; i >= 0; i--) {
+//                this.fileUrls[i] = fileUrls.get(i);
+//            }
+//        }
+            if (bundle.getStringArray("fileUrls") != null) {
+                if (this.fileUrls == null) {
+                    this.fileUrls = new String[3];
+                    this.fileUrls = bundle.getStringArray("fileUrls");
+                } else {
+                    String[] recFileUrls = bundle.getStringArray("fileUrls");
+                    if (this.fileUrls[0] != null && recFileUrls[0] != null) {
+                        this.fileUrls[0] = recFileUrls[0];
+                    }
+                    if (this.fileUrls[1] != null && recFileUrls[1] != null) {
+                        this.fileUrls[1] = recFileUrls[1];
+                    }
+                    if (this.fileUrls[2] != null && recFileUrls[2] != null) {
+                        this.fileUrls[2] = recFileUrls[2];
+                    }
+                }
+            }
+            if (fileCount > 0) {
+                if (fileUrls != null) {
+                    if (fileUrls[0] != null && !fileUrls[0].equals("") && photo1.getDrawable() == null) {
+                        Glide.with(MainActivity.this)
+                                .load(fileUrls[0])
+                                .override(92, 68)
+                                .fitCenter()
+                                .diskCacheStrategy(DiskCacheStrategy.RESULT)
+                                .into(photo1);
+                    }
+                    if (fileUrls[1] != null && !fileUrls[1].equals("") && photo2.getDrawable() == null) {
+                        photo2 = (ImageView) findViewById(R.id.ruvPic2);
+                        Glide.with(MainActivity.this)
+                                .load(fileUrls[1])
+                                .override(92, 68)
+                                .fitCenter()
+                                .diskCacheStrategy(DiskCacheStrategy.RESULT)
+                                .into(photo2);
+                    }
+                    if (fileUrls[2] != null && !fileUrls[2].equals("") && photo3.getDrawable() == null) {
+                        photo3 = (ImageView) findViewById(R.id.ruvPic3);
+                        Glide.with(MainActivity.this)
+                                .load(fileUrls[2])
+                                .override(92, 68)
+                                .fitCenter()
+                                .diskCacheStrategy(DiskCacheStrategy.RESULT)
+                                .into(photo3);
+                    }
+                }
+            }
+
+            String finalPrice = "$" + MainActivity.this.price.toString();
+            MainActivity.this.currentPrice.setText(finalPrice);
+
+            if (editFrag != null) {
+                editFrag.dismiss();
+                getFragmentManager().beginTransaction().remove(editFrag).commit();
+            }
+            putPrefsData();
+            refreshUi();
+            revealActivity();
+            this.lastAction = CURATION_MODE;
+        }
+    }
+
+    @Override
+    public void imageFragInteraction(Bundle bundle, int request) {
+        if (request == RUV_IMGEDIT_DELETE) {
+            if (bundle.getStringArray("fileUrls") != null) {
+                this.fileUrls = bundle.getStringArray("fileUrls");
+            }
+            this.fileCount = bundle.getInt("fileCount");
+            this.editMode = bundle.getInt("editMode");
+            refreshUi();
+            editDialog();
+        }
     }
 
     @Override
@@ -837,7 +1331,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
     @Override
     public void onStop() {
         super.onStop();
-
+        putPrefsData();
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         mGoogleApi.disconnect();
@@ -845,6 +1339,9 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         mGoogleApi.disconnect();
     }
 
+    public boolean isEditing() {
+        return this.editing;
+    }
 
     public String[] getPrefCreds()  {
         String[] creds = new String[2];
@@ -860,13 +1357,16 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         prefEdit.putString("address", address);
         prefEdit.putString("postal", postal);
         prefEdit.putString("city", city);
-        prefEdit.putString("region", province);
+        prefEdit.putString("region", region);
         prefEdit.putString("price", String.valueOf(price));
         prefEdit.putFloat("width", width);
         prefEdit.putFloat("length", length);
         prefEdit.putFloat("slope", slope);
         prefEdit.putBoolean("premium", premium);
         prefEdit.putInt("currentRid", currentRid);
+        prefEdit.putString("fileUrl1", fileUrls[0]);
+        prefEdit.putString("fileUrl2", fileUrls[1]);
+        prefEdit.putString("fileUrl3", fileUrls[2]);
         if (mCustomer != null) {
             try {
                 JSONObject customerJson = new JSONObject();
@@ -875,6 +1375,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
                 customerJson.put("email", mCustomer.getEmail());
                 customerJson.put("phone", mCustomer.getPhone());
                 customerJson.put("married", mCustomer.getMarried());
+                customerJson.put("prefix", mCustomer.getPrefix());
                 prefEdit.putString("customer", customerJson.toString());
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -888,12 +1389,21 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         SharedPreferences mPrefs = MainActivity.this.getSharedPreferences("RuviuzApp", Context.MODE_PRIVATE);
         this.address = mPrefs.getString("address", "");
         this.postal = mPrefs.getString("postal", "");
+        this.city = mPrefs.getString("city","");
+        this.region = mPrefs.getString("region", "");
         this.price = new BigDecimal(mPrefs.getString("price", "0"));
         this.width = mPrefs.getFloat("width", 0f);
         this.length = mPrefs.getFloat("length", 0f);
         this.slope = mPrefs.getFloat("slope", 0f);
         this.premium = mPrefs.getBoolean("premium", false);
         this.currentRid = mPrefs.getInt("currentRid", 0);
+
+        if (this.fileUrls == null) {
+            this.fileUrls = new String[3];
+        }
+        fileUrls[0] = mPrefs.getString("fileUrl1", "");
+        fileUrls[1] = mPrefs.getString("fileUrl2", "");
+        fileUrls[2] = mPrefs.getString("fileUrl3", "");
         try {
             JSONObject customerJson = new JSONObject(mPrefs.getString("customer", ""));
             if (this.mCustomer == null) this.mCustomer = new Customer();
@@ -902,6 +1412,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
             this.mCustomer.setEmail(customerJson.get("email").toString());
             this.mCustomer.setPhone(customerJson.get("phone").toString());
             this.mCustomer.setMarried(Boolean.valueOf(customerJson.get("married").toString()));
+            this.mCustomer.setPrefix(customerJson.get("prefix").toString());
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -917,7 +1428,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         this.address = "";
         this.postal = "";
         this.city = "";
-        this.province = "";
+        this.region = "";
         this.price = new BigDecimal(0);
         this.width = 0f;
         this.length = 0f;
@@ -929,18 +1440,15 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
 
         putPrefsData();
 
-        premiumMaterial.setChecked(false);
+//        premiumMaterial.setChecked(false);
         roofLength.setText("0");
         roofWidth.setText("0");
         roofSlope.setText("0");
         currentPrice.setText(R.string.zero);
-        photo1.setImageDrawable(null);
-        photo2.setImageDrawable(null);
-        photo3.setImageDrawable(null);
-        addressBtn.setAlpha(0.2f);
-        clientBtn.setAlpha(0.2f);
-        draftBtn.setAlpha(0.2f);
-        draftBtn.setText("Draft");
+        Glide.clear(photo1); Glide.clear(photo2); Glide.clear(photo3);
+//          addressBtn.setAlpha(0.2f);
+//        draftBtn.setAlpha(0.2f);
+//        draftBtn.setText("Draft");
 
         if (getIntent().hasExtra("uri"))
             getIntent().removeExtra("uri");
@@ -970,14 +1478,15 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
                 break;
             case R.id.roofView:
                 Intent rviewIntent = new Intent(this, RviewActivity.class);
-                rviewIntent.putExtra("authToken", authToken);
-                rviewIntent.putExtra("baseUrl", baseUrl);
+                putIntentData(rviewIntent);
+                rviewIntent.putExtra("baseUrl", MainActivity.baseUrl);
                 putPrefsData();
                 setResult(RUVIUZ_DATA_PERSIST, rviewIntent);
                 this.startActivityForResult(rviewIntent, RUVIUZ_DATA_PERSIST);
                 break;
             case R.id.loginAction:
                 Log.d(TAG, "Login action!!");
+                putPrefsData();
                 loginDialog();
                 break;
             case R.id.geoLocate:
@@ -986,6 +1495,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
                 break;
             case R.id.goHome:
                 Log.d(TAG, "Going HOME");
+                putPrefsData();
                 dismissAllDialogs();
                 hideActivity();
                 welcomeDialog();
@@ -1027,14 +1537,14 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
                         } else if (address.getAddressLine(0) != null && address.getAdminArea() == null) {
                             String country = "COUNTRY::" + address.getAddressLine(0);
                             MainActivity.this.city = "NoLocality";
-                            MainActivity.this.province = country;
+                            MainActivity.this.region = country;
                         } else {
                             Snackbar.make(findViewById(R.id.MainParentView), "Unable to get GeoLocation", Snackbar.LENGTH_SHORT).show();
                         }
-                        if (MainActivity.this.city == null)
+//                        if (MainActivity.this.city == null || MainActivity.this.city.trim().equals(""))
                         MainActivity.this.city = locality == null ? addressLine1 : locality;
-                        if (MainActivity.this.province == null)
-                        MainActivity.this.province = address.getAdminArea() == null ? "NoRegion" : RuvLocation.provinceMap.get(address.getAdminArea());
+//                        if (MainActivity.this.region == null || MainActivity.this.region.trim().equals(""))
+                        MainActivity.this.region = address.getAdminArea() == null ? "NoRegion" : RuvLocation.provinceMap.get(address.getAdminArea());
                     }
                     MainActivity.this.putPrefsData();
                 } catch (IOException e) {
@@ -1045,6 +1555,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
 
         if (rLocation.init()) {
             rLocation.getLocation();
+            return true;
         }
 
         return false;
@@ -1054,7 +1565,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
     public String[] getAddress() {
         String[] mAddress = new String[2];
         mAddress[0] = city;
-        mAddress[1] = province;
+        mAddress[1] = region;
 
         return mAddress;
     }
@@ -1063,145 +1574,6 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         return this.ready;
     }
 
-    @Override
-    public void metricfragInteraction(Float[] values, String data) {
-        Log.d(TAG, data);
-        if (data.equals("METRIC_SUCCESS")) {
-            Log.d(TAG, "METRICFRAG_COMPLETE");
-            MainActivity.this.length = values[0];
-            roofLength.setText(String.valueOf(values[0]));
-//            roofLength.jumpDrawablesToCurrentState();
-            MainActivity.this.width = values[1];
-            roofWidth.setText(String.valueOf(values[1]));
-//            roofWidth.jumpDrawablesToCurrentState();
-            MainActivity.this.slope = values[2];
-            roofSlope.setText(String.valueOf(MainActivity.this.slope));
-//            roofSlope.jumpDrawablesToCurrentState();
-
-            if (metricFrag != null && metricFrag.isAdded()) {
-                metricFrag.dismiss();
-            }
-
-            if (mainFragment != null && mainFragment.isAdded()) {
-                mainFragment.dismiss();
-            }
-
-            putPrefsData();
-            
-            slopeDialog();
-
-        }
-
-        if (data.equals("BACK_TO_ADDRESS")) {
-
-            addressDialog();
-
-            if (metricFrag != null && metricFrag.isAdded()) {
-                metricFrag.dismiss();
-            }
-
-            if (mainFragment != null && mainFragment.isAdded()) {
-                mainFragment.dismiss();
-            }
-
-        }
-    }
-
-    @Override
-    public void customerfragInteraction(String[] name, String email, String phone,boolean married) {
-        Log.d(TAG, "CUSTOMERFRAGINTERACTION");
-        if (mCustomer == null) mCustomer = new Customer();
-
-        mCustomer.setFirstname(name[0]);
-        mCustomer.setLastname(name[1]);
-        mCustomer.setEmail(email);
-        mCustomer.setPhone(phone);
-        mCustomer.setMarried(married);
-        clientBtn.setAlpha(1f);
-        if (mCustomerFrag != null && mCustomerFrag.isAdded()) {
-            mCustomerFrag.dismiss();
-        }
-        revealActivity();
-    }
-
-    @Override
-    public void welcomeInteraction(int action) {
-
-        Log.d(TAG, "welcomeInteraction");
-        if (mWelcomeFrag != null && mWelcomeFrag.isAdded()) {
-            mWelcomeFrag.dismiss();
-        }
-
-        if (action == REQUEST_LOGIN) {
-            if (mWelcomeFrag != null && mWelcomeFrag.isAdded()) {
-                mWelcomeFrag.dismiss();
-            }
-
-            loginDialog();
-        }
-
-        if (action == CREATE_ACCOUNT) {
-            //TODO CREATE ACCOUNT DIALOG
-        }
-    }
-
-    @Override
-    public void mainfragInteraction(int action) {
-        MainActivity.this.lastAction = action;
-
-        if (action == CREATE_QUOTE) {
-            hideActivity();
-            MainActivity.this.ready = false;
-            if (authToken == null) {
-                Snackbar.make(MainActivity.this.findViewById(R.id.MainParentView), "You Must First Login", Snackbar.LENGTH_SHORT).show();
-                loginDialog();
-                mainFragment.dismiss();
-            } else {
-                addressDialog();
-                mainFragment.dismiss();
-            }
-        }
-        if (action == SEE_QUOTES) {
-            revealActivity();
-            if (authToken == null) {
-                Snackbar.make(MainActivity.this.findViewById(R.id.MainParentView), "You Must First Login", Snackbar.LENGTH_SHORT).show();
-                loginDialog();
-                mainFragment.dismiss();
-            } else {
-                Intent mIntent = new Intent(MainActivity.this, RviewActivity.class);
-                putIntentData(mIntent);
-                mIntent.putExtra("authToken", authToken);
-                mIntent.putExtra("baseUrl", baseUrl);
-                putPrefsData();
-                startActivity(mIntent);
-                mainFragment.dismiss();
-            }
-        }
-
-        if (MainActivity.this.lastAction == CREATE_QUOTE) {
-            if (mainFragment != null && mainFragment.isAdded()) {
-                mainFragment.dismiss();
-            }
-        }
-    }
-
-    @Override
-    public void slopeFragInteraction(float value, int result) {
-        if (result == SLOPE_FRAG_SUCCESS) {
-            MainActivity.this.slope = value;
-            revealActivity();
-            roofSlope.setText(String.valueOf(MainActivity.this.slope));
-
-            draftCheck();
-
-            if (slopeFrag != null && slopeFrag.isAdded()) {
-                slopeFrag.dismiss();
-            }
-
-        } else {
-            slopeFrag.dismiss();
-        }
-    }
 
     static class IncomingHandler extends Handler {
         private final WeakReference<MainActivity> mActivity;
@@ -1224,14 +1596,14 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         if ( MainActivity.this.address != null &&
              MainActivity.this.postal != null &&
              MainActivity.this.city  != null &&
-             MainActivity.this.province != null  &&
+             MainActivity.this.region != null  &&
              width > 0 && slope > 0 && length > 0 &&
              !MainActivity.this.address.equals("") &&
                 !MainActivity.this.postal.equals("") &&
                 !MainActivity.this.city.equals("") &&
-                !MainActivity.this.province.equals("")) {
-            draftBtn.setText(R.string.ready);
-            draftBtn.setAlpha(1f);
+                !MainActivity.this.region.equals("")) {
+//            draftBtn.setText(R.string.ready);
+//            draftBtn.setAlpha(1f);
             MainActivity.this.ready = true;
         }
     }
@@ -1244,7 +1616,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
      * @param color
      *         the color to tint with
      */
-    private static void updateMenuWithIcon(@NonNull final MenuItem item, final int color) {
+    public static void updateMenuWithIcon(@NonNull final MenuItem item, final int color) {
         SpannableStringBuilder builder = new SpannableStringBuilder()
                 .append("*") // the * will be replaced with the icon via ImageSpan
 //                .append("    ") // This extra space acts as padding. Adjust as you wish
@@ -1266,7 +1638,6 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
     }
     
     public void hideActivity() {
-        Log.d(TAG, "COLOR: " + String.valueOf(MainActivity.this.getWindow().getDecorView().getRootView().getSolidColor()));
         if (MainActivity.this.findViewById(R.id.MainParentView) != null) {
             MainActivity.this.getWindow().getDecorView().getRootView().setBackgroundColor(Color.BLACK);
             MainActivity.this.findViewById(R.id.MainParentView).setVisibility(View.INVISIBLE);
@@ -1280,18 +1651,16 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         roofSlope.setVisibility(View.INVISIBLE);
         if (currentPrice != null)
         currentPrice.setVisibility(View.INVISIBLE);
-        if (addressBtn != null)
-        addressBtn.setVisibility(View.INVISIBLE);
-        if (metricBtn != null)
-        metricBtn.setVisibility(View.INVISIBLE);
-        if (draftBtn != null)
-        draftBtn.setVisibility(View.INVISIBLE);
+//        if (addressBtn != null)
+//        addressBtn.setVisibility(View.INVISIBLE);
+//        if (metricBtn != null)
+//        metricBtn.setVisibility(View.INVISIBLE);
+//        if (draftBtn != null)
+//        draftBtn.setVisibility(View.INVISIBLE);
         if (ruuvBtn != null)
         ruuvBtn.setVisibility(View.INVISIBLE);
-        if (clearBtn != null)
-        clearBtn.setVisibility(View.INVISIBLE);
-        if (photoBtn != null)
-        photoBtn.setVisibility(View.INVISIBLE);
+        if (editBtn != null)
+        editBtn.setVisibility(View.INVISIBLE);
         if (calculateBtn != null)
         calculateBtn.setVisibility(View.INVISIBLE);
         if (roofLength != null)
@@ -1300,12 +1669,12 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
             roofWidth.setVisibility(View.INVISIBLE);
         if (roofSlope != null)
             roofSlope.setVisibility(View.INVISIBLE);
-        if (premiumMaterial != null)
-            premiumMaterial.setVisibility(View.INVISIBLE);
+        if (materialTv != null)
+            materialTv.setVisibility(View.INVISIBLE);
     }
 
     
-    private void revealActivity() {
+    public void revealActivity() {
         MainActivity.this.findViewById(R.id.MainParentView).setVisibility(View.VISIBLE);
         MainActivity.this.findViewById(R.id.side_menu).setVisibility(View.VISIBLE);
         roofLength.setVisibility(View.VISIBLE);
@@ -1314,18 +1683,16 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         currentPrice.setVisibility(View.VISIBLE);
         if (currentPrice != null)
             currentPrice.setVisibility(View.VISIBLE);
-        if (addressBtn != null)
-            addressBtn.setVisibility(View.VISIBLE);
-        if (metricBtn != null)
-            metricBtn.setVisibility(View.VISIBLE);
-        if (draftBtn != null)
-            draftBtn.setVisibility(View.VISIBLE);
+//        if (addressBtn != null)
+//            addressBtn.setVisibility(View.VISIBLE);
+//        if (metricBtn != null)
+//            metricBtn.setVisibility(View.VISIBLE);
+//        if (draftBtn != null)
+//            draftBtn.setVisibility(View.VISIBLE);
         if (ruuvBtn != null)
             ruuvBtn.setVisibility(View.VISIBLE);
-        if (clearBtn != null)
-            clearBtn.setVisibility(View.VISIBLE);
-        if (photoBtn != null)
-            photoBtn.setVisibility(View.VISIBLE);
+        if (editBtn != null)
+            editBtn.setVisibility(View.VISIBLE);
         if (calculateBtn != null)
             calculateBtn.setVisibility(View.VISIBLE);
         if (roofLength != null)
@@ -1334,8 +1701,8 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
             roofWidth.setVisibility(View.VISIBLE);
         if (roofSlope != null)
             roofSlope.setVisibility(View.VISIBLE);
-        if (premiumMaterial != null)
-            premiumMaterial.setVisibility(View.VISIBLE);
+        if (materialTv != null)
+            materialTv.setVisibility(View.VISIBLE);
     }
 
     public void putIntentData(Intent intent) {
@@ -1347,11 +1714,13 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         intent.putExtra("address", this.address);
         intent.putExtra("postal", this.postal);
         intent.putExtra("city", this.city);
-        intent.putExtra("region", this.province);
+        intent.putExtra("region", this.region);
         intent.putExtra("premium", this.premium);
         intent.putExtra("currentRid", this.currentRid);
         intent.putExtra("fileCount", this.fileCount);
         intent.putExtra("fileUrls", this.fileUrls);
+        intent.putExtra("baseUrl", MainActivity.baseUrl);
+        intent.putExtra("editing", MainActivity.this.isEditing());
         this.ready = intent.getBooleanExtra("ready", false);
         if (mCustomer != null) {
             try {
@@ -1360,19 +1729,17 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
                 customerJson.put("lastName", mCustomer.getLastname());
                 customerJson.put("email", mCustomer.getEmail());
                 customerJson.put("phone", mCustomer.getPhone());
+                customerJson.put("prefix", mCustomer.getPrefix());
                 customerJson.put("married", mCustomer.getMarried());
                 intent.putExtra("customer", customerJson.toString());
             } catch (JSONException e) {
                 e.printStackTrace();
             }
         }
-
     }
     
     public void getIntentData(Intent intent) {
-        if (!intent.hasExtra("REQUEST")) {
-            handleRequest(intent.getIntExtra("REQUEST", 0));
-        }
+        Bundle extras = intent.getExtras();
         this.ready = intent.getBooleanExtra("ready", false);
         this.authToken = intent.getStringExtra("authToken");
         this.slope = intent.getFloatExtra("slope", 0);
@@ -1381,11 +1748,12 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         this.address = intent.getStringExtra("address");
         this.postal = intent.getStringExtra("postal");
         this.city= intent.getStringExtra("city");
-        this.province= intent.getStringExtra("region");
+        this.region= intent.getStringExtra("region");
         this.premium = intent.getBooleanExtra("premium", false);
         this.currentRid = intent.getIntExtra("currentRid", -1);
         this.fileCount = intent.getIntExtra("fileCount", 0);
         this.fileUrls = intent.getStringArrayExtra("fileUrls");
+        this.editing = intent.getBooleanExtra("editing", false);
         if (intent.hasExtra("customer"))
             try {
                 JSONObject customerJson = new JSONObject(intent.getStringExtra("customer"));
@@ -1394,10 +1762,14 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
                 this.mCustomer.setLastname(customerJson.get("lastName").toString());
                 this.mCustomer.setEmail(customerJson.get("email").toString());
                 this.mCustomer.setPhone(customerJson.get("phone").toString());
+                this.mCustomer.setPrefix(customerJson.get("prefix").toString());
                 this.mCustomer.setMarried(Boolean.valueOf(customerJson.get("married").toString()));
             } catch (JSONException e) {
                 e.printStackTrace();
             }
+        if (intent.hasExtra("REQUEST")) {
+            handleRequest(extras.getInt("REQUEST", 0));
+        }
     }
 
 
@@ -1416,32 +1788,43 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
 
     public void handleRequest(int request) {
         Log.d(TAG, "Rview REQUEST:: " + request);
-
         if (request == WELCOME_REQUEST) {
-
+            welcomeDialog();
         }
         if (request == LOGIN_REQUEST) {
-
+            welcomeDialog();
         }
         if (request == CLEAR_REQUEST) {
-
+            clearValues();
         }
         if (request == ADDRESS_REQUEST) {
-
+            addressDialog();
         }
         if (request == CUSTOMER_REQUEST) {
-
+            customerDialog();
         }
         if (request == CAMERA_REQUEST) {
-
+            if (checkCameraHardware(MainActivity.this)) {
+                Intent intent = new Intent(MainActivity.this, CameraActivity.class);
+                putIntentData(intent);
+                intent.putExtra("authToken", authToken);
+                intent.putExtra("callingClass", MainActivity.this.getClass().getSimpleName());
+                putPrefsData();
+                setResult(RUVIUZ_DATA_PERSIST);
+                startActivity(intent);
+            } else {
+                Log.d(TAG, "No Camera Hardware on Device");
+            }
         }
         if (request == METRIC_REQUEST) {
-
+            getMetric();
         }
         if (request == GEOLOCATION_REQUEST) {
-
+            getGeoLocation();
         }
     }
+
+
 
 
     @Override
@@ -1486,15 +1869,45 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         }
     }
 
-    /** Check if this device has a camera */
-    private boolean checkCameraHardware(Context context) {
-        if (context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)){
-            // this device has a camera
-            return true;
+    private void refreshUi() {
+        if (fileCount == 0) {
+            Glide.clear(this.photo1); Glide.clear(this.photo2); Glide.clear(this.photo3);
         } else {
-            // no camera on this device
-            return false;
+            if (fileCount > 0) {
+                if (fileUrls != null) {
+                    if (fileUrls[0] != null && photo1.getDrawable() == null) {
+                        Glide.with(MainActivity.this)
+                                .load(fileUrls[0])
+                                .override(92, 68)
+                                .fitCenter()
+                                .diskCacheStrategy(DiskCacheStrategy.RESULT)
+                                .into(photo1);
+                    }
+                    if (fileUrls[1] != null && photo2.getDrawable() == null) {
+                        photo2 = (ImageView) findViewById(R.id.ruvPic2);
+                        Glide.with(MainActivity.this)
+                                .load(fileUrls[1])
+                                .override(92, 68)
+                                .fitCenter()
+                                .diskCacheStrategy(DiskCacheStrategy.RESULT)
+                                .into(photo2);
+                    }
+                    if (fileUrls[2] != null && photo3.getDrawable() == null) {
+                        photo3 = (ImageView) findViewById(R.id.ruvPic3);
+                        Glide.with(MainActivity.this)
+                                .load(fileUrls[2])
+                                .override(92, 68)
+                                .fitCenter()
+                                .diskCacheStrategy(DiskCacheStrategy.RESULT)
+                                .into(photo3);
+                    }
+                }
+            }
         }
+    }
+
+    private boolean checkCameraHardware(Context context) {
+        return context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA);
     }
 
 
@@ -1509,6 +1922,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         if (mAddressFrag != null && mAddressFrag.isAdded()) mAddressFrag.dismiss();
         if (metricFrag != null && metricFrag.isAdded()) metricFrag.dismiss();
         if (slopeFrag != null && slopeFrag.isAdded()) slopeFrag.dismiss();
+        if (editFrag != null && editFrag.isAdded()) editFrag.dismiss();
     }
 
     public void dismissOtherDialogs(Class mClass) {
@@ -1518,6 +1932,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         if (mAddressFrag != null && mAddressFrag.isAdded() && mAddressFrag.getClass() != mClass) mAddressFrag.dismiss();
         if (metricFrag != null && metricFrag.isAdded() && metricFrag.getClass() != mClass) metricFrag.dismiss();
         if (slopeFrag != null && slopeFrag.isAdded() && slopeFrag.getClass() != mClass) slopeFrag.dismiss();
+        if (editFrag != null && editFrag.isAdded() && editFrag.getClass() != mClass) editFrag.dismiss();
     }
 
     public static int getStatusBarHeight(Activity a) {
@@ -1568,6 +1983,11 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
                     ruuvJson.put("length", mBundle.getFloat("length"));
                     ruuvJson.put("slope", mBundle.getFloat("slope"));
                     ruuvJson.put("price", mBundle.getString("price"));
+                    ruuvJson.put("firstName", mBundle.getString("firstName"));
+                    ruuvJson.put("lastName", mBundle.getString("lastName"));
+                    ruuvJson.put("email", mBundle.getString("email"));
+                    ruuvJson.put("phone", mBundle.getString("phone"));
+                    ruuvJson.put("prefix", mBundle.getString("prefix"));
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }

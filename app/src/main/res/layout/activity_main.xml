@@ -1,9 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-    <!--android:paddingBottom="@dimen/activity_vertical_margin"-->
-    <!--android:paddingTop="@dimen/activity_vertical_margin"-->
-    <!--android:paddingLeft="8dp"-->
-    <!--android:paddingRight="8dp"-->
-
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -44,6 +39,7 @@
         android:layout_height="match_parent"
         android:layout_marginTop="?attr/actionBarSize">
 
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -51,461 +47,633 @@
             android:textAllCaps="true"
             android:textStyle="bold"
             android:textAlignment="center"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="32dp"
+            android:layout_marginTop="48dp"
             android:layout_centerHorizontal="true"
+            android:layout_marginBottom="8dp"
             android:id="@+id/mainTitle"
             android:text="@string/overview"
             android:textColor="#000"
             android:layout_alignParentTop="true"
             />
 
-
-
         <RelativeLayout
+            android:layout_alignParentBottom="true"
+            android:layout_width="match_parent"
+            android:layout_height="96dp"
+            android:id="@+id/actionBtnWrap">
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/calcTxt"
+                android:textStyle="bold"
+                android:layout_marginStart="12dp"
+                android:layout_marginBottom="8dp"
+                android:text="@string/calculate"
+                android:textSize="15sp"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentStart="true"
+                android:textColor="#000"
+                />
+            <ImageButton
+                android:id="@+id/calculateBtn"
+                android:layout_height="32dp"
+                android:layout_width="48dp"
+                android:layout_alignParentStart="true"
+                android:padding="4dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/calculate"
+                android:layout_above="@id/calcTxt"
+                android:background="@drawable/ruvbtn_wt"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="24dp"
+                android:layout_marginBottom="4dp"
+                />
+
+
+
+
+            <TextView
+                android:id="@+id/currentPrice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
+                android:layout_above="@id/calcTxt"
+                android:layout_toEndOf="@id/calculateBtn"
+                android:text="@string/no_price"
+                android:textColor="@color/colorPrimaryDark"
+                android:textStyle="bold"
+                android:layout_marginBottom="12dp"
+                android:layout_marginStart="16dp"
+                android:textSize="15sp" />
+
+
+
+
+
+
+
+
+
+            <ImageButton
+                android:layout_width="48dp"
+                android:layout_height="32dp"
+                android:scaleType="fitCenter"
+                android:id="@+id/ruuvSubmitBtn"
+                android:src="@drawable/upload"
+                android:padding="8dp"
+                android:text="@string/send"
+                android:textColorLink="?android:attr/colorFocusedHighlight"
+                android:textColor="@color/ruvSelected"
+                android:textColorHighlight="@color/colorAccent"
+                android:layout_alignParentEnd="true"
+                android:elevation="0dp"
+                android:textSize="17sp"
+                android:layout_marginEnd="16dp"
+                android:layout_above="@+id/sendTxt"
+                android:background="@drawable/ruvbtn_wt"
+                android:layout_marginBottom="4dp"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:layout_centerHorizontal="true"
+                android:layout_marginEnd="24dp"
+                android:id="@+id/sendTxt"
+                android:layout_alignParentEnd="true"
+                android:text="@string/send"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:textColor="#000"
+                android:layout_alignParentBottom="true"
+                />
+
+        </RelativeLayout>
+
+        <ScrollView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/mainTitle"
-            android:layout_centerInParent="true"
-            android:id="@+id/switchLayout"
-            android:padding="16dp">
-            <!--<Switch-->
-                <!--android:layout_width="128dp"-->
-                <!--android:layout_height="44dp"-->
-                <!--android:layout_alignParentStart="true"-->
-                <!--android:id="@+id/roofFlat"-->
-                <!--android:text="@string/flatAsk"-->
-                <!--android:checked="false"-->
-                <!--android:textColor="@color/material_deep_teal_200" />-->
+            android:layout_above="@id/actionBtnWrap"
+            android:id="@+id/dataWrap">
 
-            <Switch
-                android:layout_width="128dp"
-                android:layout_height="44dp"
-                android:layout_alignParentEnd="true"
-                android:id="@+id/premiumMaterial"
-                android:text="@string/matAsk"
-                android:textColor="@color/material_deep_teal_200"
-                android:checked="false"
-                android:enabled="true" />
-        </RelativeLayout>
-        <LinearLayout
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+        <GridLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:id="@+id/numberContainer"
-            android:layout_below="@id/switchLayout"
-            android:padding="12dp"
-            android:layout_marginTop="8dp">
-            <LinearLayout
+            android:id="@+id/roofData"
+            android:columnCount="3"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_alignParentTop="true">
+
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:id="@+id/numberText"
-                android:paddingTop="16dp">
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                android:layout_gravity="top|start"
+                android:layout_marginStart="16dp"
+                android:textSize="17sp"
+                android:layout_columnWeight="1"
+                android:text="@string/name"
+                android:id="@+id/nameLabel"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:textSize="13sp"
+                android:textColor="@color/colorPrimaryDark"
+                android:layout_gravity="top|start"
+                android:layout_columnWeight="1.5"
+                android:layout_columnSpan="2"
+                android:layout_toEndOf="@id/nameLabel"
+                android:id="@+id/nameTv"/>
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/rfLgText"
-                    android:text="Length"
-                    android:textColor="#000"
-                    android:paddingBottom="8dp" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_gravity="top|start"
+                android:layout_columnWeight="1"
+                android:layout_alignParentStart="true"
+                android:layout_below="@id/nameTv"
+                android:textSize="17sp"
+                android:text="@string/email"
+                android:id="@+id/emailLabel"/>
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/rfWdText"
-                    android:text="Width"
-                    android:layout_marginTop="16dp"
-                    android:textColor="#000"
-                    />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="13sp"
+                android:textColor="@color/colorPrimaryDark"
+                android:layout_marginTop="11dp"
+                android:layout_gravity="top|start"
+                android:layout_columnWeight="1.5"
+                android:layout_columnSpan="2"
+                android:layout_toEndOf="@id/emailLabel"
+                android:layout_below="@id/nameTv"
+                android:id="@+id/emailTv" />
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/rfSlText"
-                    android:text="Slope"
-                    android:layout_marginTop="26dp"
-                    android:textColor="#000"
-                    />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/emailLabel"
+                android:layout_alignParentStart="true"
+                android:layout_marginTop="6dp"
+                android:layout_marginStart="16dp"
+                android:layout_gravity="top|start"
+                android:layout_columnWeight="1"
+                android:textSize="17sp"
+                android:text="@string/phone"
+                android:id="@+id/phoneLabel"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_columnSpan="2"
+                android:textSize="13sp"
+                android:textColor="@color/colorPrimaryDark"
+                android:layout_marginTop="10dp"
+                android:layout_gravity="top|start"
+                android:layout_columnWeight="1.5"
+                android:layout_below="@id/emailTv"
+                android:layout_toEndOf="@id/emailLabel"
+                android:id="@+id/phoneTv"/>
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/calcTxt"
-                    android:text="@string/calculate"
-                    android:layout_marginTop="26dp"
-                    android:textColor="#000"
-                    />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_below="@id/phoneLabel"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:text="@string/address"
+                android:textSize="17sp"
+                android:layout_gravity="top|start"
+                android:layout_columnWeight="1"
+                android:id="@+id/addressLabel"/>
 
-            </LinearLayout>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="13sp"
+                android:id="@+id/addressTv"
+                android:layout_below="@id/phoneLabel"
+                android:layout_columnSpan="2"
+                android:layout_marginTop="8dp"
+                android:textColor="@color/colorPrimaryDark"
+                android:layout_gravity="top|start"
+                android:layout_columnWeight="1.5"
+                android:layout_toEndOf="@id/addressLabel"/>
+
+
+            <TextView
+                android:layout_width="96dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_below="@id/addressTv"
+                android:textSize="17sp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:text="@string/dimensions"
+                android:layout_gravity="top|start"
+                android:layout_columnSpan="3"
+                android:id="@+id/dimensionLabel"/>
+
+            <TextView
+                android:layout_width="52dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="12dp"
+                android:layout_alignParentStart="true"
+                android:layout_below="@id/dimensionLabel"
+                android:layout_gravity="top|start"
+                android:layout_columnSpan="1"
+                android:textSize="14sp"
+                android:id="@+id/lengthLabel"
+                android:text="@string/length"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="top|start"
+                android:layout_marginTop="12dp"
+                android:textColor="@color/colorPrimaryDark"
+                android:layout_toEndOf="@id/lengthLabel"
+                android:id="@+id/roofLength"
+                android:layout_columnSpan="1"
+                android:layout_below="@id/dimensionLabel"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/roofLengthFtTxt"
+                android:text="@string/ft"
+                android:textSize="13sp"
+                android:layout_marginTop="12dp"
+                android:layout_marginStart="4dp"
+                android:layout_below="@id/dimensionLabel"
+                android:layout_toEndOf="@+id/roofLength" />
+
+            <TextView android:layout_columnSpan="1"/>
+            <TextView
+                android:id="@+id/roofLengthIn"
+                android:layout_height="20dp"
+                android:textAlignment="center"
+                android:inputType="numberDecimal"
+                android:textColor="@color/colorPrimaryDark"
+                android:layout_centerVertical="false"
+                android:layout_toEndOf="@+id/roofLengthFtTxt"
+                android:layout_below="@id/dimensionLabel"
+                android:layout_width="wrap_content"
+                android:layout_marginTop="4dp"
+                android:layout_marginStart="4dp"
+                android:text="@string/zero"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/roofLengthInTxt"
+                android:layout_below="@id/dimensionLabel"
+                android:text="@string/inches"
+                android:labelFor="@id/roofLengthIn"
+                android:textSize="13sp"
+                android:layout_marginTop="4dp"
+                android:layout_marginStart="4dp"
+                android:layout_toEndOf="@+id/roofLengthIn" />
+
+            <TextView
+                android:layout_width="52dp"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="4dp"
+                android:textSize="14sp"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/lengthLabel"
+                android:layout_alignParentStart="true"
+                android:id="@+id/widthLabel"
+                android:text="@string/width"/>
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_columnSpan="1"
+                android:layout_marginTop="5dp"
+                android:textColor="@color/colorPrimaryDark"
+                android:layout_toEndOf="@id/widthLabel"
+                android:id="@+id/roofWidth"
+                android:layout_below="@id/lengthLabel"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/roofWidthFtTxt"
+                android:text="@string/ft"
+                android:textSize="13sp"
+                android:layout_columnSpan="1"
+                android:layout_marginTop="4dp"
+                android:layout_marginStart="4dp"
+                android:layout_toEndOf="@+id/roofWidth"
+                android:layout_below="@id/lengthLabel"/>
+
+            <TextView android:layout_columnSpan="1"/>
+            <TextView
+                android:id="@+id/roofWidthIn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:inputType="numberDecimal"
+                android:textAlignment="center"
+                android:layout_centerVertical="false"
+                android:textColor="@color/colorPrimaryDark"
+                android:text="@string/zero"
+                android:layout_toEndOf="@+id/roofWidthFtTxt"
+                android:layout_marginTop="4dp"
+                android:layout_marginStart="4dp"
+                android:layout_below="@id/lengthLabel"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/roofWidthInTxt"
+                android:labelFor="@id/roofWidthFtTxt"
+                android:text="@string/inches"
+                android:textSize="13sp"
+                android:layout_marginTop="4dp"
+                android:layout_marginStart="4dp"
+                android:layout_toEndOf="@+id/roofWidthIn"
+                android:layout_below="@id/lengthLabel"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="4dp"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:layout_alignParentStart="true"
+                android:layout_below="@id/widthLabel"
+                android:layout_columnSpan="1"
+                android:id="@+id/slopeLabel"
+                android:text="@string/slope"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:textColor="@color/colorPrimaryDark"
+                android:layout_toEndOf="@id/slopeLabel"
+                android:layout_below="@id/widthLabel"
+                android:layout_columnSpan="1"
+                android:id="@+id/roofSlope"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toEndOf="@id/roofSlope"
+                android:layout_below="@id/widthLabel"
+                android:layout_marginTop="4dp"
+                android:layout_columnSpan="1"
+                android:text="@string/degree_symbol"/>
             <LinearLayout
+                android:layout_columnSpan="3"
+                android:layout_rowSpan="4"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:id="@+id/numberLayout">
-
-                <RelativeLayout
-                    android:layout_width="wrap_content"
+                android:orientation="vertical">
+                <GridLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:id="@+id/uiRow1"
-                    android:layout_marginBottom="1dp"
-                    android:weightSum="1"
-                    android:layout_marginTop="6dp">
-                    <EditText
-                        android:id="@+id/roofLength"
-                        android:layout_height="wrap_content"
-                        android:background="#fff"
-                        android:textAlignment="center"
-                        android:inputType="numberDecimal"
-                        android:layout_centerVertical="false"
-                        android:textColor="#000"
-                        android:layout_marginTop="8dp"
-                        android:layout_marginStart="8dp"
-                        android:layout_width="48dp" />
+                    android:columnCount="5">
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/roofLengthFtTxt"
-                        android:text="@string/ft"
-                        android:textColor="#000"
-                        android:textSize="16sp"
-                        android:layout_marginTop="8dp"
-                        android:layout_marginStart="8dp"
-                        android:layout_toEndOf="@+id/roofLength" />
+                </GridLayout>
 
-                    <EditText
-                        android:id="@+id/roofLengthIn"
-                        android:layout_height="wrap_content"
-                        android:background="#fff"
-                        android:textAlignment="center"
-                        android:inputType="numberDecimal"
-                        android:layout_centerVertical="false"
-                        android:textColor="#000"
-                        android:layout_marginTop="8dp"
-                        android:layout_toEndOf="@+id/roofLengthFtTxt"
-                        android:layout_width="48dp"
-                        android:layout_marginStart="8dp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/roofLengthInTxt"
-                        android:text="@string/inches"
-                        android:textColor="#000"
-                        android:textSize="16sp"
-                        android:layout_marginTop="8dp"
-                        android:layout_marginStart="8dp"
-                        android:layout_toEndOf="@+id/roofLengthIn" />
-
-                    <Button
-                        android:layout_height="36dp"
-                        android:id="@+id/addressGetDialog"
-                        android:text="@string/address"
-                        android:layout_gravity="end"
-                        android:layout_alignWithParentIfMissing="true"
-                        android:background="@drawable/ruvbtn_wt"
-                        android:alpha="0.2"
-                        android:textAlignment="center"
-                        android:textAllCaps="false"
-                        android:elevation="0dp"
-                        android:drawableEnd="@drawable/address"
-                        android:layout_width="108dp"
-                        android:layout_alignParentEnd="true"
-                        android:layout_marginBottom="2dp" />
-
-                </RelativeLayout>
-                <RelativeLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:id="@+id/uiRow2"
-                    android:layout_marginBottom="1dp">
-                   
-
-                    <EditText
-                        android:id="@+id/roofWidth"
-                        android:layout_width="48dp"
-                        android:layout_height="wrap_content"
-                        android:background="#fff"
-                        android:textAlignment="center"
-                        android:inputType="numberDecimal"
-                        android:layout_centerVertical="false"
-                        android:textColor="#000"
-                        android:layout_marginStart="8dp"
-                        android:layout_marginTop="12dp" />
-
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/roofWidthFtTxt"
-                        android:text="@string/ft"
-                        android:textColor="#000"
-                        android:textSize="16sp"
-                        android:layout_marginTop="8dp"
-                        android:layout_marginStart="8dp"
-                        android:layout_toEndOf="@+id/roofWidth" />
-
-                    <EditText
-                        android:id="@+id/roofWidthIn"
-                        android:layout_width="48dp"
-                        android:layout_height="wrap_content"
-                        android:background="#fff"
-                        android:inputType="numberDecimal"
-                        android:textAlignment="center"
-                        android:layout_centerVertical="false"
-                        android:layout_toEndOf="@+id/roofWidthFtTxt"
-                        android:textColor="#000"
-                        android:layout_marginTop="12dp"
-                        android:layout_marginStart="8dp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/roofWidthInTxt"
-                        android:text="@string/inches"
-                        android:textColor="#000"
-                        android:textSize="16sp"
-                        android:layout_marginTop="8dp"
-                        android:layout_marginStart="8dp"
-                        android:layout_toEndOf="@+id/roofWidthIn" />
-
-                    <Button
-                        android:layout_height="36dp"
-                        android:id="@+id/clientBtn"
-                        android:text="@string/client_info"
-                        android:layout_gravity="end"
-                        android:layout_alignWithParentIfMissing="true"
-                        android:background="@drawable/ruvbtn_wt"
-                        android:alpha="0.2"
-                        android:textAlignment="center"
-                        android:textAllCaps="false"
-                        android:elevation="0dp"
-                        android:drawableEnd="@drawable/customer"
-                        android:layout_width="108dp"
-                        android:layout_alignParentEnd="true"
-                        android:layout_marginTop="2dp" />
-                    
-                </RelativeLayout>
-                <RelativeLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:id="@+id/uiRow3">
-
-                    <EditText
-                        android:id="@+id/roofSlope"
-                        android:layout_width="64dp"
-                        android:layout_height="wrap_content"
-                        android:background="#fff"
-                        android:textAlignment="center"
-                        android:inputType="numberDecimal"
-                        android:layout_centerVertical="false"
-                        android:textColor="#000"
-                        android:layout_marginStart="8dp"
-                        android:layout_marginTop="12dp" />
-
-                    <TextView
-                        android:id="@+id/slopeSymbol"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@android:color/transparent"
-                        android:layout_centerVertical="false"
-                        android:layout_toEndOf="@id/roofSlope"
-                        android:text="@string/degree_symbol"
-                        android:textColor="#000"
-                        android:layout_marginTop="4dp"
-                        android:textSize="32dp"
-                        android:layout_marginStart="8dp" />
-
-                    <ImageButton
-                        android:layout_height="36dp"
-                        android:id="@+id/takePhoto"
-                        android:layout_gravity="end"
-                        android:layout_alignWithParentIfMissing="true"
-                        android:background="?attr/actionModeSplitBackground"
-                        android:textAlignment="center"
-                        android:textAllCaps="false"
-                        android:elevation="0dp"
-                        android:scaleType="fitCenter"
-                        android:src="@drawable/addphoto48"
-                        android:layout_width="108dp"
-                        android:layout_alignParentEnd="true"
-                        android:layout_marginTop="4dp" />
-
-                </RelativeLayout>
-                <RelativeLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:id="@+id/uiRow4">
-
-                    <ImageButton
-                        android:id="@+id/calculateBtn"
-                        android:layout_height="32dp"
-                        android:layout_alignParentStart="true"
-                        android:padding="4dp"
-                        android:scaleType="fitCenter"
-                        android:src="@drawable/calculate"
-                        android:background="@drawable/ruvbtn_wt"
-                        android:layout_marginStart="8dp"
-                        android:layout_marginTop="8dp"
-                        android:layout_width="48dp" />
-
-                    <EditText
-                        android:id="@+id/currentPrice"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@android:color/transparent"
-                        android:layout_centerVertical="false"
-                        android:layout_toEndOf="@id/calculateBtn"
-                        android:text="@string/no_price"
-                        android:textColor="#000"
-                        android:textStyle="bold"
-                        android:layout_marginTop="14dp"
-                        android:layout_marginStart="8dp"
-                        android:textSize="16sp" />
-
-                    <Button
-                        android:layout_height="36dp"
-                        android:id="@+id/metricfragOpen"
-                        android:elegantTextHeight="true"
-                        android:layout_alignParentEnd="true"
-                        android:layout_centerInParent="true"
-                        android:layout_gravity="end"
-                        android:layout_marginTop="8dp"
-                        android:elevation="0dp"
-                        android:textAlignment="center"
-                        android:textAllCaps="false"
-                        android:background="@drawable/metric"
-                        android:layout_width="108dp" />
-                    
-                </RelativeLayout>
             </LinearLayout>
-        </LinearLayout>
 
-        <RelativeLayout
-            android:layout_height="wrap_content"
-            android:layout_width="match_parent"
-            android:layout_below="@id/numberContainer"
-            android:layout_marginTop="8dp">
-            <ImageView
-                android:layout_width="72dp"
+
+            <TextView
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:maxWidth="72dp"
+                android:layout_marginTop="12dp"
+                android:layout_marginStart="16dp"
+                android:id="@+id/matLabel"
+                android:layout_columnSpan="1"
+                android:layout_below="@id/slopeLabel"
+                android:text="@string/material"
+                android:textSize="17sp"
+                />
+
+
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/slopeLabel"
+                android:layout_toEndOf="@id/matLabel"
+                android:layout_marginTop="9dp"
+                android:layout_columnSpan="2"
+                android:textColor="@color/colorPrimaryDark"
+                android:text="Aluminum Shingles"
+                android:id="@+id/materialTv"
+                android:textSize="15sp"/>
+
+
+            <!--<ImageButton-->
+            <!--android:layout_height="36dp"-->
+            <!--android:id="@+id/takePhoto"-->
+            <!--android:layout_gravity="end"-->
+            <!--android:background="@drawable/ruvbtn_wt"-->
+            <!--android:textAlignment="center"-->
+            <!--android:textAllCaps="false"-->
+            <!--android:elevation="0dp"-->
+            <!--android:scaleType="fitCenter"-->
+            <!--android:src="@drawable/addphoto48"-->
+            <!--android:layout_marginEnd="8dp"-->
+            <!--android:layout_width="108dp"/>-->
+
+            <!--<ImageButton-->
+            <!--android:layout_height="36dp"-->
+            <!--android:id="@+id/clientBtn"-->
+            <!--android:text="@string/client_info"-->
+            <!--android:layout_gravity="end"-->
+            <!--android:padding="4dp"-->
+            <!--android:background="@drawable/ruvbtn_wt"-->
+            <!--android:scaleType="fitCenter"-->
+            <!--android:alpha="0.2"-->
+            <!--android:textAlignment="center"-->
+            <!--android:layout_marginEnd="8dp"-->
+            <!--android:textAllCaps="false"-->
+            <!--android:elevation="0dp"-->
+            <!--android:layout_marginTop="24dp"-->
+            <!--android:src="@drawable/client"-->
+            <!--android:layout_below="@id/contactInfoTv"-->
+            <!--android:layout_width="108dp"-->
+            <!--android:layout_alignParentEnd="true"-->
+            <!--android:layout_marginBottom="8dp"-->
+            <!--/>-->
+
+
+            <!--<Button-->
+            <!--android:layout_height="36dp"-->
+            <!--android:id="@+id/addressGetDialog"-->
+            <!--android:text="@string/address"-->
+            <!--android:background="@drawable/ruvbtn_wt"-->
+            <!--android:alpha="0.2"-->
+            <!--android:textAlignment="center"-->
+            <!--android:textAllCaps="false"-->
+            <!--android:elevation="0dp"-->
+            <!--android:drawableEnd="@drawable/address"-->
+            <!--android:layout_below="@id/clientBtn"-->
+            <!--android:layout_width="108dp"-->
+            <!--android:layout_alignParentEnd="true"-->
+            <!--android:layout_marginEnd="8dp"-->
+            <!--android:layout_marginBottom="8dp"/>-->
+
+
+            <!--<Button-->
+            <!--android:layout_height="36dp"-->
+            <!--android:id="@+id/metricfragOpen"-->
+            <!--android:elegantTextHeight="true"-->
+            <!--android:layout_alignParentEnd="true"-->
+            <!--android:layout_centerInParent="true"-->
+            <!--android:layout_gravity="end"-->
+            <!--android:elevation="0dp"-->
+            <!--android:layout_marginEnd="8dp"-->
+            <!--android:textAlignment="center"-->
+            <!--android:layout_below="@id/addressGetDialog"-->
+            <!--android:textAllCaps="false"-->
+            <!--android:background="@drawable/metric"-->
+            <!--android:layout_width="108dp" />-->
+
+
+
+            <!--android:layout_marginTop="16dp" />-->
+            <!--android:layout_alignParentEnd="true"-->
+
+            <!--<TextView-->
+            <!--android:layout_width="72dp"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:id="@+id/priceLabel"-->
+            <!--android:layout_alignParentStart="true"-->
+            <!--android:layout_below="@id/matLabel"-->
+            <!--android:layout_marginTop="36dp"-->
+            <!--android:layout_marginStart="20dp"-->
+            <!--android:textSize="17sp"-->
+            <!--android:text="Price"-->
+            <!--/>-->
+        </GridLayout>
+
+            <RelativeLayout
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:layout_below="@id/roofData"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginTop="16dp"
+                android:id="@+id/ruvPics"
+                android:layout_alignParentStart="true">
+
+
+            <ImageView
+                android:layout_width="92dp"
+                android:layout_height="wrap_content"
+                android:maxWidth="92dp"
                 android:id="@+id/ruvPic1"
                 android:adjustViewBounds="true"
                 android:layout_alignParentStart="true"
                 android:contentDescription="@string/ruvhomephoto"/>
 
             <ImageView
-                android:layout_width="72dp"
+                android:layout_width="92dp"
                 android:layout_height="wrap_content"
-                android:maxWidth="72dp"
+                android:maxWidth="92dp"
                 android:id="@+id/ruvPic2"
                 android:adjustViewBounds="true"
                 android:layout_centerHorizontal="true"
                 android:contentDescription="@string/ruvhomephoto"/>
 
             <ImageView
-                android:layout_width="72dp"
+                android:layout_width="92dp"
                 android:layout_height="wrap_content"
-                android:maxWidth="72dp"
+                android:maxWidth="92dp"
                 android:id="@+id/ruvPic3"
                 android:adjustViewBounds="true"
                 android:layout_alignParentEnd="true"
                 android:contentDescription="@string/ruvhomephoto"/>
 
-        </RelativeLayout>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:layout_marginStart="20dp"
-            android:id="@+id/clearBtnTxt"
-            android:text="@string/clear"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:textColor="#000"
-            android:layout_alignParentStart="false"
-            android:layout_alignParentBottom="true"
-            />
-
-        <ImageButton
-            android:id="@+id/clearBtn"
-            android:src="@drawable/restart"
-            android:background="@drawable/ruvbtn_wt"
-            android:scaleType="fitCenter"
-            android:layout_alignWithParentIfMissing="false"
-            android:padding="8dp"
-            android:layout_above="@+id/clearBtnTxt"
-            android:layout_height="48dp"
-            android:layout_marginBottom="4dp"
-            android:layout_marginStart="4dp"
-            android:layout_width="72dp"
-            android:layout_alignParentBottom="false" />
+            </RelativeLayout>
 
 
-        <ImageButton
-            android:layout_height="48dp"
-            android:scaleType="fitCenter"
-            android:id="@+id/ruuvSubmitBtn"
-            android:layout_marginTop="8dp"
-            android:layout_centerHorizontal="true"
-            android:src="@drawable/upload"
-            android:padding="8dp"
-            android:text="@string/send"
-            android:textColorLink="?android:attr/colorFocusedHighlight"
-            android:textColor="@color/ruvSelected"
-            android:textColorHighlight="@color/colorAccent"
-            android:elevation="0dp"
-            android:textSize="18sp"
-            android:layout_above="@+id/sendTxt"
-            android:background="@drawable/ruvbtn_wt"
-            android:layout_marginBottom="4dp"
-            android:layout_width="72dp" />
+                <Button
+                android:id="@+id/editQuote"
+                android:drawableEnd="@drawable/edit24"
+                android:textAlignment="viewStart"
+                android:textAllCaps="false"
+                android:elevation="0dp"
+                android:background="@android:color/transparent"
+                android:scaleType="fitCenter"
+                android:layout_alignParentEnd="true"
+                android:layout_below="@id/ruvPics"
+                android:layout_marginEnd="18dp"
+                android:layout_marginTop="16dp"
+                android:text="@string/edit"
+                android:layout_width="64dp"
+                android:layout_height="36dp"
+                android:layout_marginBottom="4dp"
+                android:padding="4dp" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:layout_marginStart="8dp"
-            android:layout_centerHorizontal="true"
-            android:id="@+id/sendTxt"
-            android:text="@string/send"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:textColor="#000"
-            android:layout_alignParentBottom="true"
-            />
+            </RelativeLayout>
 
-        <Button
-            android:id="@+id/quoteStatus"
-            android:text="@string/draft"
-            android:background="@color/ruvGreen"
-            android:alpha="0.2"
-            android:textAlignment="center"
-            android:textAllCaps="false"
-            android:elevation="0dp"
-            android:drawableEnd="@drawable/checked"
-            android:layout_alignParentEnd="true"
-            android:layout_alignWithParentIfMissing="false"
-            android:layout_centerInParent="false"
-            android:layout_centerHorizontal="false"
-            android:layout_centerVertical="false"
-            android:layout_alignParentStart="false"
-            android:layout_alignParentTop="false"
-            android:layout_height="48dp"
-            android:textSize="12sp"
-            android:layout_alignParentBottom="true"
-            android:layout_width="72dp"
-            android:layout_marginBottom="34dp"
-            android:layout_marginEnd="4dp" />
+        </ScrollView>
+
+        <!--<TextView-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:text="@string/edit"-->
+            <!--android:layout_below="@id/roofData"-->
+            <!--android:layout_marginTop="19dp"-->
+            <!--android:textSize="16sp"-->
+            <!--android:layout_marginEnd="2dp"-->
+            <!--android:id="@+id/editLabel"-->
+            <!--android:textColor="#000"-->
+            <!--android:layout_toStartOf="@id/editQuote"-->
+            <!--/>-->
+
+
+
+
+
+
+
+        <!--<Button-->
+            <!--android:id="@+id/quoteStatus"-->
+            <!--android:text="@string/draft"-->
+            <!--android:background="@color/ruvGreen"-->
+            <!--android:alpha="0.2"-->
+            <!--android:textAlignment="center"-->
+            <!--android:textAllCaps="false"-->
+            <!--android:elevation="0dp"-->
+            <!--android:drawableEnd="@drawable/checked"-->
+            <!--android:layout_alignParentEnd="true"-->
+            <!--android:layout_alignWithParentIfMissing="false"-->
+            <!--android:layout_centerInParent="false"-->
+            <!--android:layout_centerHorizontal="false"-->
+            <!--android:layout_centerVertical="false"-->
+            <!--android:layout_alignParentStart="false"-->
+            <!--android:layout_alignParentTop="false"-->
+            <!--android:layout_height="48dp"-->
+            <!--android:textSize="12sp"-->
+            <!--android:layout_alignParentBottom="true"-->
+            <!--android:layout_width="72dp"-->
+            <!--android:layout_marginBottom="34dp"-->
+            <!--android:layout_marginEnd="4dp" />-->
 
     </RelativeLayout>
 
-</RelativeLayout>
+    </RelativeLayout>

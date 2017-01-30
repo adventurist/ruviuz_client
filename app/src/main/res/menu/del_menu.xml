@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:ruviuz="http://schemas.android.com/apk/res-auto"
+    >
+
+    <item android:id="@+id/yesDelete"
+        android:title="@string/delete"
+        ruviuz:showAsAction="always"
+        ruviuz:actionViewClass="android.support.v7.widget.SearchView"
+        android:icon="@drawable/destroy"
+        />
+
+    <item
+        android:id="@+id/noDelete"
+        android:title="@string/cancel"
+        ruviuz:showAsAction="always"
+        android:icon="@drawable/restart" />
+
+</menu>

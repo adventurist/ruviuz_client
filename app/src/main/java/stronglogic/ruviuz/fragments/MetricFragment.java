@@ -108,14 +108,15 @@ public class MetricFragment extends DialogFragment {
         }
     }
 
-//    @Override
-//    public Dialog onCreateDialog(Bundle savedInstanceState) {
-//        Dialog dialog = super.onCreateDialog(savedInstanceState);
-//        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color
-//                .TRANSPARENT));
-//        return dialog;
-//    }
-
+    @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        return new Dialog(getActivity(), getTheme()){
+            @Override
+            public void onBackPressed() {
+                mActivity.addressDialog();
+            }
+        };
+    }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -163,6 +164,7 @@ public class MetricFragment extends DialogFragment {
                             break;
                         case R.id.loginAction:
                             Log.d(TAG, "Login action!!");
+                            mActivity.putPrefsData();
                             mActivity.loginDialog();
                             MetricFragment.this.dismiss();
                             break;

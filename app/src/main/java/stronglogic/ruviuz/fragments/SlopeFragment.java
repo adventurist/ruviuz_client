@@ -3,6 +3,7 @@ package stronglogic.ruviuz.fragments;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
@@ -110,6 +111,20 @@ public class SlopeFragment extends DialogFragment {
         }
     }
 
+    @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        return new Dialog(getActivity(), getTheme()){
+            @Override
+            public void onBackPressed() {
+                mActivity.getMetric();
+            }
+        };
+    }
+
+    @Override
+    public void onCancel(DialogInterface dialog) {
+        mActivity.getMetric();
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -154,6 +169,7 @@ public class SlopeFragment extends DialogFragment {
                             break;
                         case R.id.loginAction:
                             Log.d(TAG, "Login action!!");
+                            mActivity.putPrefsData();
                             mActivity.loginDialog();
                             SlopeFragment.this.dismiss();
                             break;
@@ -179,7 +195,7 @@ public class SlopeFragment extends DialogFragment {
         backward.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mListener.slopeFragInteraction(SlopeFragment.this.slope, SLOPE_FRAG_SUCCESS);
+                mListener.slopeFragInteraction(SlopeFragment.this.slope, SLOPE_FRAG_FAIL);
 
             }
         });
@@ -190,6 +206,12 @@ public class SlopeFragment extends DialogFragment {
             @Override
             public void onClick(View v) {
                 if (roofSlope != null) {
+//                    float returnFloat1 = Float.valueOf(SlopeFragment.this.roofSlope.getText().toString());
+//                    float returnFloat2 = Float.valueOf(SlopeFragment.this.roofSlope.getText().toString());
+//                    float returnFloat3 = Float.valueOf(SlopeFragment.this.roofSlope.getText().toString());
+//                    float returnFloat4 = Float.valueOf(SlopeFragment.this.roofSlope.getText().toString());
+//                    float returnFloat5 = Float.valueOf(SlopeFragment.this.roofSlope.getText().toString());
+//                    float returnFloat = (returnFloat1 + returnFloat2 + returnFloat3 + returnFloat4 + returnFloat5)/5;
                     float returnFloat = Float.valueOf(SlopeFragment.this.roofSlope.getText().toString());
                     SlopeFragment.this.slope = returnFloat;
                     mListener.slopeFragInteraction(returnFloat, SLOPE_FRAG_SUCCESS);
@@ -221,7 +243,6 @@ public class SlopeFragment extends DialogFragment {
         sensorManager = (SensorManager) getActivity().getSystemService(Context.SENSOR_SERVICE);
         sensorManager.registerListener(mSensorListener, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_GAME);
 
-
         getAngle = (ImageButton) mView.findViewById(R.id.setAngle);
         getAngle.getBackground().setColorFilter(Color.BLACK, PorterDuff.Mode.SRC_ATOP);
         getAngle.setOnClickListener(new View.OnClickListener() {
@@ -244,12 +265,8 @@ public class SlopeFragment extends DialogFragment {
                         slopeAngleText.setTextColor(Color.BLACK);
                     }
                 }, 4000);
-
-
-
             }
         });
-
 
         return mView;
     }

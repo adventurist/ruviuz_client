@@ -15,7 +15,7 @@
     <string name="updated">Updated!</string>
     <string name="title_activity_camera">CameraActivity</string>
     <string name="draft">Draft</string>
-    <string name="send">Send</string>
+    <string name="send">Save</string>
     <string name="_0_00000">0.00000</string>
     <string name="ruvhomephoto">Photo of home for roofing quote</string>
     <string name="city">City</string>
@@ -26,7 +26,7 @@
     <string name="take_pic">Take Pic</string>
 
 
-    <string name="measure">measure</string>
+    <string name="measure">Measure</string>
     <string name="width">Width</string>
     <string name="length">Length</string>
     <string name="slope">Slope</string>
@@ -87,7 +87,24 @@
         <item>Logout</item>
     </string-array>
 
-    <!-- TODO: Remove or change this placeholder text -->
+
+    <string-array name="prefixTypes">
+        <item>Mr.</item>
+        <item>Ms.</item>
+        <item>Mrs.</item>
+    </string-array>
+
+    <string-array name="roofMaterials">
+        <item>Standard Shingles</item>
+        <item>Premium Shingles</item>
+        <item>Aluminum Shingles</item>
+        <item>Standing Seam</item>
+        <item>PVC Roof 50mm</item>
+        <item>TPO Roof 45mm</item>
+        <item>EPDM (Rubber)</item>
+        <item>Tar &amp; Gravel/BUR</item>
+    </string-array>
+
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="create_new_quote">Create New Quote</string>
     <string name="see_quotes">See Existing Quotes</string>
@@ -104,6 +121,29 @@
     <string name="street">Street</string>
     <string name="overview">Quote Overview</string>
     <string name="enter_address">Enter Address</string>
+    <string name="mrs">Mrs.</string>
+    <string name="mr">Mr.</string>
+    <string name="ms">Ms.</string>
+    <string name="search">Search</string>
+    <string name="name">Name</string>
+    <string name="contact_info">Contact Info</string>
+    <string name="dimensions">Dimensions</string>
+    <string name="contact">Contact</string>
+    <string name="typetoggle">typeToggle</string>
+    <string name="phone">Phone</string>
+    <string name="edit">Edit</string>
+    <string name="material">Material</string>
+    <string name="prefix">Prefix</string>
+    <string name="price">Price</string>
+    <string name="editing_mode">Editing Mode</string>
+    <string name="edit_mode">Edit Mode</string>
+    <string name="attach">Attach</string>
+    <string name="okay">Okay</string>
+    <string name="delete">Delete</string>
+    <string name="set_main">Set Main</string>
+    <string name="comment">Comment</string>
+    <string name="cancel">Cancel</string>
+    <string name="add_images">Add Images</string>
 
 
 </resources>

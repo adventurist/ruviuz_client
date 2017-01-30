@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_marginTop="4dp"
+    android:layout_marginBottom="4dp"
+    android:descendantFocusability="blocksDescendants"
+    android:background="@color/common_google_signin_btn_text_dark_disabled"
+    android:id="@+id/rviewRow">
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/primaryInfo"
+    android:layout_marginStart="4dp"
+
+    android:orientation="horizontal">
+    <TextView
+        android:text="ID"
+        android:layout_width="48dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/idLabel"
+        android:textColor="#FFFFFF"
+        android:textStyle="normal|bold" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="4dp"
+        android:id="@+id/idTv"
+        android:textColor="#000"
+        >
+
+    </TextView>
+
+    <TextView
+        android:text="Width"
+        android:layout_width="48dp"
+
+        android:layout_height="wrap_content"
+        android:id="@+id/widthLabel"
+        android:textColor="#FFFFFF"
+        android:layout_toEndOf="@id/idTv"
+        android:textStyle="bold"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/widthTv"
+        android:layout_marginEnd="4dp"
+        android:textColor="#000">
+
+    </TextView>
+    <TextView
+        android:text="Length"
+        android:layout_width="48dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/lengthLabel"
+        android:layout_toEndOf="@id/widthTv"
+        android:textColor="#FFFFFF"
+        android:textStyle="bold"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="4dp"
+        android:id="@+id/lengthTv"
+        android:textColor="#000">
+
+    </TextView>
+
+    <TextView
+        android:text="Slope"
+        android:layout_width="48dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/slopeLabel"
+        android:textColor="#FFFFFF"
+        android:textStyle="bold"
+        />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/slopeTv"
+        android:textColor="#000">
+
+    </TextView>
+
+
+</LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/primaryInfo"
+        android:layout_marginTop="4dp"
+        android:layout_marginStart="4dp"
+        android:id="@+id/row6">
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/priceLayout"
+            android:orientation="horizontal">
+            <TextView
+                android:text="Price"
+                android:layout_width="56dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/priceLabel"
+                android:textColor="#FFFFFF"
+                android:textStyle="bold"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:inputType=""
+                android:id="@+id/priceTv"
+                android:textColor="#000">
+            </TextView>
+
+            <TextView
+                android:text="Address"
+
+                android:layout_width="56dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/addressLabel"
+                android:layout_marginStart="8dp"
+                android:textColor="#FFFFFF"
+                android:textStyle="bold"
+                android:layout_below="@id/priceLayout"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_height="wrap_content"
+                android:layout_toEndOf="@id/addressLabel"
+                android:layout_below="@id/priceLayout"
+                android:id="@+id/addressTv"
+                android:textColor="#000">
+            </TextView>
+        </LinearLayout>
+
+        <ImageButton
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_alignParentEnd="true"
+            android:id="@+id/roofOptions"
+            app:elevation="2dp"
+            android:layout_marginEnd="2dp"
+            android:layout_marginBottom="4dp"
+            android:background="@drawable/edit" />
+    </RelativeLayout>
+  
+</RelativeLayout>

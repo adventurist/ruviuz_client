@@ -7,24 +7,30 @@ import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.style.ImageSpan;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import org.json.JSONArray;
@@ -33,19 +39,24 @@ import org.json.JSONObject;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 import stronglogic.ruviuz.content.Customer;
 import stronglogic.ruviuz.content.Roof;
 import stronglogic.ruviuz.fragments.RuvFragment;
 import stronglogic.ruviuz.tasks.RviewTask;
-import stronglogic.ruviuz.views.RuvAdapter;
+import stronglogic.ruviuz.util.RuvFilter;
+import stronglogic.ruviuz.views.IndexAdapter;
 
 import static stronglogic.ruviuz.MainActivity.getStatusBarHeight;
 import static stronglogic.ruviuz.MainActivity.sendViewToBack;
 
-public class RviewActivity extends AppCompatActivity implements RuvFragment.RuvFragListener {
+public class IndexViewActivity extends AppCompatActivity
+        implements RuvFragment.RuvFragListener
+{
 
-    private static final String TAG = "RuviuzRVIEWACTIVITY";
+    private static final String TAG = "RuviuzIndexViewActivity";
     private static final int RUVIUZ_CAMERA = 15;
     private static final int WELCOME_REQUEST = 60;
     private static final int LOGIN_REQUEST = 61;
@@ -71,14 +82,20 @@ public class RviewActivity extends AppCompatActivity implements RuvFragment.RuvF
 
     private ArrayList<Roof> roofArrayList;
     public RecyclerView rv;
+    private IndexAdapter indexAdapter;
+    private RuvFilter ruvFilter;
+    private RuvFilter.filterType filterType = RuvFilter.filterType.ADDRESS;
 
     private DrawerLayout mDrawerLayout;
     private NavigationView mDrawerView;
+    private SearchView searchView;
+
+    private FloatingActionButton showAllFab;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_rview);
+        setContentView(R.layout.activity_iview);
 
         getPrefsData();
 
@@ -90,9 +107,9 @@ public class RviewActivity extends AppCompatActivity implements RuvFragment.RuvF
                         | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
                         | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
 
-        RviewActivity.this.findViewById(R.id.activity_rview).setPadding(0, getStatusBarHeight(RviewActivity.this), 0, 0);
+        IndexViewActivity.this.findViewById(R.id.activity_iview).setPadding(0, getStatusBarHeight(IndexViewActivity.this), 0, 0);
 
-        w.setStatusBarColor(ContextCompat.getColor(RviewActivity.this, R.color.ruvGreenStatus));
+        w.setStatusBarColor(ContextCompat.getColor(IndexViewActivity.this, R.color.ruvGreenStatus));
 
         mToolbar = (Toolbar) findViewById(R.id.app_bar);
         setSupportActionBar(mToolbar);
@@ -113,7 +130,7 @@ public class RviewActivity extends AppCompatActivity implements RuvFragment.RuvF
             if (mIntent.hasExtra("uri")) {
 //                getIntentData(xIntent);
                 if (fileCount + 1 == 4) {
-                    Toast.makeText(RviewActivity.this, "You cannot add more photos", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(IndexViewActivity.this, "You cannot add more photos", Toast.LENGTH_SHORT).show();
                 } else {
                     this.fileCount++;
                     if (fileUrls == null) {
@@ -144,6 +161,20 @@ public class RviewActivity extends AppCompatActivity implements RuvFragment.RuvF
         });
         rviewTask.execute();
 
+        showAllFab = (FloatingActionButton) findViewById(R.id.fullView);
+
+        showAllFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent mIntent = new Intent(IndexViewActivity.this, RviewActivity.class);
+                putIntentData(mIntent);
+                mIntent.putExtra("authToken", authToken);
+                mIntent.putExtra("baseUrl", baseUrl);
+                putPrefsData();
+                startActivity(mIntent);
+            }
+        });
+
         mDrawerLayout = (DrawerLayout) findViewById(R.id.side_menu);
         mDrawerView = (NavigationView) findViewById(R.id.left_drawer);
         ActionBarDrawerToggle drawerToggle = setupDrawerToggle();
@@ -155,8 +186,8 @@ public class RviewActivity extends AppCompatActivity implements RuvFragment.RuvF
                 Intent mIntent = new Intent();
                 switch (item.getTitle().toString()) {
                     case ("Roof List"):
-                        Intent reloadIntent = new Intent(RviewActivity.this, IndexViewActivity.class);
-                        putIntentData(reloadIntent);
+                        Intent reloadIntent = new Intent();
+                        finish();
                         startActivity(reloadIntent);
                         break;
                     case ("Take Photo"):
@@ -208,7 +239,7 @@ public class RviewActivity extends AppCompatActivity implements RuvFragment.RuvF
                 mDrawerLayout.requestLayout();
                 if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
                     mDrawerLayout.closeDrawer(GravityCompat.START);
-                    mDrawerLayout.setBackgroundColor(ContextCompat.getColor(RviewActivity.this, R.color.colorRow));
+                    mDrawerLayout.setBackgroundColor(ContextCompat.getColor(IndexViewActivity.this, R.color.colorRow));
                     sendViewToBack(mDrawerLayout);
                 } else {
                     mDrawerLayout.openDrawer(GravityCompat.START);
@@ -234,7 +265,7 @@ public class RviewActivity extends AppCompatActivity implements RuvFragment.RuvF
 //                if (mToolbar != null) mToolbar.setTitle("Ruviuz");
                 if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
                     mDrawerLayout.closeDrawer(GravityCompat.START);
-                    mDrawerLayout.setBackgroundColor(ContextCompat.getColor(RviewActivity.this, R.color.colorRow));
+                    mDrawerLayout.setBackgroundColor(ContextCompat.getColor(IndexViewActivity.this, R.color.colorRow));
                     sendViewToBack(mDrawerLayout);
                 }
             }
@@ -242,7 +273,7 @@ public class RviewActivity extends AppCompatActivity implements RuvFragment.RuvF
     }
 
     public void goToMain(int request) {
-        Intent mIntent = new Intent(RviewActivity.this, MainActivity.class);
+        Intent mIntent = new Intent(IndexViewActivity.this, MainActivity.class);
         mIntent.putExtra("REQUEST", request);
         startActivity(mIntent);
     }
@@ -263,6 +294,7 @@ public class RviewActivity extends AppCompatActivity implements RuvFragment.RuvF
                 roof.setWidth(Float.valueOf(roofJson.getString("width")));
                 roof.setSlope(Float.valueOf(roofJson.getString("slope")));
                 roof.setPrice(new BigDecimal(roofJson.getString("price")));
+                roof.setCustomerName("Jigga da Third");
                 if (roofJson.has("files")) {
                     JSONArray rFiles = new JSONArray(roofJson.getString("files"));
                     int fileNum = rFiles.length();
@@ -275,9 +307,14 @@ public class RviewActivity extends AppCompatActivity implements RuvFragment.RuvF
                     }
                 roof.setPhotos(photoArray);
                 }
-
                 roofArrayList.add(roof);
             }
+            Collections.sort(roofArrayList, new Comparator<Roof>() {
+                @Override
+                public int compare(Roof o1, Roof o2) {
+                    return o1.getId() > o2.getId() ? 1 : o1.getId() < o2.getId() ? -1 : 0;
+                }
+            });
             return true;
         } catch (JSONException e) {
             e.printStackTrace();
@@ -294,9 +331,9 @@ public class RviewActivity extends AppCompatActivity implements RuvFragment.RuvF
     public void updateUi()  {
         final ArrayList<Roof> feedList = getFeed();
         if (feedList.size() > 0) {
-            final RuvAdapter ruvAdapter = new RuvAdapter(RviewActivity.this, feedList, baseUrl, authToken, reopenDialog, fileUrls);
-            rv = (RecyclerView) findViewById(R.id.recycView);
-            rv.setAdapter(ruvAdapter);
+            this.indexAdapter = new IndexAdapter(IndexViewActivity.this, feedList, baseUrl, authToken, reopenDialog, fileUrls);
+            rv = (RecyclerView) findViewById(R.id.indexView);
+            rv.setAdapter(indexAdapter);
             rv.addOnScrollListener(new RecyclerView.OnScrollListener() {
                 @Override
                 public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
@@ -315,13 +352,79 @@ public class RviewActivity extends AppCompatActivity implements RuvFragment.RuvF
             layoutMgr.setRecycleChildrenOnDetach(true);
             rv.setLayoutManager(layoutMgr);
 //            rv.addItemDecoration(new HorizontalDividerItemDecoration.Builder(this).build());
+            ruvFilter = new RuvFilter(indexAdapter, roofArrayList);
+            this.filterType = RuvFilter.filterType.ADDRESS;
         }
     }
 
     @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                Log.d(TAG, "QueryTxt::" + query);
+                ruvFilter.setType(IndexViewActivity.this.filterType);
+                ruvFilter.filter(query);
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                Log.d(TAG, "TxtChng::" + newText);
+                ruvFilter.setType(IndexViewActivity.this.filterType);
+                ruvFilter.filter(newText);
+                return false;
+            }
+        });
+        return true;
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.ruviuz_menu, menu);
+        getMenuInflater().inflate(R.menu.list_menu, menu);
+        final MenuItem searchItem = menu.findItem(R.id.search);
+        final MenuItem searchToggle = menu.findItem(R.id.actionType);
+        searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+
+        ViewGroup.LayoutParams navButtonsParams = new ViewGroup.LayoutParams(IndexViewActivity.this.mToolbar.getHeight() * 2 / 3, mToolbar.getHeight() * 2 / 3);
+
+        Button typeBtn = new Button(this);
+        typeBtn.setBackground(getDrawable(R.drawable.choose));
+
+//        Button btnPrev = new Button(this);
+//        btnPrev.setBackground(IndexViewActivity.this.getDrawable(R.drawable.choose));
+
+//        searchStats = new TextView(this);
+
+//        ((LinearLayout) searchView.getChildAt(0)).addView(searchStats);
+//        ((LinearLayout) searchView.getChildAt(0)).addView(btnPrev, navButtonsParams);
+        ((LinearLayout) searchView.getChildAt(0)).addView(typeBtn, navButtonsParams);
+
+        ((LinearLayout) searchView.getChildAt(0)).setGravity(Gravity.BOTTOM);
+
+
+
+        typeBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(TAG, "Clicking Choose Button");
+                if (IndexViewActivity.this.filterType == null) {
+                    IndexViewActivity.this.filterType = RuvFilter.filterType.ADDRESS;
+                } else {
+                    IndexViewActivity.this.filterType = IndexViewActivity.this.filterType == RuvFilter.filterType.ADDRESS ? RuvFilter.filterType.CUSTOMER : RuvFilter.filterType.ADDRESS;
+                }
+            }
+        });
+//                .setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+//            @Override
+//            public boolean onMenuItemClick(MenuItem item) {
+//                ruvFilter.setType(RuvFilter.filterType.CUSTOMER);
+//                return false;
+//            }
+//        });
+
+
+//
         updateMenuWithIcon(menu.findItem(R.id.goHome), Color.WHITE);
         updateMenuWithIcon(menu.findItem(R.id.loginAction), Color.WHITE);
         updateMenuWithIcon(menu.findItem(R.id.geoLocate), Color.WHITE);
@@ -340,28 +443,16 @@ public class RviewActivity extends AppCompatActivity implements RuvFragment.RuvF
                 }
                 break;
             case R.id.roofView:
-                Intent rviewIntent = new Intent(this, RviewActivity.class);
+                Intent rviewIntent = new Intent(this, IndexViewActivity.class);
                 rviewIntent.putExtra("authToken", authToken);
                 rviewIntent.putExtra("baseUrl", baseUrl);
                 this.startActivity(rviewIntent);
                 break;
             case R.id.loginAction:
                 Log.d(TAG, "Login action!!");
-                Intent loginIntent = new Intent(RviewActivity.this, MainActivity.class);
-                putIntentData(loginIntent);
-                loginIntent.putExtra("PERSIST", true);
-                loginIntent.putExtra("REQUEST", MainActivity.LOGIN_REQUEST);
-                startActivity(loginIntent);
+
+//                loginDialog();
                 break;
-            case R.id.geoLocate:
-                Log.d(TAG, "GEOLOCATION REQUEST");
-//                MainActivity.getGeoLocation();
-                break;
-            case R.id.goHome:
-                Log.d(TAG, "Going HOME");
-//                dismissAllDialogs();
-//                hideActivity();
-//                welcomeDialog();
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -471,6 +562,7 @@ public class RviewActivity extends AppCompatActivity implements RuvFragment.RuvF
     }
 
     public void getIntentData(Intent intent) {
+
         this.ready = intent.getBooleanExtra("ready", false);
         this.authToken = intent.getStringExtra("authToken");
         this.slope = intent.getFloatExtra("slope", 0);
@@ -501,7 +593,7 @@ public class RviewActivity extends AppCompatActivity implements RuvFragment.RuvF
     }
 
     public void putPrefsData() {
-        SharedPreferences.Editor prefEdit = RviewActivity.this.getSharedPreferences("RuviuzApp", Context.MODE_PRIVATE).edit();
+        SharedPreferences.Editor prefEdit = IndexViewActivity.this.getSharedPreferences("RuviuzApp", Context.MODE_PRIVATE).edit();
         prefEdit.putString("address", address);
         prefEdit.putString("postal", postal);
         prefEdit.putString("city", city);
@@ -531,7 +623,7 @@ public class RviewActivity extends AppCompatActivity implements RuvFragment.RuvF
 
 
     public void getPrefsData() {
-        SharedPreferences mPrefs = RviewActivity.this.getSharedPreferences("RuviuzApp", Context.MODE_PRIVATE);
+        SharedPreferences mPrefs = IndexViewActivity.this.getSharedPreferences("RuviuzApp", Context.MODE_PRIVATE);
         this.address = mPrefs.getString("address", "");
         this.postal = mPrefs.getString("postal", "");
 //        this.price = new BigDecimal(mPrefs.getString("price", "0"));

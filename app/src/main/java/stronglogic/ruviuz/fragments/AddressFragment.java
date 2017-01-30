@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -20,6 +21,7 @@ import android.widget.Toast;
 
 import stronglogic.ruviuz.MainActivity;
 import stronglogic.ruviuz.R;
+import stronglogic.ruviuz.RviewActivity;
 
 /**
  * Created by logicp on 3/22/16.
@@ -74,6 +76,16 @@ public class AddressFragment extends DialogFragment {
     }
 
     @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        return new Dialog(getActivity(), getTheme()){
+            @Override
+            public void onBackPressed() {
+                mActivity.customerDialog();
+            }
+        };
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup parent,
                              Bundle savedInstanceState) {
 
@@ -108,6 +120,21 @@ public class AddressFragment extends DialogFragment {
                         case R.id.actionfragTitle:
                             Log.d(TAG, "ACTIONFRAGTITLE");
                             break;
+                        case R.id.roofView:
+                            Intent rviewIntent = new Intent(mActivity, RviewActivity.class);
+                            mActivity.putIntentData(rviewIntent);
+                            mActivity.putPrefsData();
+                            Log.d(TAG, "Implement this through MainActivity");
+//                            rviewIntent.putExtra("baseUrl", mActivity.);
+                            mActivity.startActivity(rviewIntent);
+                            AddressFragment.this.dismiss();
+                            break;
+                        case R.id.loginAction:
+                            Log.d(TAG, "Login action!!");
+                            mActivity.putPrefsData();
+                            mActivity.loginDialog();
+                            AddressFragment.this.dismiss();
+                            break;
                         case R.id.geoLocate:
                             if (mActivity != null) {
                                 mActivity.getGeoLocation();
@@ -115,6 +142,12 @@ public class AddressFragment extends DialogFragment {
                                 cityEt.setText(newAddress[0]);
                                 provinceEt.setText(newAddress[1]);
                             }
+                            break;
+                        case R.id.goHome:
+                            Log.d(TAG, "Going HOME");
+                            mActivity.putPrefsData();
+                            mActivity.welcomeDialog();
+                            AddressFragment.this.dismiss();
                             break;
                     }
                     return true;
@@ -182,6 +215,7 @@ public class AddressFragment extends DialogFragment {
     public void buttonClicked(View view)    {
         if (this.address != null && this.postal != null) {
             addressFragListener.addressFragInteraction(address, postal, city, province);
+            dismiss();
         }
     }
 

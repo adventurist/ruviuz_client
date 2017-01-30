@@ -3,11 +3,13 @@ package stronglogic.ruviuz.fragments;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
+import android.telephony.PhoneNumberFormattingTextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -15,6 +17,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 
 import stronglogic.ruviuz.MainActivity;
 import stronglogic.ruviuz.R;
@@ -40,7 +44,10 @@ public class CustomerFragment extends DialogFragment {
     
     private MainActivity mActivity;
 
-    private String firstName, lastName, email, phone;
+    private String firstName, lastName, email, phone, prefix;
+
+    private RadioGroup prefixGroup;
+    private RadioButton mr, mrs, ms;
 
     private EditText firstEt, lastEt, emailEt, phoneeT;
 
@@ -67,6 +74,7 @@ public class CustomerFragment extends DialogFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
+            this.prefix = getArguments().getString("prefix");
             this.firstName = getArguments().getString("firstName");
             this.lastName = getArguments().getString("lastName");
             this.email = getArguments().getString("email");
@@ -91,14 +99,37 @@ public class CustomerFragment extends DialogFragment {
     }
 
     @Override
+    public void onCancel(DialogInterface dialog) {
+        mActivity.mainDialog();
+    }
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View mView = inflater.inflate(R.layout.customerfragment, container, false);
+        final View mView = inflater.inflate(R.layout.customerfragment, container, false);
 
         mToolbar = (Toolbar) mView.findViewById(R.id.ruvFragToolbar);
 
         mToolbar.inflateMenu(R.menu.ruviuz_menu);
+
+        prefixGroup = (RadioGroup) mView.findViewById(R.id.clientPrefix);
+        mr = (RadioButton) mView.findViewById(R.id.prefix_mr);
+        if (this.prefix != null && this.prefix.equals("Mr."))
+            mr.setChecked(true);
+        ms = (RadioButton) mView.findViewById(R.id.prefix_ms);
+        if (this.prefix != null && this.prefix.equals("Ms."))
+            ms.setChecked(true);
+        mrs = (RadioButton) mView.findViewById(R.id.prefix_mrs);
+        if (this.prefix != null && this.prefix.equals("Mrs."))
+            mrs.setChecked(true);
+
+        prefixGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                RadioButton radioBtn = (RadioButton) mView.findViewById(checkedId);
+                CustomerFragment.this.prefix = radioBtn.getText().toString();
+            }
+        });
 
         firstEt = (EditText) mView.findViewById(R.id.customerFirst);
         if (firstName != null) firstEt.setText(firstName);
@@ -108,6 +139,8 @@ public class CustomerFragment extends DialogFragment {
         if (email != null) emailEt.setText(email);
         phoneeT = (EditText) mView.findViewById(R.id.phone);
         if (phone != null) phoneeT.setText(phone);
+        phoneeT.addTextChangedListener(new PhoneNumberFormattingTextWatcher());
+
 
         if (mToolbar != null) {
             mToolbar.setNavigationIcon(R.drawable.construction);
@@ -136,6 +169,7 @@ public class CustomerFragment extends DialogFragment {
                             break;
                         case R.id.loginAction:
                             Log.d(TAG, "Login action!!");
+                            mActivity.putPrefsData();
                             mActivity.loginDialog();
                             CustomerFragment.this.dismiss();
                             break;
@@ -145,6 +179,7 @@ public class CustomerFragment extends DialogFragment {
                             break;
                         case R.id.goHome:
                             Log.d(TAG, "Going HOME");
+                            mActivity.putPrefsData();
                             mActivity.welcomeDialog();
                             CustomerFragment.this.dismiss();
                             break;
@@ -165,9 +200,9 @@ public class CustomerFragment extends DialogFragment {
                 customerName[1] = lastEt.getText().toString();
                 String email = emailEt.getText().toString();
                 String phone = phoneeT.getText().toString();
-                //TODO add email and phone
+                String mPrefix = CustomerFragment.this.prefix == null ? "Mr" : CustomerFragment.this.prefix;
 
-                mListener.customerfragInteraction(customerName, email, phone, false);
+                mListener.customerfragInteraction(customerName, email, phone, false, mPrefix);
             }
         });
 
@@ -206,6 +241,6 @@ public class CustomerFragment extends DialogFragment {
      */
     public interface CustomerFragListener {
         // TODO: Update argument type and name
-        void customerfragInteraction(String[] name, String email, String phone, boolean married);
+        void customerfragInteraction(String[] name, String email, String phone, boolean married, String prefix);
     }
 }

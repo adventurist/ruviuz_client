@@ -560,16 +560,18 @@ public class CameraActivity extends AppCompatActivity {
         this.fileUrls = intent.getStringArrayExtra("fileUrls");
         this.callingClass = intent.getStringExtra("callingClass");
         this.ready = intent.getBooleanExtra("ready", false);
-        try {
-            JSONObject customerJson = new JSONObject(intent.getStringExtra("customer"));
-            if (this.mCustomer == null) this.mCustomer = new Customer();
-            this.mCustomer.setFirstname(customerJson.get("firstName").toString());
-            this.mCustomer.setLastname(customerJson.get("lastName").toString());
-            this.mCustomer.setEmail(customerJson.get("email").toString());
-            this.mCustomer.setPhone(customerJson.get("phone").toString());
-            this.mCustomer.setMarried(Boolean.valueOf(customerJson.get("married").toString()));
-        } catch (JSONException e) {
-            e.printStackTrace();
+        if (intent.hasExtra("customer")) {
+            try {
+                JSONObject customerJson = new JSONObject(intent.getStringExtra("customer"));
+                if (this.mCustomer == null) this.mCustomer = new Customer();
+                this.mCustomer.setFirstname(customerJson.get("firstName").toString());
+                this.mCustomer.setLastname(customerJson.get("lastName").toString());
+                this.mCustomer.setEmail(customerJson.get("email").toString());
+                this.mCustomer.setPhone(customerJson.get("phone").toString());
+                this.mCustomer.setMarried(Boolean.valueOf(customerJson.get("married").toString()));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
     }
 

@@ -20,7 +20,7 @@
                 <item android:title="@string/measure"
                     android:icon="@drawable/metric"/>
                 <item android:title="Client"
-                    android:icon="@drawable/customer"/>
+                    android:icon="@drawable/client"/>
                 <item android:title="@string/address"
                     android:icon="@drawable/address"/>
                 <item android:title="Get Location"

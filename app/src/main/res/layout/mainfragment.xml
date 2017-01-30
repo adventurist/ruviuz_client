@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="#000"
+    android:background="@color/colorRow"
     tools:context="stronglogic.ruviuz.fragments.MainFragment">
     <!--style="@style/RuvFullFrag"-->
 
@@ -16,13 +16,6 @@
         android:theme="@style/RuvFragActionBar"
         app:popupTheme="@style/RuvFragActionBar"/>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/actionUI"
-        android:orientation="vertical"
-        android:background="@color/colorRow">
-
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -30,19 +23,29 @@
         android:textAllCaps="true"
         android:textStyle="bold"
         android:textAlignment="center"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="32dp"
+        android:layout_marginTop="48dp"
         android:layout_gravity="center_horizontal"
         android:id="@+id/actionfragTitle"
         android:text="@string/ruv_action"
         android:textColor="#000"
         />
 
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/actionUI"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:layout_marginBottom="64dp"
+        android:background="@color/colorRow">
+
+
     <ImageButton
         android:layout_width="168dp"
         android:layout_height="42dp"
         android:id="@+id/createQuote"
-        android:layout_gravity="center_horizontal"
+        android:layout_gravity="center"
         android:selectAllOnFocus="true"
         android:padding="4dp"
         android:gravity="center"

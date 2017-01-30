@@ -19,6 +19,7 @@ public class Roof extends LauncherActivity.ListItem implements Serializable  {
     private float width;
     private float length;
     private int id;
+    private String customerName;
     private boolean justUpdated;
 
     private ArrayList<String> photos;
@@ -86,6 +87,14 @@ public class Roof extends LauncherActivity.ListItem implements Serializable  {
         } else {
             return new ArrayList<String>();
         }
+    }
+
+    public void setCustomerName(String name) {
+        this.customerName = name;
+    }
+
+    public String getCustomerName() {
+        return this.customerName;
     }
 
 

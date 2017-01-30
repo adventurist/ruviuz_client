@@ -1,0 +1,335 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context="stronglogic.ruviuz.fragments.ImageEditFragment">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/ruvFragToolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="@style/RuvFragActionBar"
+        app:popupTheme="@style/RuvFragActionBar"/>
+
+    <RelativeLayout
+        android:id="@+id/form"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/colorRow"
+        android:layout_marginTop="?attr/actionBarSize">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="24sp"
+            android:textAllCaps="true"
+            android:textStyle="bold"
+            android:textAlignment="center"
+            android:layout_marginTop="48dp"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="8dp"
+            android:id="@+id/mainTitle"
+            android:text="@string/add_images"
+            android:textColor="#000"
+            android:layout_alignParentTop="true"
+            />
+
+        <RelativeLayout
+            android:layout_alignParentBottom="true"
+            android:layout_width="match_parent"
+            android:layout_height="72dp"
+            android:id="@+id/fileBtnWrap">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:layout_marginStart="16dp"
+                android:id="@+id/takePicTxt"
+                android:text="@string/take_pic"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:textColor="#000"
+                android:layout_alignParentStart="false"
+                android:layout_alignParentBottom="true"
+                />
+
+            <ImageButton
+                android:id="@+id/takePicBtn"
+                android:src="@drawable/takephoto"
+                android:background="@drawable/ruvbtn_wt"
+                android:scaleType="fitCenter"
+                android:layout_alignWithParentIfMissing="false"
+                android:padding="4dp"
+                android:layout_above="@+id/takePicTxt"
+                android:layout_width="48dp"
+                android:layout_height="32dp"
+                android:layout_marginBottom="4dp"
+                android:layout_marginStart="20dp"
+                android:layout_alignParentBottom="false" />
+
+
+            <ImageButton
+                android:layout_width="48dp"
+                android:layout_height="32dp"
+                android:scaleType="fitCenter"
+                android:id="@+id/okayBtn"
+                android:src="@drawable/checked"
+                android:padding="4dp"
+                android:text="@string/send"
+                android:textColorLink="?android:attr/colorFocusedHighlight"
+                android:textColor="@color/ruvSelected"
+                android:textColorHighlight="@color/colorAccent"
+                android:layout_centerHorizontal="true"
+                android:elevation="0dp"
+                android:textSize="18sp"
+                android:layout_marginEnd="16dp"
+                android:layout_above="@+id/fileChooseTxt"
+                android:background="@drawable/ruvbtn_wt"
+                android:layout_marginBottom="4dp"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:layout_centerHorizontal="true"
+                android:layout_marginEnd="15dp"
+                android:id="@+id/fileChooseTxt"
+                 android:text="@string/upload"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:textColor="#000"
+                android:layout_alignParentBottom="true"
+                />
+
+            <ImageButton
+                android:layout_width="48dp"
+                android:layout_height="32dp"
+                android:scaleType="fitCenter"
+                android:id="@+id/fileChooseBtn"
+                android:src="@drawable/attach"
+                android:padding="4dp"
+                android:text="@string/send"
+                android:textColorLink="?android:attr/colorFocusedHighlight"
+                android:textColor="@color/ruvSelected"
+                android:textColorHighlight="@color/colorAccent"
+                android:layout_alignParentEnd="true"
+                android:elevation="0dp"
+                android:textSize="18sp"
+                android:layout_marginEnd="16dp"
+                android:layout_above="@+id/fileChooseTxt"
+                android:background="@drawable/ruvbtn_wt"
+                android:layout_marginBottom="4dp"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:layout_centerHorizontal="true"
+                android:layout_marginEnd="15dp"
+                android:id="@+id/fileChooseTxt"
+                android:layout_alignParentEnd="true"
+                android:text="@string/upload"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:textColor="#000"
+                android:layout_alignParentBottom="true"
+                />
+
+
+        </RelativeLayout>
+
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/mainTitle"
+            android:layout_above="@id/fileBtnWrap"
+            android:id="@+id/dataWrap">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/mainTitle"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:id="@+id/fileWrap"
+            android:layout_marginTop="24dp"
+            >
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxWidth="220dp"
+            android:id="@+id/ruvpic1"
+            android:layout_centerHorizontal="true"
+            />
+
+        <!--<Button-->
+            <!--android:layout_width="72dp"-->
+            <!--android:layout_height="36dp"-->
+            <!--android:layout_centerHorizontal="true"-->
+            <!--android:layout_below="@id/ruvpic1"-->
+            <!--android:id="@+id/addComment"-->
+            <!--android:layout_marginStart="24dp"-->
+            <!--android:layout_marginBottom="16dp"-->
+            <!--android:layout_marginEnd="24dp"-->
+            <!--android:textColor="@color/ruvGreen"-->
+            <!--android:text="@string/comment"-->
+            <!--android:textAllCaps="false"-->
+            <!--android:visibility="invisible"-->
+            <!--android:background="@drawable/ruvdrkbtn"/>-->
+
+
+        <!--<Button-->
+            <!--android:layout_width="72dp"-->
+            <!--android:layout_height="36dp"-->
+            <!--android:layout_below="@id/ruvpic1"-->
+            <!--android:id="@+id/setMainBtn"-->
+            <!--android:layout_toStartOf="@id/addComment"-->
+            <!--android:textColor="@color/ruvGreen"-->
+            <!--android:layout_marginBottom="16dp"-->
+            <!--android:textAllCaps="false"-->
+            <!--android:visibility="invisible"-->
+            <!--android:text="@string/set_main"-->
+            <!--android:background="@drawable/ruvdrkbtn" />-->
+
+        <!--<Button-->
+            <!--android:layout_width="72dp"-->
+            <!--android:layout_height="36dp"-->
+            <!--android:layout_below="@id/ruvpic1"-->
+            <!--android:id="@+id/deleteBtn"-->
+            <!--android:textAllCaps="false"-->
+            <!--android:text="@string/delete"-->
+            <!--android:visibility="invisible"-->
+            <!--android:textColor="@color/ruvGreen"-->
+            <!--android:layout_marginBottom="16dp"-->
+            <!--android:layout_toEndOf="@id/addComment"-->
+            <!--android:background="@drawable/ruvdrkbtn"-->
+            <!--/>-->
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxWidth="220dp"
+            android:id="@+id/ruvpic2"
+            android:layout_below="@id/ruvpic1"
+            android:layout_centerHorizontal="true"
+            />
+
+        <!--<Button-->
+            <!--android:layout_width="72dp"-->
+            <!--android:layout_height="36dp"-->
+            <!--android:layout_centerHorizontal="true"-->
+            <!--android:layout_below="@id/ruvpic2"-->
+            <!--android:id="@+id/addComment"-->
+            <!--android:layout_marginStart="24dp"-->
+            <!--android:layout_marginBottom="16dp"-->
+            <!--android:layout_marginEnd="24dp"-->
+            <!--android:textColor="@color/ruvGreen"-->
+            <!--android:text="@string/comment"-->
+            <!--android:textAllCaps="false"-->
+            <!--android:visibility="invisible"-->
+            <!--android:background="@drawable/ruvdrkbtn"/>-->
+
+
+        <!--<Button-->
+            <!--android:layout_width="72dp"-->
+            <!--android:layout_height="36dp"-->
+            <!--android:layout_below="@id/ruvpic2"-->
+            <!--android:id="@+id/setMainBtn"-->
+            <!--android:layout_toStartOf="@id/addComment"-->
+            <!--android:textColor="@color/ruvGreen"-->
+            <!--android:layout_marginBottom="16dp"-->
+            <!--android:textAllCaps="false"-->
+            <!--android:visibility="invisible"-->
+            <!--android:text="@string/set_main"-->
+            <!--android:background="@drawable/ruvdrkbtn" />-->
+
+        <!--<Button-->
+            <!--android:layout_width="72dp"-->
+            <!--android:layout_height="36dp"-->
+            <!--android:layout_below="@id/ruvpic2"-->
+            <!--android:id="@+id/deleteBtn"-->
+            <!--android:textAllCaps="false"-->
+            <!--android:text="@string/delete"-->
+            <!--android:visibility="invisible"-->
+            <!--android:textColor="@color/ruvGreen"-->
+            <!--android:layout_marginBottom="16dp"-->
+            <!--android:layout_toEndOf="@id/addComment"-->
+            <!--android:background="@drawable/ruvdrkbtn"-->
+            <!--/>-->
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxWidth="220dp"
+            android:id="@+id/ruvpic3"
+            android:layout_below="@id/ruvpic2"
+            android:layout_centerHorizontal="true"
+            />
+
+
+
+
+        <!--<Button-->
+            <!--android:layout_width="72dp"-->
+            <!--android:layout_height="36dp"-->
+            <!--android:layout_centerHorizontal="true"-->
+            <!--android:layout_alignParentBottom="true"-->
+            <!--android:id="@+id/addComment"-->
+            <!--android:layout_marginStart="24dp"-->
+            <!--android:layout_marginBottom="16dp"-->
+            <!--android:layout_marginEnd="24dp"-->
+            <!--android:textColor="@color/ruvGreen"-->
+            <!--android:text="@string/comment"-->
+            <!--android:textAllCaps="false"-->
+            <!--android:background="@drawable/ruvdrkbtn"/>-->
+
+
+        <!--<Button-->
+            <!--android:layout_width="72dp"-->
+            <!--android:layout_height="36dp"-->
+            <!--android:layout_alignParentBottom="true"-->
+            <!--android:id="@+id/setMainBtn"-->
+            <!--android:layout_toStartOf="@id/addComment"-->
+            <!--android:textColor="@color/ruvGreen"-->
+            <!--android:layout_marginBottom="16dp"-->
+            <!--android:textAllCaps="false"-->
+            <!--android:text="@string/set_main"-->
+            <!--android:background="@drawable/ruvdrkbtn" />-->
+
+        <!--<Button-->
+            <!--android:layout_width="72dp"-->
+            <!--android:layout_height="36dp"-->
+            <!--android:layout_alignParentBottom="true"-->
+            <!--android:id="@+id/deleteBtn"-->
+            <!--android:textAllCaps="false"-->
+            <!--android:text="@string/delete"-->
+            <!--android:textColor="@color/ruvGreen"-->
+            <!--android:layout_marginBottom="16dp"-->
+            <!--android:layout_toEndOf="@id/addComment"-->
+            <!--android:background="@drawable/ruvdrkbtn"-->
+            <!--/>-->
+        <!--<TextView-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:textSize="24sp"-->
+            <!--android:textAllCaps="true"-->
+            <!--android:textStyle="bold"-->
+            <!--android:textAlignment="center"-->
+            <!--android:layout_marginTop="48dp"-->
+            <!--android:layout_centerHorizontal="true"-->
+            <!--android:layout_marginBottom="8dp"-->
+            <!--android:id="@+id/mainTitle"-->
+            <!--android:text=""-->
+            <!--android:textColor="#000"-->
+            <!--android:layout_alignParentTop="true"-->
+        <!--/>-->
+            </RelativeLayout>
+        </ScrollView>
+    </RelativeLayout>
+</FrameLayout>

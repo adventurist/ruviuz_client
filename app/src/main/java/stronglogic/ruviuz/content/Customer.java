@@ -15,7 +15,13 @@ public class Customer extends LauncherActivity.ListItem implements Serializable 
     private String phone;
     private String firstname;
     private String lastname;
+    private String prefix;
     private boolean married;
+
+
+    public void setPrefix(String prefix) { this.prefix = prefix;}
+
+    public String getPrefix() { return this.prefix; }
 
 
     public void setEmail (String email)    {

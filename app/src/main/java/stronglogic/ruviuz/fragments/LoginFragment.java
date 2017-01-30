@@ -3,6 +3,7 @@ package stronglogic.ruviuz.fragments;
 import android.app.Activity;
 import android.app.DialogFragment;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
@@ -32,14 +33,8 @@ public class LoginFragment extends DialogFragment {
     private String[] login = new String[2];
     private String baseUrl;
 
-//    public static LoginFragment newInstance(String param1, String param2) {
-//        LoginFragment fragment = new LoginFragment();
-////        Bundle args = new Bundle();
-////        args.putString(ARG_PARAM1, param1);
-////        args.putString(ARG_PARAM2, param2);
-////        fragment.setArguments(args);
-//        return fragment;
-//    }
+    private MainActivity mActivity;
+
 
     public LoginFragment() {
 
@@ -62,6 +57,11 @@ public class LoginFragment extends DialogFragment {
     }
 
     @Override
+    public void onCancel(DialogInterface dialog) {
+        mActivity.welcomeDialog();
+    }
+
+        @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup parent,
                              Bundle savedInstanceState) {
 
@@ -101,6 +101,10 @@ public class LoginFragment extends DialogFragment {
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         try {
+
+            if (activity instanceof MainActivity) {
+                this.mActivity = (MainActivity)activity;
+            }
             if (activity != null) {
                 loginFragListener = (LoginFragListener) activity;
             }
@@ -131,7 +135,7 @@ public class LoginFragment extends DialogFragment {
         SharedPreferences prefs = getActivity().getSharedPreferences("RuviuzApp", Context.MODE_PRIVATE);
         SharedPreferences.Editor prefEdit = prefs.edit();
         prefEdit.putString("email", login[0]);
-        prefEdit.putString("pass", login[1]);
+        prefEdit.putString("password", login[1]);
         prefEdit.apply();
     }
 

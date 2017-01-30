@@ -1,0 +1,735 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context="stronglogic.ruviuz.fragments.EditFragment">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/ruvFragToolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="@style/RuvFragActionBar"
+        app:popupTheme="@style/RuvFragActionBar"/>
+
+    <RelativeLayout
+        android:id="@+id/form"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="?attr/actionBarSize">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="24sp"
+            android:textAllCaps="true"
+            android:textStyle="bold"
+            android:textAlignment="center"
+            android:layout_marginTop="48dp"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="8dp"
+            android:id="@+id/mainTitle"
+            android:text="@string/edit_mode"
+            android:textColor="#000"
+            android:layout_alignParentTop="true"
+            />
+
+
+    <RelativeLayout
+        android:layout_alignParentBottom="true"
+        android:layout_width="match_parent"
+        android:layout_height="72dp"
+        android:id="@+id/editBtnWrap">
+
+        <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginStart="26dp"
+        android:id="@+id/clearBtnTxt"
+        android:text="@string/clear"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        android:textColor="#000"
+        android:layout_alignParentStart="false"
+        android:layout_alignParentBottom="true"
+        />
+
+        <ImageButton
+            android:id="@+id/clearBtn"
+            android:src="@drawable/restart"
+            android:background="@drawable/ruvbtn_wt"
+            android:scaleType="fitCenter"
+            android:layout_alignWithParentIfMissing="false"
+            android:padding="8dp"
+            android:layout_above="@+id/clearBtnTxt"
+            android:layout_width="48dp"
+            android:layout_height="32dp"
+            android:layout_marginBottom="4dp"
+            android:layout_marginStart="20dp"
+            android:layout_alignParentBottom="false" />
+
+        <ImageButton
+            android:layout_width="48dp"
+            android:layout_height="32dp"
+            android:scaleType="fitCenter"
+            android:id="@+id/okayBtn"
+            android:src="@drawable/checked"
+            android:padding="8dp"
+            android:text="@string/send"
+            android:textColorLink="?android:attr/colorFocusedHighlight"
+            android:textColor="@color/ruvSelected"
+            android:textColorHighlight="@color/colorAccent"
+            android:layout_alignParentEnd="true"
+            android:elevation="0dp"
+            android:textSize="18sp"
+            android:layout_marginEnd="16dp"
+            android:layout_above="@+id/sendTxt"
+            android:background="@drawable/ruvbtn_wt"
+            android:layout_marginBottom="4dp"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_centerHorizontal="true"
+            android:layout_marginEnd="24dp"
+            android:id="@+id/sendTxt"
+            android:layout_alignParentEnd="true"
+            android:text="@string/okay"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:textColor="#000"
+            android:layout_alignParentBottom="true"
+            />
+
+
+        </RelativeLayout>
+
+
+
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/mainTitle"
+            android:layout_above="@id/editBtnWrap"
+            android:id="@+id/dataWrap">
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+            <GridLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/roofData"
+                android:columnCount="3"
+                android:layout_marginTop="16dp"
+                >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="top|start"
+                    android:layout_marginStart="16dp"
+                    android:textSize="18sp"
+                    android:layout_columnWeight="1"
+                    android:text="@string/name"
+                    android:id="@+id/nameLabel"/>
+
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:layout_gravity="top|start"
+                    android:textSize="18sp"
+                    android:layout_columnWeight="1"
+                    android:text="@string/prefix"
+                    android:id="@+id/prefixLabel"/>
+
+
+                <Spinner
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_columnSpan="1"
+                    android:layout_gravity="top|start"
+                    android:layout_marginTop="-12dp"
+                    android:textSize="14sp"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:id="@+id/prefixSpin"/>
+                <TextView android:layout_columnSpan="1"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="top|start"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_columnSpan="1"
+                    android:textSize="18sp"
+                    android:layout_columnWeight="1"
+                    android:text="First"
+                    android:id="@+id/firstLabel"/>
+
+                <EditText
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="14sp"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:layout_gravity="top|start"
+                    android:layout_columnSpan="1"
+                    android:id="@+id/firstEt"/>
+
+                <TextView android:layout_columnSpan="1" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:layout_gravity="top|start"
+                    android:layout_columnSpan="1"
+                    android:layout_marginTop="8dp"
+                    android:textSize="18sp"
+                    android:layout_columnWeight="1"
+                    android:text="Last"
+                    android:id="@+id/lastLabel"/>
+
+                <EditText
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="14sp"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:layout_gravity="top|start"
+                    android:layout_columnSpan="1"
+                    android:id="@+id/lastEt"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_gravity="top|start"
+                    android:layout_marginTop="8dp"
+                    android:layout_columnSpan="1"
+                    android:textSize="18sp"
+                    android:text="@string/email"
+                    android:id="@+id/emailLabel"/>
+
+                <EditText
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:inputType="textEmailAddress"
+                    android:textSize="14sp"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:layout_gravity="top|start"
+                    android:layout_columnWeight="1.5"
+                    android:layout_columnSpan="2"
+                    android:id="@+id/emailEt" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_gravity="top|start"
+                    android:layout_columnWeight="1"
+                    android:textSize="18sp"
+                    android:text="@string/phone"
+                    android:id="@+id/phoneLabel"/>
+                <EditText
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_columnSpan="2"
+                    android:textSize="14sp"
+                    android:inputType="phone"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:layout_gravity="top|start"
+                    android:layout_marginStart="4dp"
+                    android:id="@+id/phoneEt"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="8dp"
+                    android:text="@string/address"
+                    android:textSize="18sp"
+                    android:layout_gravity="top|start"
+                    android:layout_columnWeight="1"
+                    android:id="@+id/addressLabel"/>
+
+                <EditText
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="14sp"
+                    android:id="@+id/addressEt"
+                    android:layout_marginStart="4dp"
+                    android:inputType="textPostalAddress"
+                    android:layout_columnSpan="2"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:layout_gravity="top|start"
+                    android:layout_columnWeight="1.5" />
+
+                <TextView
+                    android:layout_width="72dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_columnSpan="1"
+                    android:text="@string/city"
+                    android:textSize="18sp"
+                    android:id="@+id/cityLabel"/>
+
+                <EditText
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="14sp"
+                    android:id="@+id/cityEt"
+                    android:layout_marginTop="6dp"
+                    android:layout_columnSpan="1"
+                    android:layout_marginStart="4dp"
+                    android:textColor="@color/colorPrimaryDark" />
+
+                <Button
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_gravity="end"
+                    android:layout_marginEnd="24dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/geolocation"
+                    android:id="@+id/getLocationBtn"
+                    android:layout_columnSpan="1" />
+
+                <TextView
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_columnSpan="1"
+                    android:text="@string/province"
+                    android:textSize="18sp"
+                    android:id="@+id/regionLabel"/>
+
+                <EditText
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:textSize="14sp"
+                    android:id="@+id/regionEt"
+                    android:layout_marginTop="6dp"
+                    android:layout_columnSpan="2"
+                    android:textColor="@color/colorPrimaryDark"
+                    />
+
+                <TextView
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_columnSpan="1"
+                    android:text="@string/postal_code"
+                    android:textSize="18sp"
+                    android:id="@+id/postalLabel"/>
+
+                <EditText
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="14sp"
+                    android:layout_marginTop="7dp"
+                    android:layout_marginStart="4dp"
+                    android:inputType="textPostalAddress"
+                    android:id="@+id/postalEt"
+
+                    android:layout_columnSpan="1"
+                    android:textColor="@color/colorPrimaryDark"
+                    />
+
+
+
+                <TextView
+                    android:layout_width="96dp"
+                    android:layout_height="wrap_content"
+                    android:textSize="18sp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="12dp"
+                    android:text="@string/dimensions"
+                    android:layout_gravity="top|start"
+                    android:layout_columnSpan="3"/>
+
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="24dp"
+                    android:layout_marginTop="12dp"
+                    android:layout_gravity="top|start"
+                    android:layout_columnSpan="1"
+                    android:textSize="14sp"
+                    android:id="@+id/lengthLabel"
+                    android:text="@string/length"/>
+                <EditText
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="top|start"
+                    android:layout_columnSpan="1"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginTop="2dp"
+                    android:inputType="numberDecimal"
+                    android:textSize="14sp"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:id="@+id/roofLength"
+                     />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/roofLengthFtTxt"
+                    android:text="@string/ft"
+                    android:textSize="14sp"
+                    android:layout_gravity="top|start"
+                    android:layout_columnSpan="1"
+                    android:labelFor="@id/roofLength"
+                    android:layout_marginTop="12dp"
+                    android:layout_marginStart="4dp"
+                     />
+
+                <TextView android:layout_columnSpan="1"/>
+                <EditText
+                    android:id="@+id/roofLengthIn"
+                    android:layout_height="wrap_content"
+                    android:textAlignment="center"
+                    android:inputType="numberDecimal"
+                    android:textSize="14sp"
+                    android:layout_gravity="top|start"
+                    android:layout_columnSpan="1"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:layout_width="wrap_content"
+                    android:layout_marginTop="-8dp"
+                    android:layout_marginStart="4dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/roofLengthInTxt"
+                    android:text="@string/inches"
+                    android:layout_gravity="top|start"
+                    android:layout_columnSpan="1"
+                    android:labelFor="@id/roofLengthIn"
+                    android:textSize="14sp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginStart="4dp"
+                    />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_marginStart="24dp"
+                    android:layout_marginTop="4dp"
+                    android:textSize="14sp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="top|start"
+                    android:layout_columnSpan="1"
+                    android:id="@+id/widthLabel"
+                    android:text="@string/width"/>
+
+
+                <EditText
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="top|start"
+                    android:layout_columnSpan="1"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginTop="-7dp"
+                    android:textSize="14sp"
+                    android:inputType="numberDecimal"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:id="@+id/roofWidth"
+                    android:layout_below="@id/lengthLabel"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/roofWidthFtTxt"
+                    android:text="@string/ft"
+                    android:textSize="14sp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginStart="4dp"
+                    android:layout_gravity="top|start"
+                    android:layout_columnSpan="1"/>
+
+                <TextView android:layout_columnSpan="1"/>
+                <EditText
+                    android:id="@+id/roofWidthIn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:inputType="numberDecimal"
+                    android:textAlignment="center"
+                    android:textSize="14sp"
+                    android:layout_gravity="top|start"
+                    android:layout_columnSpan="1"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:layout_marginTop="-8dp"
+                    android:layout_marginStart="4dp"
+                    />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/roofWidthInTxt"
+                    android:labelFor="@id/roofWidthFtTxt"
+                    android:text="@string/inches"
+                    android:textSize="14sp"
+                    android:layout_gravity="top|start"
+                    android:layout_columnSpan="1"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginStart="4dp"
+                    />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_marginStart="24dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_height="wrap_content"
+                    android:textSize="14sp"
+                    android:layout_gravity="top|start"
+                    android:layout_columnSpan="1"
+                    android:id="@+id/slopeLabel"
+                    android:text="@string/slope"/>
+
+                <EditText
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="-7dp"
+                    android:textSize="14sp"
+                    android:layout_marginStart="4dp"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:inputType="numberDecimal"
+                    android:layout_gravity="top|start"
+                    android:layout_columnSpan="1"
+                    android:id="@+id/roofSlope"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:layout_gravity="top|start"
+                    android:layout_columnSpan="1"
+                    android:text="@string/degree_symbol"/>
+                <LinearLayout
+                    android:layout_columnSpan="3"
+                    android:layout_rowSpan="4"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                </LinearLayout>
+
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginStart="16dp"
+                    android:id="@+id/matLabel"
+                    android:layout_columnSpan="1"
+                    android:text="@string/material"
+                    android:textSize="18sp"
+                    />
+
+
+                <Spinner
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_columnSpan="2"
+                    android:layout_marginTop="8dp"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:id="@+id/materialSpin"
+                    android:textSize="15sp"/>
+
+                <TextView
+                    android:layout_width="72dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginStart="16dp"
+                    android:textSize="18sp"
+                    android:layout_columnSpan="1"
+                    android:layout_gravity="top|start"
+                    android:text="@string/price"/>
+
+                <EditText
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="18sp"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:layout_gravity="top|start"
+                    android:layout_marginStart="4dp"
+                    android:id="@+id/priceEt"
+                    android:layout_columnSpan="1"
+                    />
+
+                <Button
+                    android:id="@+id/uploadFile"
+                    android:layout_gravity="end"
+                    android:text="@string/attach"
+                    android:background="@android:color/transparent"
+                    android:drawableTop="@drawable/attach24"
+                    android:textAlignment="center"
+                    android:textAllCaps="false"
+                    android:elevation="0dp"
+                    android:scaleType="fitCenter"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_columnSpan="1"
+                    android:textSize="15sp"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp" />
+
+
+
+
+
+                <!--<ImageButton-->
+                <!--android:layout_height="36dp"-->
+                <!--android:id="@+id/clientBtn"-->
+                <!--android:text="@string/client_info"-->
+                <!--android:layout_gravity="end"-->
+                <!--android:padding="4dp"-->
+                <!--android:background="@drawable/ruvbtn_wt"-->
+                <!--android:scaleType="fitCenter"-->
+                <!--android:alpha="0.2"-->
+                <!--android:textAlignment="center"-->
+                <!--android:layout_marginEnd="8dp"-->
+                <!--android:textAllCaps="false"-->
+                <!--android:elevation="0dp"-->
+                <!--android:layout_marginTop="24dp"-->
+                <!--android:src="@drawable/client"-->
+                <!--android:layout_below="@id/contactInfoTv"-->
+                <!--android:layout_width="108dp"-->
+                <!--android:layout_alignParentEnd="true"-->
+                <!--android:layout_marginBottom="8dp"-->
+                <!--/>-->
+
+
+                <!--<Button-->
+                <!--android:layout_height="36dp"-->
+                <!--android:id="@+id/addressGetDialog"-->
+                <!--android:text="@string/address"-->
+                <!--android:background="@drawable/ruvbtn_wt"-->
+                <!--android:alpha="0.2"-->
+                <!--android:textAlignment="center"-->
+                <!--android:textAllCaps="false"-->
+                <!--android:elevation="0dp"-->
+                <!--android:drawableEnd="@drawable/address"-->
+                <!--android:layout_below="@id/clientBtn"-->
+                <!--android:layout_width="108dp"-->
+                <!--android:layout_alignParentEnd="true"-->
+                <!--android:layout_marginEnd="8dp"-->
+                <!--android:layout_marginBottom="8dp"/>-->
+
+
+                <!--<Button-->
+                <!--android:layout_height="36dp"-->
+                <!--android:id="@+id/metricfragOpen"-->
+                <!--android:elegantTextHeight="true"-->
+                <!--android:layout_alignParentEnd="true"-->
+                <!--android:layout_centerInParent="true"-->
+                <!--android:layout_gravity="end"-->
+                <!--android:elevation="0dp"-->
+                <!--android:layout_marginEnd="8dp"-->
+                <!--android:textAlignment="center"-->
+                <!--android:layout_below="@id/addressGetDialog"-->
+                <!--android:textAllCaps="false"-->
+                <!--android:background="@drawable/metric"-->
+                <!--android:layout_width="108dp" />-->
+
+
+
+                <!--android:layout_marginTop="16dp" />-->
+                <!--android:layout_alignParentEnd="true"-->
+
+                <!--<TextView-->
+                <!--android:layout_width="72dp"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:id="@+id/priceLabel"-->
+                <!--android:layout_alignParentStart="true"-->
+                <!--android:layout_below="@id/matLabel"-->
+                <!--android:layout_marginTop="36dp"-->
+                <!--android:layout_marginStart="20dp"-->
+                <!--android:textSize="18sp"-->
+                <!--android:text="Price"-->
+                <!--/>-->
+
+
+            </GridLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/roofData"
+                android:layout_alignParentBottom="true"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:id="@+id/fileWrap"
+                android:layout_marginTop="24dp"
+                >
+
+                <ImageView
+                    android:layout_width="92dp"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/ruvPic1"
+                    android:adjustViewBounds="true"
+                    android:layout_alignParentStart="true"
+                    android:contentDescription="@string/ruvhomephoto"/>
+
+                <ImageView
+                    android:layout_width="92dp"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/ruvPic2"
+                    android:adjustViewBounds="true"
+                    android:layout_centerHorizontal="true"
+                    android:contentDescription="@string/ruvhomephoto"/>
+
+                <ImageView
+                    android:layout_width="92dp"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/ruvPic3"
+                    android:adjustViewBounds="true"
+                    android:layout_alignParentEnd="true"
+                    android:contentDescription="@string/ruvhomephoto"/>
+
+
+
+            </RelativeLayout>
+            </RelativeLayout>
+
+        </ScrollView>
+
+        <!--<TextView-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_marginBottom="8dp"-->
+        <!--android:layout_marginStart="20dp"-->
+        <!--android:id="@+id/clearBtnTxt"-->
+        <!--android:text="@string/clear"-->
+        <!--android:textSize="15sp"-->
+        <!--android:textStyle="bold"-->
+        <!--android:textColor="#000"-->
+        <!--android:layout_alignParentStart="false"-->
+        <!--android:layout_alignParentBottom="true"-->
+        <!--/>-->
+
+        <!--<ImageButton-->
+        <!--android:id="@+id/clearBtn"-->
+        <!--android:src="@drawable/restart"-->
+        <!--android:background="@drawable/ruvbtn_wt"-->
+        <!--android:scaleType="fitCenter"-->
+        <!--android:layout_alignWithParentIfMissing="false"-->
+        <!--android:padding="8dp"-->
+        <!--android:layout_above="@+id/clearBtnTxt"-->
+        <!--android:layout_height="36dp"-->
+        <!--android:layout_marginBottom="4dp"-->
+        <!--android:layout_marginStart="20dp"-->
+        <!--android:layout_width="36dp"-->
+        <!--android:layout_alignParentBottom="false" />-->
+
+   </RelativeLayout>
+
+</FrameLayout>

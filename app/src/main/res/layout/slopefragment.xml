@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="#000"
+    android:background="@color/colorRow"
     style="@style/RuvFullFrag"
     android:theme="@style/Ruviuz.rootFullView"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -17,26 +17,24 @@
         android:theme="@style/RuvFragActionBar"
         app:popupTheme="@style/RuvFragActionBar"/>
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:textSize="24sp"
+        android:textAllCaps="true"
+        android:textStyle="bold"
+        android:textAlignment="center"
+        android:layout_marginTop="48dp"
+        android:id="@+id/slopeTitle"
+        android:text="@string/slope_measure"
+        android:textColor="#000"/>
+
     <RelativeLayout
         android:layout_height="match_parent"
         android:layout_width="match_parent"
         android:background="@color/colorRow">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:textSize="24sp"
-            android:textAllCaps="true"
-            android:textStyle="bold"
-            android:textAlignment="center"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="32dp"
-            android:layout_centerHorizontal="true"
-            android:id="@+id/slopeTitle"
-            android:text="@string/slope_measure"
-            android:textColor="#000"
-            android:layout_centerInParent="false" />
 
         <TextView
             android:id="@+id/slopePicker"
@@ -44,12 +42,12 @@
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:textColorHighlight="#000"
-            android:layout_above="@+id/angleValue"
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="48dp"
             android:background="#fff"
             android:textColor="#000"
             android:textSize="20sp"
             android:text="@string/zero"
-            android:layout_marginTop="12dp"
             android:paddingStart="32dp"
             android:paddingEnd="32dp"
             android:paddingTop="12dp"
@@ -62,9 +60,9 @@
             android:textColor="#000"
             android:textSize="48sp"
             android:layout_toEndOf="@+id/slopePicker"
-            android:layout_above="@+id/angleValue"
             android:layout_centerHorizontal="false"
-            android:layout_marginStart="4dp" />
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="36dp"/>
 
 
         <TextView
@@ -74,9 +72,9 @@
             android:textColor="#000"
             android:textSize="48sp"
             android:layout_centerHorizontal="false"
-            android:layout_centerVertical="true"
-            android:layout_marginEnd="12dp"
-            android:layout_marginBottom="16dp"
+            android:layout_below="@id/slopePicker"
+            android:layout_marginTop="25dp"
+            android:layout_marginEnd="32dp"
             android:layout_toStartOf="@+id/angleValue"
             android:paddingBottom="12dp" />
         <TextView
@@ -87,6 +85,7 @@
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
             android:text="@string/zero"
+            android:layout_below="@id/slopePicker"
             android:textStyle="bold"
             android:layout_marginTop="32dp"
             android:textColor="#000"
@@ -99,39 +98,10 @@
             android:textColor="#000"
             android:textSize="48sp"
             android:layout_centerVertical="true"
-            android:layout_toEndOf="@+id/angleValue"
+            android:layout_below="@+id/slopePicker"
+            android:layout_toEndOf="@id/angleValue"
+            android:layout_marginTop="32dp"
             android:layout_marginStart="8dp" />
-
-        <!--<me.angrybyte.numberpicker.view.ActualNumberPicker-->
-            <!--android:id="@+id/slopePicker"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="48dp"-->
-            <!--android:layout_centerHorizontal="true"-->
-            <!--android:layout_marginStart="36dp"-->
-            <!--android:layout_marginEnd="36dp"-->
-            <!--android:layout_below="@id/slopePickerTv"-->
-            <!--android:background="#ffc400"-->
-            <!--app:bar_color="@android:color/white"-->
-            <!--app:bar_width="2dp"-->
-            <!--app:bars_count="26"-->
-            <!--android:layout_centerVertical="false"-->
-            <!--app:controls_color="@android:color/white"-->
-            <!--app:draw_over_controls="true"-->
-            <!--app:draw_over_text="false"-->
-            <!--app:fast_controls_color="@android:color/darker_gray"-->
-            <!--app:highlight_color="#263238"-->
-            <!--app:max_value="360"-->
-            <!--app:min_value="0"-->
-            <!--app:selection_color="#fff"-->
-            <!--app:show_bars="true"-->
-            <!--app:show_controls="false"-->
-            <!--app:show_fast_controls="false"-->
-            <!--app:show_highlight="true"-->
-            <!--app:show_text="true"-->
-            <!--app:text_color="#000"-->
-            <!--app:text_size="20sp"-->
-            <!--app:value="0"-->
-            <!--android:layout_marginTop="12dp" />-->
 
         <ImageButton
             android:id="@+id/setAngle"
@@ -142,7 +112,7 @@
             android:scaleType="fitXY"
             android:layout_centerHorizontal="true"
             android:layout_below="@id/angleValue"
-            android:layout_marginTop="24dp"
+            android:layout_marginTop="64dp"
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:background="@drawable/target" />

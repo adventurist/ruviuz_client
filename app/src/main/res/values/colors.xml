@@ -3,6 +3,7 @@
     <color name="ruvGreen">#46ffcb</color>
     <color name="ruvGreenStatus">#27a481</color>
     <color name="ruvGreenAccent">#FF51FF00</color>
+    <color name="ruvMatGreen">#ff80cbc4</color>
     <color name="ruvAccent">#ffc400</color>
     <color name="ruvSelected">#FFDD00FF</color>
     <color name="ruvGrey">#757575</color>

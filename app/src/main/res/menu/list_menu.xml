@@ -2,11 +2,18 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:ruviuz="http://schemas.android.com/apk/res-auto"
     >
-    <item android:id="@+id/roofView"
-        android:icon="@drawable/rooflist"
-        android:title="@string/roofs"
-        android:text="@string/login"
-        ruviuz:showAsAction="ifRoom" />
+
+    <item android:id="@+id/search"
+        android:title="@string/search"
+        ruviuz:showAsAction="always"
+        ruviuz:actionViewClass="android.support.v7.widget.SearchView"
+        android:icon="@android:drawable/ic_menu_search" />
+
+    <item
+        android:id="@+id/actionType"
+            android:title="@string/typetoggle"
+        android:icon="@drawable/destroy"
+        ruviuz:showAsAction="always" />
     <item
         android:id="@+id/goHome"
         ruviuz:showAsAction="never"

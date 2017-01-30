@@ -3,6 +3,7 @@ package stronglogic.ruviuz.fragments;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -30,6 +31,8 @@ public class WelcomeFragment extends DialogFragment {
     private ImageButton loginBtn, newAccountBtn;
 
     private WelcomeFragListener mListener;
+
+    private MainActivity mActivity;
 
     public WelcomeFragment() {
         // Required empty public constructor
@@ -61,21 +64,26 @@ public class WelcomeFragment extends DialogFragment {
         }
     }
 
-//    @Override
-//    public void onStart() {
-//        super.onStart();
-//        Dialog dialog = super.getDialog();
-//        if (dialog != null) {
-//            dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-//        }
-//    }
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        Dialog dialog = super.onCreateDialog(savedInstanceState);
+
+
+        Dialog dialog = new Dialog(getActivity(), getTheme()) {
+            @Override
+            public void onBackPressed() {
+                mActivity.revealActivity();
+            }
+        };
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color
                 .TRANSPARENT));
         return dialog;
+
+    }
+
+    @Override
+    public void onCancel(DialogInterface dialog) {
+        mActivity.revealActivity();
     }
 
     @Override
@@ -111,6 +119,9 @@ public class WelcomeFragment extends DialogFragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+        if (context instanceof MainActivity) {
+            this.mActivity = (MainActivity) context;
+        }
         if (context instanceof WelcomeFragListener) {
             mListener = (WelcomeFragListener) context;
         } else {

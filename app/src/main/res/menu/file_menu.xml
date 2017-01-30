@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:ruviuz="http://schemas.android.com/apk/res-auto"
+    >
+
+    <item android:id="@+id/takePhoto"
+        android:title="@string/take_pic"
+        ruviuz:showAsAction="always"
+        ruviuz:actionViewClass="android.support.v7.widget.SearchView"
+        android:icon="@drawable/takephoto"
+        />
+
+    <item
+        android:id="@+id/chooseFile"
+        android:title="@string/upload"
+        ruviuz:showAsAction="always"
+        android:icon="@drawable/getimg" />
+
+</menu>
