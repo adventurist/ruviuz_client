@@ -97,8 +97,8 @@
                 android:layout_marginBottom="8dp"
                 android:layout_centerHorizontal="true"
                 android:layout_marginEnd="15dp"
-                android:id="@+id/fileChooseTxt"
-                 android:text="@string/upload"
+                android:id="@+id/completeBtn"
+                 android:text="@string/done"
                 android:textSize="15sp"
                 android:textStyle="bold"
                 android:textColor="#000"
@@ -151,185 +151,86 @@
             android:layout_above="@id/fileBtnWrap"
             android:id="@+id/dataWrap">
 
-        <RelativeLayout
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/mainTitle"
+            android:orientation="vertical"
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
             android:id="@+id/fileWrap"
             android:layout_marginTop="24dp"
+            android:paddingBottom="72dp"
             >
+            <GridLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/picwrap1"
+                android:layout_marginBottom="16dp"
+                android:padding="12dp"
+                android:columnCount="3"
+                android:background="@drawable/border_top_bottom"
+                android:visibility="invisible"
+                >
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_marginBottom="4dp"
+                android:id="@+id/ruvpic1"
+                android:layout_columnSpan="3"
+
+
+                android:layout_centerHorizontal="true"
+                />
+
+            </GridLayout>
+
+            <GridLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:padding="12dp"
+                android:id="@+id/picwrap2"
+                android:columnCount="3"
+                android:background="@drawable/border_top_bottom"
+                android:visibility="invisible"
+                android:orientation="horizontal">
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:maxWidth="220dp"
-            android:id="@+id/ruvpic1"
-            android:layout_centerHorizontal="true"
-            />
 
-        <!--<Button-->
-            <!--android:layout_width="72dp"-->
-            <!--android:layout_height="36dp"-->
-            <!--android:layout_centerHorizontal="true"-->
-            <!--android:layout_below="@id/ruvpic1"-->
-            <!--android:id="@+id/addComment"-->
-            <!--android:layout_marginStart="24dp"-->
-            <!--android:layout_marginBottom="16dp"-->
-            <!--android:layout_marginEnd="24dp"-->
-            <!--android:textColor="@color/ruvGreen"-->
-            <!--android:text="@string/comment"-->
-            <!--android:textAllCaps="false"-->
-            <!--android:visibility="invisible"-->
-            <!--android:background="@drawable/ruvdrkbtn"/>-->
-
-
-        <!--<Button-->
-            <!--android:layout_width="72dp"-->
-            <!--android:layout_height="36dp"-->
-            <!--android:layout_below="@id/ruvpic1"-->
-            <!--android:id="@+id/setMainBtn"-->
-            <!--android:layout_toStartOf="@id/addComment"-->
-            <!--android:textColor="@color/ruvGreen"-->
-            <!--android:layout_marginBottom="16dp"-->
-            <!--android:textAllCaps="false"-->
-            <!--android:visibility="invisible"-->
-            <!--android:text="@string/set_main"-->
-            <!--android:background="@drawable/ruvdrkbtn" />-->
-
-        <!--<Button-->
-            <!--android:layout_width="72dp"-->
-            <!--android:layout_height="36dp"-->
-            <!--android:layout_below="@id/ruvpic1"-->
-            <!--android:id="@+id/deleteBtn"-->
-            <!--android:textAllCaps="false"-->
-            <!--android:text="@string/delete"-->
-            <!--android:visibility="invisible"-->
-            <!--android:textColor="@color/ruvGreen"-->
-            <!--android:layout_marginBottom="16dp"-->
-            <!--android:layout_toEndOf="@id/addComment"-->
-            <!--android:background="@drawable/ruvdrkbtn"-->
-            <!--/>-->
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:maxWidth="220dp"
             android:id="@+id/ruvpic2"
+            android:layout_marginBottom="4dp"
             android:layout_below="@id/ruvpic1"
+            android:layout_columnSpan="3"
             android:layout_centerHorizontal="true"
             />
 
-        <!--<Button-->
-            <!--android:layout_width="72dp"-->
-            <!--android:layout_height="36dp"-->
-            <!--android:layout_centerHorizontal="true"-->
-            <!--android:layout_below="@id/ruvpic2"-->
-            <!--android:id="@+id/addComment"-->
-            <!--android:layout_marginStart="24dp"-->
-            <!--android:layout_marginBottom="16dp"-->
-            <!--android:layout_marginEnd="24dp"-->
-            <!--android:textColor="@color/ruvGreen"-->
-            <!--android:text="@string/comment"-->
-            <!--android:textAllCaps="false"-->
-            <!--android:visibility="invisible"-->
-            <!--android:background="@drawable/ruvdrkbtn"/>-->
+                </GridLayout>
 
-
-        <!--<Button-->
-            <!--android:layout_width="72dp"-->
-            <!--android:layout_height="36dp"-->
-            <!--android:layout_below="@id/ruvpic2"-->
-            <!--android:id="@+id/setMainBtn"-->
-            <!--android:layout_toStartOf="@id/addComment"-->
-            <!--android:textColor="@color/ruvGreen"-->
-            <!--android:layout_marginBottom="16dp"-->
-            <!--android:textAllCaps="false"-->
-            <!--android:visibility="invisible"-->
-            <!--android:text="@string/set_main"-->
-            <!--android:background="@drawable/ruvdrkbtn" />-->
-
-        <!--<Button-->
-            <!--android:layout_width="72dp"-->
-            <!--android:layout_height="36dp"-->
-            <!--android:layout_below="@id/ruvpic2"-->
-            <!--android:id="@+id/deleteBtn"-->
-            <!--android:textAllCaps="false"-->
-            <!--android:text="@string/delete"-->
-            <!--android:visibility="invisible"-->
-            <!--android:textColor="@color/ruvGreen"-->
-            <!--android:layout_marginBottom="16dp"-->
-            <!--android:layout_toEndOf="@id/addComment"-->
-            <!--android:background="@drawable/ruvdrkbtn"-->
-            <!--/>-->
-
+            <GridLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:padding="12dp"
+                android:columnCount="3"
+                android:background="@drawable/border_top_bottom"
+                android:visibility="invisible"
+                android:id="@+id/picwrap3"
+                android:orientation="horizontal">
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:maxWidth="220dp"
             android:id="@+id/ruvpic3"
             android:layout_below="@id/ruvpic2"
             android:layout_centerHorizontal="true"
+            android:layout_columnSpan="3"
             />
+                </GridLayout>
 
 
-
-
-        <!--<Button-->
-            <!--android:layout_width="72dp"-->
-            <!--android:layout_height="36dp"-->
-            <!--android:layout_centerHorizontal="true"-->
-            <!--android:layout_alignParentBottom="true"-->
-            <!--android:id="@+id/addComment"-->
-            <!--android:layout_marginStart="24dp"-->
-            <!--android:layout_marginBottom="16dp"-->
-            <!--android:layout_marginEnd="24dp"-->
-            <!--android:textColor="@color/ruvGreen"-->
-            <!--android:text="@string/comment"-->
-            <!--android:textAllCaps="false"-->
-            <!--android:background="@drawable/ruvdrkbtn"/>-->
-
-
-        <!--<Button-->
-            <!--android:layout_width="72dp"-->
-            <!--android:layout_height="36dp"-->
-            <!--android:layout_alignParentBottom="true"-->
-            <!--android:id="@+id/setMainBtn"-->
-            <!--android:layout_toStartOf="@id/addComment"-->
-            <!--android:textColor="@color/ruvGreen"-->
-            <!--android:layout_marginBottom="16dp"-->
-            <!--android:textAllCaps="false"-->
-            <!--android:text="@string/set_main"-->
-            <!--android:background="@drawable/ruvdrkbtn" />-->
-
-        <!--<Button-->
-            <!--android:layout_width="72dp"-->
-            <!--android:layout_height="36dp"-->
-            <!--android:layout_alignParentBottom="true"-->
-            <!--android:id="@+id/deleteBtn"-->
-            <!--android:textAllCaps="false"-->
-            <!--android:text="@string/delete"-->
-            <!--android:textColor="@color/ruvGreen"-->
-            <!--android:layout_marginBottom="16dp"-->
-            <!--android:layout_toEndOf="@id/addComment"-->
-            <!--android:background="@drawable/ruvdrkbtn"-->
-            <!--/>-->
-        <!--<TextView-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:textSize="24sp"-->
-            <!--android:textAllCaps="true"-->
-            <!--android:textStyle="bold"-->
-            <!--android:textAlignment="center"-->
-            <!--android:layout_marginTop="48dp"-->
-            <!--android:layout_centerHorizontal="true"-->
-            <!--android:layout_marginBottom="8dp"-->
-            <!--android:id="@+id/mainTitle"-->
-            <!--android:text=""-->
-            <!--android:textColor="#000"-->
-            <!--android:layout_alignParentTop="true"-->
-        <!--/>-->
-            </RelativeLayout>
+            </LinearLayout>
         </ScrollView>
     </RelativeLayout>
 </FrameLayout>

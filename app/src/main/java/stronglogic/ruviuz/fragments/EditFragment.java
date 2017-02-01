@@ -90,6 +90,7 @@ public class EditFragment extends DialogFragment {
     private BigDecimal price;
     private String address, postal, city, region, material, firstName, lastName, email, phone, prefix;
     private String[] fileUrls = new String[3];
+    private String[] fileComments = new String[3];
     private Customer mCustomer;
     private boolean premium, ready;
 
@@ -673,6 +674,9 @@ public class EditFragment extends DialogFragment {
 //            for (int i = 0; i < fileUrls.length; i++) {
 //                ruvFileUrls.add(fileUrls[i]);
 //            }
+        }
+        if (bundle.getStringArray("fileComments") != null) {
+            this.fileComments = bundle.getStringArray("fileComments");
         }
         this.actionMode = bundle.getInt("editAction");
     }

@@ -270,7 +270,7 @@ public class CameraActivity extends AppCompatActivity {
                     super.onCaptureCompleted(session, request, result);
                     String fileUri = file.getPath();
                     Intent returnPicIntent = null;
-                    if (CameraActivity.this.callingClass.equals("MainActivity")) {
+                    if (CameraActivity.this.callingClass.equals("MainActivity") || CameraActivity.this.callingClass.equals("FileFragment")) {
                         returnPicIntent = new Intent(CameraActivity.this, MainActivity.class);
                     }
                     if (CameraActivity.this.callingClass.equals("RuvFragment")) {
@@ -528,6 +528,7 @@ public class CameraActivity extends AppCompatActivity {
         intent.putExtra("currentRid", this.currentRid);
         intent.putExtra("fileCount", this.fileCount);
         intent.putExtra("fileUrls", this.fileUrls);
+        intent.putExtra("callingClass", this.callingClass);
         intent.putExtra("ready", this.ready);
         if (mCustomer != null) {
             try {

@@ -13,20 +13,31 @@ import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.view.menu.MenuBuilder;
+import android.support.v7.view.menu.MenuPopupHelper;
 import android.support.v7.widget.Toolbar;
+import android.text.InputType;
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.GridLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+
+import java.util.ArrayList;
 
 import stronglogic.ruviuz.CameraActivity;
 import stronglogic.ruviuz.MainActivity;
@@ -45,22 +56,27 @@ import static android.app.Activity.RESULT_OK;
 public class FileFragment extends DialogFragment {
 
     private final static String TAG = "RUVIUZImageEditFragment";
-    
+
     private static final int CAMERA_PERMISSION = 6;
     private final static int RESULT_LOAD_IMAGE = 17;
-    
+    private final static int COMMENT_1 = 101;
+    private final static int COMMENT_2 = 101;
+    private final static int COMMENT_3 = 101;
+
     private FileFragListener mListener;
 
     private Toolbar mToolbar;
 
     private MainActivity mActivity;
 
+    private EditText commentEt1, commentEt2, commentEt3;
     private ImageView ruvpic1, ruvpic2, ruvpic3;
-
     private ImageButton cameraBtn, uploadBtn, okayBtn;
 
-    private int editIndex, fileCount;
+    private int fileCount;
     private String[] fileUrls;
+    private String[] fileComments = new String[3];
+    private ArrayList<EditText> commentEts = new ArrayList<EditText>();
 
     public FileFragment() {
         // Required empty public constructor
@@ -187,6 +203,8 @@ public class FileFragment extends DialogFragment {
         ruvpic2 = (ImageView) mView.findViewById(R.id.ruvpic2);
         ruvpic3 = (ImageView) mView.findViewById(R.id.ruvpic3);
 
+//        LinearLayout imageLayout = (LinearLayout) mView.findViewById(R.id.fileWrap);
+
         if (fileUrls[0] != null && !fileUrls[0].equals("")) {
             Glide.with(mActivity)
                     .load(fileUrls[0])
@@ -194,22 +212,11 @@ public class FileFragment extends DialogFragment {
                     .diskCacheStrategy(DiskCacheStrategy.RESULT)
                     .into(ruvpic1);
 
-            Button setMainBtn = new Button(mActivity);
-            setMainBtn.setText("MY TEXT");
-            setMainBtn.setTextSize(20);
-            RelativeLayout.LayoutParams mainBtnParams = new RelativeLayout.LayoutParams(32, 32);
-            mainBtnParams.addRule(RelativeLayout.ALIGN_PARENT_START);
-            addButtonToView(setMainBtn, mainBtnParams, ruvpic1.getId(), mView);
-
-            Button commentBtn = new Button(mActivity);
-            RelativeLayout.LayoutParams commentBtnParams = new RelativeLayout.LayoutParams(32, 32);
-            commentBtnParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
-            addButtonToView(commentBtn, commentBtnParams, ruvpic1.getId(), mView);
-
-            Button deleteBtn = new Button(mActivity);
-            RelativeLayout.LayoutParams delBtnParams = new RelativeLayout.LayoutParams(32, 32);
-            delBtnParams.addRule(RelativeLayout.ALIGN_PARENT_END);
-            addButtonToView(deleteBtn, delBtnParams, ruvpic1.getId(), mView);
+            GridLayout imageLayout = (GridLayout) mView.findViewById(R.id.picwrap1);
+            imageLayout.setVisibility(View.VISIBLE);
+            addMainBtn(imageLayout);
+            addCommentBtn(imageLayout, 0);
+            addDeleteBtn(imageLayout, 2);
         }
 
         if (fileUrls[1] != null && !fileUrls[1].equals("")) {
@@ -219,22 +226,11 @@ public class FileFragment extends DialogFragment {
                     .diskCacheStrategy(DiskCacheStrategy.RESULT)
                     .into(ruvpic2);
 
-            Button setMainBtn = new Button(mActivity);
-            setMainBtn.setText("MY TEXT");
-            setMainBtn.setTextSize(20);
-            RelativeLayout.LayoutParams mainBtnParams = new RelativeLayout.LayoutParams(32, 32);
-            mainBtnParams.addRule(RelativeLayout.ALIGN_PARENT_START);
-            addButtonToView(setMainBtn, mainBtnParams, ruvpic2.getId(), mView);
-
-            Button commentBtn = new Button(mActivity);
-            RelativeLayout.LayoutParams commentBtnParams = new RelativeLayout.LayoutParams(32, 32);
-            commentBtnParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
-            addButtonToView(commentBtn, commentBtnParams, ruvpic2.getId(), mView);
-
-            Button deleteBtn = new Button(mActivity);
-            RelativeLayout.LayoutParams delBtnParams = new RelativeLayout.LayoutParams(32, 32);
-            delBtnParams.addRule(RelativeLayout.ALIGN_PARENT_END);
-            addButtonToView(deleteBtn, delBtnParams, ruvpic2.getId(), mView);
+            GridLayout imageLayout = (GridLayout) mView.findViewById(R.id.picwrap2);
+            imageLayout.setVisibility(View.VISIBLE);
+            addMainBtn(imageLayout);
+            addCommentBtn(imageLayout, 1);
+            addDeleteBtn(imageLayout, 2);
         }
 
         if (fileUrls[2] != null && !fileUrls[2].equals("")) {
@@ -243,23 +239,12 @@ public class FileFragment extends DialogFragment {
                     .fitCenter()
                     .diskCacheStrategy(DiskCacheStrategy.RESULT)
                     .into(ruvpic3);
-
-            Button setMainBtn = new Button(mActivity);
-            setMainBtn.setText("MY TEXT");
-            setMainBtn.setTextSize(20);
-            RelativeLayout.LayoutParams mainBtnParams = new RelativeLayout.LayoutParams(32, 32);
-            mainBtnParams.addRule(RelativeLayout.ALIGN_PARENT_START);
-            addButtonToView(setMainBtn, mainBtnParams, ruvpic3.getId(), mView);
-
-            Button commentBtn = new Button(mActivity);
-            RelativeLayout.LayoutParams commentBtnParams = new RelativeLayout.LayoutParams(32, 32);
-            commentBtnParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
-            addButtonToView(commentBtn, commentBtnParams, ruvpic3.getId(), mView);
-
-            Button deleteBtn = new Button(mActivity);
-            RelativeLayout.LayoutParams delBtnParams = new RelativeLayout.LayoutParams(32, 32);
-            delBtnParams.addRule(RelativeLayout.ALIGN_PARENT_END);
-            addButtonToView(deleteBtn, delBtnParams, ruvpic3.getId(), mView);
+//
+            GridLayout imageLayout = (GridLayout) mView.findViewById(R.id.picwrap3);
+            imageLayout.setVisibility(View.VISIBLE);
+            addMainBtn(imageLayout);
+            addCommentBtn(imageLayout, 2);
+            addDeleteBtn(imageLayout, 2);
         }
 
         cameraBtn = (ImageButton) mView.findViewById(R.id.takePicBtn);
@@ -270,7 +255,7 @@ public class FileFragment extends DialogFragment {
                 if (checkCameraHardware(mActivity)) {
                     Intent intent = new Intent(mActivity, CameraActivity.class);
                     mActivity.putIntentData(intent);
-                    intent.putExtra("callingClass", mActivity.getClass().getSimpleName());
+                    intent.putExtra("callingClass", FileFragment.this.getClass().getSimpleName());
                     mActivity.putPrefsData();
                     startActivity(intent);
                 } else {
@@ -291,6 +276,7 @@ public class FileFragment extends DialogFragment {
                         "Select Picture"), RESULT_LOAD_IMAGE);
             }
         });
+
 //        deleteBtn = (Button) mView.findViewById(R.id.deleteBtn);
 //        deleteBtn.setOnClickListener(new View.OnClickListener() {
 //            @Override
@@ -337,6 +323,16 @@ public class FileFragment extends DialogFragment {
         okayBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                for (EditText et : commentEts) {
+                    int id = et.getId();
+                    Log.d(TAG, et.getText().toString());
+                    Log.d(TAG, String.valueOf(id));
+                    if (id < 3) {
+                        FileFragment.this.fileComments[id] = et.getText().toString();
+                    }
+                }
+                mListener.fileFragInteraction(FileFragment.this.fileUrls, FileFragment.this.fileComments, FileFragment.this.fileCount, MainActivity.RUV_ADD_FILES);
                 mActivity.revealActivity();
                 dismiss();
             }
@@ -367,16 +363,130 @@ public class FileFragment extends DialogFragment {
     }
 
 
-    protected void addButtonToView(Button button, RelativeLayout.LayoutParams params, int viewId, View parent) {
-        RelativeLayout imageLayout = (RelativeLayout) parent.findViewById(R.id.fileWrap);
-        params.addRule(RelativeLayout.BELOW, viewId);
+    protected void addButtonToView(Button button, LinearLayout.LayoutParams params, int viewId, View parent) {
+        LinearLayout imageLayout = (LinearLayout) parent.findViewById(R.id.fileWrap);
+//        params.addRule(RelativeLayout.BELOW, viewId);
         button.setLayoutParams(params);
-        imageLayout.addView(button);
+        imageLayout.addView(button, params);
         String TestCruft = "CRUFT";
     }
 
+    protected void addMainBtn(GridLayout gridLayout) {
+        Button setMainBtn = new Button(mActivity);
+        setMainBtn.setText(mActivity.getResources().getString(R.string.set_main));
+        setMainBtn.setTextSize(12);
+        setMainBtn.setBackgroundResource(R.drawable.ruvbtn_wt);
+        GridLayout.LayoutParams mainBtnParams = new GridLayout.LayoutParams();
+        mainBtnParams.setGravity(Gravity.START);
+        mainBtnParams.setMarginStart(48);
+        setMainBtn.setLayoutParams(mainBtnParams);
+        gridLayout.addView(setMainBtn);
+    }
+
+    protected void addCommentBtn(final GridLayout gridLayout, final int index) {
+        final Button commentBtn = new Button(mActivity);
+        commentBtn.setText(R.string.comment);
+        commentBtn.setTextSize(12);
+        commentBtn.setBackgroundResource(R.drawable.ruvbtn_wt);
+        GridLayout.LayoutParams cBtnParams = new GridLayout.LayoutParams(GridLayout.spec(GridLayout.UNDEFINED, 1f),      GridLayout.spec(GridLayout.UNDEFINED, 1f));
+        cBtnParams.setGravity(Gravity.CENTER_HORIZONTAL);
+        commentBtn.setLayoutParams(cBtnParams);
+        gridLayout.addView(commentBtn);
+
+        commentBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                EditText commentEt = new EditText(mActivity);
+                commentEt.setTextSize(12);
+                commentEt.setPadding(12, 12, 12, 12);
+                commentEt.setHint(R.string.enter_comment);
+//                commentEt.setInputType(InputType.TYPE_TEXT_FLAG_MULTI_LINE);
+                commentEt.setSingleLine(false);
+                commentEt.setImeOptions(EditorInfo.IME_FLAG_NO_ENTER_ACTION);
+                commentEt.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_MULTI_LINE);
+                commentEt.setMinLines(5);
+                commentEt.setMaxLines(35);
+                commentEt.setVerticalScrollBarEnabled(true);
+                commentEt.setMovementMethod(ScrollingMovementMethod.getInstance());
+                commentEt.setScrollBarStyle(View.SCROLLBARS_INSIDE_INSET);
+                commentEt.setBackgroundResource(R.drawable.thin_outline);
+                GridLayout.LayoutParams cEtParams = new GridLayout.LayoutParams(GridLayout.spec(GridLayout.UNDEFINED, 1f),      GridLayout.spec(1, 2f));
+                cEtParams.setGravity(Gravity.CENTER_HORIZONTAL);
+                cEtParams.setMargins(0, 8, 0, 0);
+                commentEt.setMinHeight(96);
+                commentEt.setMinWidth(32);
+                commentEt.setMaxWidth(320);
+                commentEt.setLayoutParams(cEtParams);
+                gridLayout.addView(commentEt);
+                commentEt.setId(View.generateViewId());
+                if (fileComments[index] != null) {
+                    commentEt.setText(fileComments[index]);
+                }
+                Log.d(TAG, String.valueOf(commentEt.getId()));
+                commentEts.add(commentEt);
+                commentBtn.setOnClickListener(null);
+            }
+        });
+    }
+
+    protected void addDeleteBtn(GridLayout gridLayout, final int index) {
+        final Button deleteBtn = new Button(mActivity);
+        deleteBtn.setBackgroundResource(R.drawable.ruvbtn_wt);
+        deleteBtn.setText(mActivity.getResources().getString(R.string.delete));
+        deleteBtn.setTextSize(12);
+        GridLayout.LayoutParams delBtnParams = new GridLayout.LayoutParams();
+        delBtnParams.setGravity(Gravity.END);
+        delBtnParams.setMarginEnd(48);
+        deleteBtn.setLayoutParams(delBtnParams);
+        gridLayout.addView(deleteBtn);
+        
+        deleteBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                MenuBuilder menuBuilder = new MenuBuilder(mActivity);
+                MenuInflater inflater = new MenuInflater(mActivity);
+                inflater.inflate(R.menu.del_menu, menuBuilder);
+                final MenuPopupHelper deleteMenu = new MenuPopupHelper(mActivity, menuBuilder, deleteBtn);
+                deleteMenu.setForceShowIcon(true);
+
+                menuBuilder.setCallback(new MenuBuilder.Callback() {
+                    @Override
+                    public boolean onMenuItemSelected(MenuBuilder menu, MenuItem item) {
+                        switch (item.getItemId()) {
+                            case R.id.yesDelete:
+                                Log.d(TAG, "Deleting Image");
+                                if (FileFragment.this.fileUrls != null && FileFragment.this.fileUrls[index] != null) {
+                                    FileFragment.this.fileUrls[index] = "";
+                                    fileComments[index] = "";
+                                    FileFragment.this.fileCount--;
+                                    Bundle mBundle = new Bundle();
+                                    putBundleData(mBundle);
+//                                    FileFragment.this.mListener.fileFragInteraction(mBundle, MainActivity.RUV_IMGEDIT_DELETE);
+                                    FileFragment.this.dismiss();
+                                }
+                                return true;
+                            case R.id.noDelete:
+                                Log.d(TAG, "Cancelling delete");
+                                if (deleteMenu.isShowing()) deleteMenu.dismiss();
+                                return true;
+                            default:
+                                return false;
+                        }
+                    }
+
+                    @Override
+                    public void onMenuModeChange(MenuBuilder menu) {
+                    }
+                });
+                deleteMenu.show();
+            }
+        });
+
+    }
+
+
     public interface FileFragListener {
-        void fileFragInteraction(String[] fileUrls, int fileCount, int result);
+        void fileFragInteraction(String[] fileUrls, String[] fileComments, int fileCount, int result);
     }
 
     public void getBundleData(Bundle bundle) {
@@ -422,6 +532,9 @@ public class FileFragment extends DialogFragment {
 //                ruvFileUrls.add(fileUrls[i]);
 //            }
         }
+        if (bundle.getStringArray("fileComments") != null) {
+            this.fileComments = bundle.getStringArray("fileComments");
+        }
     }
 
     public void putBundleData(Bundle bundle) {
@@ -429,6 +542,9 @@ public class FileFragment extends DialogFragment {
         bundle.putInt("fileCount", fileCount);
         if (this.fileUrls != null) {
             bundle.putStringArray("fileUrls", this.fileUrls);
+        }
+        if (this.fileComments!= null) {
+            bundle.putStringArray("fileComments", this.fileComments);
         }
         bundle.putInt("editMode", MainActivity.RUV_IMGEDIT_DELETE);
     }

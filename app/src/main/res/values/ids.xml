@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer name="fileComment1">101</integer>
+    <integer name="fileComment2">102</integer>
+    <integer name="fileComment3">103</integer>
+</resources>

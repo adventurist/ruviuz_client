@@ -16,6 +16,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
@@ -43,11 +44,14 @@ public class ImageEditFragment extends DialogFragment {
 
     private ImageView editIv;
 
+    private EditText commentEt;
+
     private Button commentBtn, deleteBtn, setMainBtn;
 
     private String editImgUrl;
     private int editIndex, fileCount;
     private String[] fileUrls;
+    private String[] fileComments;
 
     public ImageEditFragment() {
         // Required empty public constructor
@@ -182,6 +186,10 @@ public class ImageEditFragment extends DialogFragment {
                 .diskCacheStrategy(DiskCacheStrategy.RESULT)
                 .into(editIv);
 
+        commentEt = (EditText) mView.findViewById(R.id.commentEt);
+        if (fileComments != null) {
+            commentEt.setText(fileComments[0]);
+        }
 
         deleteBtn = (Button) mView.findViewById(R.id.deleteBtn);
         deleteBtn.setOnClickListener(new View.OnClickListener() {
@@ -301,10 +309,10 @@ public class ImageEditFragment extends DialogFragment {
         if (bundle.getStringArray("fileUrls") != null) {
             if (this.fileUrls == null) this.fileUrls = new String[3];
             this.fileUrls = bundle.getStringArray("fileUrls");
-//            if (this.ruvFileUrls == null) this.ruvFileUrls = new ArrayList<String>();
-//            for (int i = 0; i < fileUrls.length; i++) {
-//                ruvFileUrls.add(fileUrls[i]);
-//            }
+        }
+        if (bundle.getStringArray("fileComments") != null) {
+            if (this.fileComments == null) this.fileComments= new String[3];
+            this.fileComments = bundle.getStringArray("fileComments");
         }
     }
 

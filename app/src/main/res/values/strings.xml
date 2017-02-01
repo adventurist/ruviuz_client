@@ -144,6 +144,8 @@
     <string name="comment">Comment</string>
     <string name="cancel">Cancel</string>
     <string name="add_images">Add Images</string>
+    <string name="done">Done</string>
+    <string name="enter_comment">Enter Comment..</string>
 
 
 </resources>

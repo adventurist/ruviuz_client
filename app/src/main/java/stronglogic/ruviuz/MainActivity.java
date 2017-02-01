@@ -99,6 +99,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
     private final static int CREATE_ACCOUNT = 36;
     private final static int FILE_ADD_MODE = 37;
     private final static int SLOPE_FRAG_SUCCESS = 39;
+    public static final int RUV_ADD_FILES = 40;
     public static final int WELCOME_REQUEST = 60;
     public static final int LOGIN_REQUEST = 61;
     public static final int CLEAR_REQUEST = 62;
@@ -150,6 +151,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
     private BigDecimal price;
     private String material, address, postal, city, region;
     private String[] fileUrls = new String[3];
+    private String[] fileComments = new String[3];
     private Customer mCustomer;
     private boolean premium, ready, editing;
 
@@ -422,6 +424,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
                         mIntent.putExtra("baseUrl", baseUrl);
                         putPrefsData();
                         startActivity(mIntent);
+
                         break;
                     case ("Take Photo"):
                         Log.d(TAG, "Getting da camera goin");
@@ -453,16 +456,22 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
                            break;
                        case ("Measure"):
                            getMetric();
+                           hideActivity();
                            mDrawerLayout.closeDrawers();
                            break;
                        case ("Client"):
                            customerDialog();
+                           hideActivity();
+                           mDrawerLayout.closeDrawers();
                            break;
                        case ("Address"):
                            addressDialog();
+                           hideActivity();
+                           mDrawerLayout.closeDrawers();
                            break;
                        case ("Get Location"):
                            getGeoLocation();
+                           mDrawerLayout.closeDrawers();
                            break;
                        case ("Upload"):
                            Log.d(TAG, "Upload to be implemented in MainActivity");
@@ -472,6 +481,8 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
                            break;
                        case ("Login"):
                            loginDialog();
+                           hideActivity();
+                           mDrawerLayout.closeDrawers();
                            break;
                        case ("Logout"):
                            Log.d(TAG, "Logout to be implemented in MainActivity");
@@ -479,6 +490,8 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
                         case ("Start"):
                            Log.d(TAG, "Going HOME");
                            welcomeDialog();
+                            hideActivity();
+                          mDrawerLayout.closeDrawers();
                             break;
                        default:
                            break;
@@ -575,7 +588,14 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
                     fileUrls[fileCount - 1] = uriS;
                 }
             }
+            if (xIntent.hasExtra("callingClass")) {
+                if (xIntent.getStringExtra("callingClass").equals("FileFragment")) {
+                    fileDialog();
+                    return;
+                }
+            }
         }
+
 
         if (fileCount > 0) {
             if (fileUrls != null) {
@@ -625,6 +645,11 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         if (isEditing()) {
             hideActivity();
             editDialog();
+        }
+        if (this.lastAction == RUV_ADD_FILES) {
+            //obliged to draw attention
+            hideActivity();
+            fileDialog();
         }
     }
 
@@ -893,6 +918,8 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         Bundle mBundle = new Bundle();
         mBundle.putStringArray("fileUrls", fileUrls);
         mBundle.putInt("fileCount", fileCount);
+        mBundle.putStringArray("fileComments", fileComments);
+        this.lastAction = RUV_ADD_FILES;
 
         if (fileFrag == null) {
             fileFrag = new FileFragment();
@@ -1110,9 +1137,10 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
     }
 
     @Override
-    public void fileFragInteraction(String[] newFileUrls, int newFileCount, int result) {
-        if (result == 0) {
+    public void fileFragInteraction(String[] newFileUrls, String[] newFileComments, int newFileCount, int result) {
+        if (result == RUV_ADD_FILES) {
             MainActivity.this.fileUrls = newFileUrls;
+            MainActivity.this.fileComments = newFileComments;
             MainActivity.this.fileCount = newFileCount;
             refreshUi();
             revealActivity();
@@ -1124,6 +1152,9 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
             fileFrag.dismiss();
             revealActivity();
         }
+//        if (this.lastAction == RUV_ADD_FILES) {
+//
+//        }
     }
 
     @Override
@@ -1193,15 +1224,15 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
             }
             if (fileCount > 0) {
                 if (fileUrls != null) {
-                    if (fileUrls[0] != null && !fileUrls[0].equals("") && photo1.getDrawable() == null) {
+                    if (fileUrls[0] != null && !fileUrls[0].equals("")) {
                         Glide.with(MainActivity.this)
                                 .load(fileUrls[0])
                                 .override(92, 68)
                                 .fitCenter()
                                 .diskCacheStrategy(DiskCacheStrategy.RESULT)
                                 .into(photo1);
-                    }
-                    if (fileUrls[1] != null && !fileUrls[1].equals("") && photo2.getDrawable() == null) {
+                    } else { Glide.clear(photo1); }
+                    if (fileUrls[1] != null && !fileUrls[1].equals("")) {
                         photo2 = (ImageView) findViewById(R.id.ruvPic2);
                         Glide.with(MainActivity.this)
                                 .load(fileUrls[1])
@@ -1209,8 +1240,8 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
                                 .fitCenter()
                                 .diskCacheStrategy(DiskCacheStrategy.RESULT)
                                 .into(photo2);
-                    }
-                    if (fileUrls[2] != null && !fileUrls[2].equals("") && photo3.getDrawable() == null) {
+                    } else { Glide.clear(photo2); }
+                    if (fileUrls[2] != null && !fileUrls[2].equals("")) {
                         photo3 = (ImageView) findViewById(R.id.ruvPic3);
                         Glide.with(MainActivity.this)
                                 .load(fileUrls[2])
@@ -1218,7 +1249,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
                                 .fitCenter()
                                 .diskCacheStrategy(DiskCacheStrategy.RESULT)
                                 .into(photo3);
-                    }
+                    } else { Glide.clear(photo3); }
                 }
             }
 
@@ -1367,6 +1398,9 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         prefEdit.putString("fileUrl1", fileUrls[0]);
         prefEdit.putString("fileUrl2", fileUrls[1]);
         prefEdit.putString("fileUrl3", fileUrls[2]);
+        prefEdit.putString("fileComment1", fileComments[0]);
+        prefEdit.putString("fileComment2", fileComments[1]);
+        prefEdit.putString("fileComment3", fileComments[2]);
         if (mCustomer != null) {
             try {
                 JSONObject customerJson = new JSONObject();
@@ -1404,6 +1438,9 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         fileUrls[0] = mPrefs.getString("fileUrl1", "");
         fileUrls[1] = mPrefs.getString("fileUrl2", "");
         fileUrls[2] = mPrefs.getString("fileUrl3", "");
+        fileComments[0] = mPrefs.getString("fileComment1", "");
+        fileComments[1] = mPrefs.getString("fileComment2", "");
+        fileComments[2] = mPrefs.getString("fileComment3", "");
         try {
             JSONObject customerJson = new JSONObject(mPrefs.getString("customer", ""));
             if (this.mCustomer == null) this.mCustomer = new Customer();
@@ -1753,6 +1790,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         this.currentRid = intent.getIntExtra("currentRid", -1);
         this.fileCount = intent.getIntExtra("fileCount", 0);
         this.fileUrls = intent.getStringArrayExtra("fileUrls");
+        this.fileComments = intent.getStringArrayExtra("fileComments");
         this.editing = intent.getBooleanExtra("editing", false);
         if (intent.hasExtra("customer"))
             try {
