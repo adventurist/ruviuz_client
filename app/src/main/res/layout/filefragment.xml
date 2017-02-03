@@ -179,10 +179,52 @@
                 android:layout_marginBottom="4dp"
                 android:id="@+id/ruvpic1"
                 android:layout_columnSpan="3"
-
-
                 android:layout_centerHorizontal="true"
                 />
+
+                <!--<Button-->
+                    <!--android:id="@+id/pic1"-->
+                    <!--android:text="@string/set_main"-->
+                    <!--android:background="@drawable/ruvbtn_wt"-->
+                    <!--android:scaleType="fitCenter"-->
+                    <!--android:layout_alignWithParentIfMissing="false"-->
+                    <!--android:padding="4dp"-->
+                    <!--android:layout_above="@+id/takePicTxt"-->
+                    <!--android:layout_width="48dp"-->
+                    <!--android:layout_height="32dp"-->
+                    <!--android:layout_marginBottom="4dp"-->
+                    <!--android:layout_marginStart="20dp"-->
+                    <!--android:layout_alignParentBottom="false" />-->
+
+                <!--<Button-->
+                    <!--android:id="@+id/"-->
+                    <!--android:text="@string/set_main"-->
+                    <!--android:background="@drawable/ruvbtn_wt"-->
+                    <!--android:scaleType="fitCenter"-->
+                    <!--android:layout_alignWithParentIfMissing="false"-->
+                    <!--android:padding="4dp"-->
+                    <!--android:layout_above="@+id/takePicTxt"-->
+                    <!--android:layout_width="48dp"-->
+                    <!--android:layout_height="32dp"-->
+                    <!--android:layout_marginBottom="4dp"-->
+                    <!--android:layout_marginStart="20dp"-->
+                    <!--android:layout_alignParentBottom="false" />-->
+
+                <!--<Button-->
+                    <!--android:id="@+id/pic1"-->
+                    <!--android:text="@string/set_main"-->
+                    <!--android:background="@drawable/ruvbtn_wt"-->
+                    <!--android:scaleType="fitCenter"-->
+                    <!--android:layout_alignWithParentIfMissing="false"-->
+                    <!--android:padding="4dp"-->
+                    <!--android:layout_above="@+id/takePicTxt"-->
+                    <!--android:layout_width="48dp"-->
+                    <!--android:layout_height="32dp"-->
+                    <!--android:layout_marginBottom="4dp"-->
+                    <!--android:layout_marginStart="20dp"-->
+                    <!--android:layout_alignParentBottom="false" />-->
+
+
 
             </GridLayout>
 

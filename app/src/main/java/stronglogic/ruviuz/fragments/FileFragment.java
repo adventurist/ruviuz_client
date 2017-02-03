@@ -215,8 +215,9 @@ public class FileFragment extends DialogFragment {
             GridLayout imageLayout = (GridLayout) mView.findViewById(R.id.picwrap1);
             imageLayout.setVisibility(View.VISIBLE);
             addMainBtn(imageLayout);
-            addCommentBtn(imageLayout, 0);
-            addDeleteBtn(imageLayout, 2);
+            Button commentBtn1 = addCommentBtn(imageLayout, 0);
+//            if (fileComments[0] != null) addCommentEditText(imageLayout, commentBtn1, 0);
+            addDeleteBtn(imageLayout, 0);
         }
 
         if (fileUrls[1] != null && !fileUrls[1].equals("")) {
@@ -229,8 +230,9 @@ public class FileFragment extends DialogFragment {
             GridLayout imageLayout = (GridLayout) mView.findViewById(R.id.picwrap2);
             imageLayout.setVisibility(View.VISIBLE);
             addMainBtn(imageLayout);
-            addCommentBtn(imageLayout, 1);
-            addDeleteBtn(imageLayout, 2);
+            Button commentBtn2 = addCommentBtn(imageLayout, 1);
+//            if (fileComments[1] != null) addCommentEditText(imageLayout, commentBtn2, 1);
+            addDeleteBtn(imageLayout, 1);
         }
 
         if (fileUrls[2] != null && !fileUrls[2].equals("")) {
@@ -243,7 +245,8 @@ public class FileFragment extends DialogFragment {
             GridLayout imageLayout = (GridLayout) mView.findViewById(R.id.picwrap3);
             imageLayout.setVisibility(View.VISIBLE);
             addMainBtn(imageLayout);
-            addCommentBtn(imageLayout, 2);
+            Button commentBtn3 = addCommentBtn(imageLayout, 2);
+//            if (fileComments[2] != null) addCommentEditText(imageLayout, commentBtn3, 2);
             addDeleteBtn(imageLayout, 2);
         }
 
@@ -325,7 +328,7 @@ public class FileFragment extends DialogFragment {
             public void onClick(View v) {
 
                 for (EditText et : commentEts) {
-                    int id = et.getId();
+                    int id = et.getId() - 1;
                     Log.d(TAG, et.getText().toString());
                     Log.d(TAG, String.valueOf(id));
                     if (id < 3) {
@@ -383,7 +386,7 @@ public class FileFragment extends DialogFragment {
         gridLayout.addView(setMainBtn);
     }
 
-    protected void addCommentBtn(final GridLayout gridLayout, final int index) {
+    protected Button addCommentBtn(final GridLayout gridLayout, final int index) {
         final Button commentBtn = new Button(mActivity);
         commentBtn.setText(R.string.comment);
         commentBtn.setTextSize(12);
@@ -396,6 +399,18 @@ public class FileFragment extends DialogFragment {
         commentBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+//                LinearLayout ll = new LinearLayout(mActivity);
+//                GridLayout.LayoutParams lp =
+//                        new GridLayout.LayoutParams
+////                        new GridLayout.LayoutParams();
+//                        (GridLayout.spec(GridLayout.UNDEFINED), GridLayout.spec(3));
+////                        new GridLayout.LayoutParams(GridLayout.spec(GridLayout.UNDEFINED, 1f),      GridLayout.spec(GridLayout.UNDEFINED, 3f));
+////                lp.columnSpec = GridLayout.spec(GridLayout.UNDEFINED, 3f);
+//                ll.setLayoutParams(lp);
+//                ll.setBackgroundResource(R.drawable.thin_outline);
+
+//                addCommentEditText(gridLayout, commentBtn, index);
                 EditText commentEt = new EditText(mActivity);
                 commentEt.setTextSize(12);
                 commentEt.setPadding(12, 12, 12, 12);
@@ -410,13 +425,17 @@ public class FileFragment extends DialogFragment {
                 commentEt.setMovementMethod(ScrollingMovementMethod.getInstance());
                 commentEt.setScrollBarStyle(View.SCROLLBARS_INSIDE_INSET);
                 commentEt.setBackgroundResource(R.drawable.thin_outline);
-                GridLayout.LayoutParams cEtParams = new GridLayout.LayoutParams(GridLayout.spec(GridLayout.UNDEFINED, 1f),      GridLayout.spec(1, 2f));
+                GridLayout.LayoutParams cEtParams = new GridLayout.LayoutParams(GridLayout.spec(GridLayout.UNDEFINED, 1f),      GridLayout.spec(1, 3f));
                 cEtParams.setGravity(Gravity.CENTER_HORIZONTAL);
                 cEtParams.setMargins(0, 8, 0, 0);
+//                cEtParams.columnSpec = GridLayout.spec(2);
+                commentEt.setLayoutParams(cEtParams);
                 commentEt.setMinHeight(96);
                 commentEt.setMinWidth(32);
                 commentEt.setMaxWidth(320);
                 commentEt.setLayoutParams(cEtParams);
+//                gridLayout.addView(commentEt);
+//                ll.addView(commentEt);
                 gridLayout.addView(commentEt);
                 commentEt.setId(View.generateViewId());
                 if (fileComments[index] != null) {
@@ -424,9 +443,42 @@ public class FileFragment extends DialogFragment {
                 }
                 Log.d(TAG, String.valueOf(commentEt.getId()));
                 commentEts.add(commentEt);
-                commentBtn.setOnClickListener(null);
+
             }
         });
+        return commentBtn;
+    }
+
+    protected void addCommentEditText(GridLayout gridLayout, Button commentBtn, int index) {
+        EditText commentEt = new EditText(mActivity);
+        commentEt.setTextSize(12);
+//        commentEt.setPadding(12, 12, 12, 12);
+        commentEt.setHint(R.string.enter_comment);
+//                commentEt.setInputType(InputType.TYPE_TEXT_FLAG_MULTI_LINE);
+        commentEt.setSingleLine(false);
+        commentEt.setImeOptions(EditorInfo.IME_FLAG_NO_ENTER_ACTION);
+        commentEt.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_MULTI_LINE);
+//        commentEt.setMinLines(5);
+//        commentEt.setMaxLines(35);
+//        commentEt.setVerticalScrollBarEnabled(true);
+//        commentEt.setMovementMethod(ScrollingMovementMethod.getInstance());
+//        commentEt.setScrollBarStyle(View.SCROLLBARS_INSIDE_INSET);
+//        commentEt.setBackgroundResource(R.drawable.thin_outline);
+        GridLayout.LayoutParams cEtParams = new GridLayout.LayoutParams(GridLayout.spec(GridLayout.UNDEFINED, 1f),      GridLayout.spec(1, 2f));
+        cEtParams.setGravity(Gravity.CENTER_HORIZONTAL);
+//        cEtParams.setMargins(0, 8, 0, 0);
+//        commentEt.setMinHeight(96);
+//        commentEt.setMinWidth(32);
+//        commentEt.setMaxWidth(320);
+        commentEt.setLayoutParams(cEtParams);
+        gridLayout.addView(commentEt);
+        commentEt.setId(View.generateViewId());
+        if (fileComments[index] != null) {
+            commentEt.setText(fileComments[index]);
+        }
+        Log.d(TAG, String.valueOf(commentEt.getId()));
+        commentEts.add(commentEt);
+        commentBtn.setOnClickListener(null);
     }
 
     protected void addDeleteBtn(GridLayout gridLayout, final int index) {

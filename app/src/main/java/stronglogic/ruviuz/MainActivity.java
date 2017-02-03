@@ -68,10 +68,14 @@ import java.math.BigDecimal;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import stronglogic.ruviuz.content.Customer;
+import stronglogic.ruviuz.content.RuvFileInfo;
 import stronglogic.ruviuz.fragments.AddressFragment;
 import stronglogic.ruviuz.fragments.CustomerFragment;
 import stronglogic.ruviuz.fragments.EditFragment;
@@ -82,6 +86,7 @@ import stronglogic.ruviuz.fragments.MainFragment;
 import stronglogic.ruviuz.fragments.MetricFragment;
 import stronglogic.ruviuz.fragments.SlopeFragment;
 import stronglogic.ruviuz.fragments.WelcomeFragment;
+import stronglogic.ruviuz.util.RuuvComment;
 import stronglogic.ruviuz.util.RuuvFile;
 import stronglogic.ruviuz.util.RuvLocation;
 
@@ -140,18 +145,21 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
 
     private IncomingHandler mHandler;
 
+    private Map<String, RuvFileInfo> ruvFiles;
+
     private SharedPreferences prefs;
 
     private RuvLocation rLocation;
 
     private Geocoder geocoder;
 
-    private int fileCount, currentRid, lastAction;
+    private int fileCount, commentCount, currentRid, lastAction;
     private float width, length, slope;
     private BigDecimal price;
     private String material, address, postal, city, region;
     private String[] fileUrls = new String[3];
     private String[] fileComments = new String[3];
+    private ArrayList<Map<String, String>> callbackFiles;
     private Customer mCustomer;
     private boolean premium, ready, editing;
 
@@ -566,10 +574,35 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
 
             if (fileUrls != null && (fileUrls.length > 0 || fileCount == 0)) {
                 int realCount = 0;
+
+                if (fileUrls.length == fileComments.length) {
+                    if (this.ruvFiles == null) {
+                        this.ruvFiles = new HashMap<>();
+
+                    }
+                    for (int i = fileUrls.length; i > 0; i--) {
+                        if (fileUrls[i - 1] != null && !fileUrls[i - 1].equals("") &&
+                                fileComments[i - 1] != null && !fileComments[i- 1].equals("")) {
+                            RuvFileInfo rFile = new RuvFileInfo();
+                            rFile.setUrl(fileUrls[i - 1]);
+                            rFile.setFilename(fileUrls[i - 1].substring(fileUrls[i - 1].lastIndexOf('/') + 1));
+                            rFile.setComment(fileComments[i - 1]);
+                            ruvFiles.put(fileUrls[i - 1], rFile);
+                        }
+                    }
+                }
+
                 for (int i = fileUrls.length; i > 0; i--) {
-                    realCount = !fileUrls[i-1].equals("") ? realCount + 1 : realCount;
+                    realCount = !fileUrls[i - 1].equals("") ? realCount + 1 : realCount;
                 }
                 this.fileCount = realCount;
+            }
+            if (fileComments != null && (fileComments.length > 0 || commentCount == 0)) {
+                int realCount = 0;
+                for (int i = fileComments.length; i > 0; i--) {
+                    realCount = !fileComments[i - 1].equals("") ? realCount + 1 : realCount;
+                }
+                this.commentCount = realCount;
             }
 
             if (xIntent.hasExtra("uri")) {
@@ -1299,6 +1332,22 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
                     }
                     if (returnedJson.has("File")) {
                         Toast.makeText(MainActivity.this, "Created File:: " + returnedJson.getString("File"), Toast.LENGTH_SHORT).show();
+
+                        JSONObject fileJson = new JSONObject(returnedJson.getString("File"));
+
+                        if (fileJson.has("id")) {
+                            if (ruvFiles.get(fileJson.getString("filename")) != null && !ruvFiles.get(fileJson.getString("filename")).getComment().equals("")) {
+                                Bundle cBundle = new Bundle();
+                                cBundle.putString("comment_body", ruvFiles.get(fileJson.getString("filename")).getComment());
+                                cBundle.putString("ruvfid", fileJson.getString("id"));
+                                RuuvComment rComment = new RuuvComment(MainActivity.this, mHandler, baseUrl, this.authToken, cBundle);
+                                Thread sendCommentThread = new Thread(rComment);
+                                sendCommentThread.start();
+                            }
+                        }
+                    }
+                    if (returnedJson.has("Comment")) {
+                        Toast.makeText(MainActivity.this, "Created Comment:: " + returnedJson.getString("Comment"), Toast.LENGTH_SHORT).show();
                     }
 
                     if (fileCount > 0) {
@@ -1308,6 +1357,14 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
                             fileUrls[1] = null;
                             fileUrls[2] = null;
                         }
+                    }
+                    if (commentCount > 0) {
+//                        if(sendComments() > 0) {
+//                            commentCount = 0;
+//                            fileComments[0] = null;
+//                            fileComments[1] = null;
+//                            fileComments[2] = null;
+//                        }
                     }
                     clearValues();
 
@@ -1327,6 +1384,18 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
                 RuuvFile rFile = new RuuvFile(MainActivity.this, mHandler, baseUrl, this.authToken, url, currentRid);
                 Thread sendFileThread = new Thread(rFile);
                 sendFileThread.start();
+                sent++;
+            }
+        }
+        return sent;
+    }
+
+    private int sendRuuvComments() {
+        int sent = 0;
+        for (String comment : fileComments) {
+            if (comment != null) {
+                Bundle mBundle = new Bundle();
+
                 sent++;
             }
         }
@@ -1435,12 +1504,24 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         if (this.fileUrls == null) {
             this.fileUrls = new String[3];
         }
+        if (this.ruvFiles == null) {
+            this.ruvFiles = new HashMap<>();
+        }
         fileUrls[0] = mPrefs.getString("fileUrl1", "");
         fileUrls[1] = mPrefs.getString("fileUrl2", "");
         fileUrls[2] = mPrefs.getString("fileUrl3", "");
         fileComments[0] = mPrefs.getString("fileComment1", "");
         fileComments[1] = mPrefs.getString("fileComment2", "");
         fileComments[2] = mPrefs.getString("fileComment3", "");
+
+        for (int i = 0; i < 3; i++) {
+            if (!fileUrls[i].equals("") && !fileComments[i].equals("")) {
+                RuvFileInfo rFile = new RuvFileInfo();
+                rFile.setUrl(fileUrls[i]);
+                rFile.setComment(fileComments[i]);
+                ruvFiles.put(fileUrls[i], rFile);
+            }
+        }
         try {
             JSONObject customerJson = new JSONObject(mPrefs.getString("customer", ""));
             if (this.mCustomer == null) this.mCustomer = new Customer();
