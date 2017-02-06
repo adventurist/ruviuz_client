@@ -29,8 +29,6 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Spinner;
-import android.widget.Switch;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
@@ -73,28 +71,25 @@ public class EditFragment extends DialogFragment {
 
     private Toolbar mToolbar;
 
-    private TextView addressTv, nameTv, phoneTv, emailTv, currentPrice;
-    private Switch isFlat, premiumMaterial;
     private ImageView ruvPhoto1, ruvPhoto2, ruvPhoto3;
-    private ImageButton ruuvBtn, calculateBtn, editBtn, clearBtn, photoBtn, clientBtn, okayBtn;
-    private Button addressBtn, metricBtn, draftBtn, fileBtn, getLocBtn;
+    private ImageButton okayBtn, clearBtn;
+    private Button fileBtn, getLocBtn;
     private Spinner prefixSpinner, materialSpinner;
 
     private ArrayList<RuvFileInfo> ruvFiles;
-    private int ruvId, position;
     private ArrayList<String> ruvFileUrls;
     private RuvFileInfo rFileInfo;
 
-    private int fileCount, currentRid, lastAction, actionMode;
+    private int fileCount, currentRid, actionMode;
     private float width, length, slope;
     private BigDecimal price;
     private String address, postal, city, region, material, firstName, lastName, email, phone, prefix;
     private String[] fileUrls = new String[3];
     private String[] fileComments = new String[3];
     private Customer mCustomer;
-    private boolean premium, ready;
+    private boolean premium;
 
-    private EditText firstEt, lastEt, emailEt, phoneEt, addressEt, cityEt, regionEt, postalEt, roofLength, roofLengthIn, roofWidth, roofWidthIn, roofSlope, priceEt;
+    private EditText firstEt, lastEt, emailEt, phoneEt, addressEt, cityEt, regionEt, postalEt, roofLength, roofLengthIn, roofWidth, roofWidthIn, roofSlope, priceEt, cEt1, cEt2, cEt3;
 
 
     public EditFragment() {
@@ -112,8 +107,7 @@ public class EditFragment extends DialogFragment {
     // TODO: Rename and change types and number of parameters
     public static EditFragment newInstance(String param1, String param2) {
         EditFragment fragment = new EditFragment();
-//        Bundle args = new Bundle();
-//        fragment.setArguments(args);
+
         return fragment;
     }
 
@@ -180,7 +174,6 @@ public class EditFragment extends DialogFragment {
             mToolbar.setElevation(8f);
             mToolbar.setTitle(getActivity().getResources().getString(R.string.app_name));
             mToolbar.setTitleTextColor(Color.BLACK);
-//            mToolbar.setTitleTextColor(ContextCompat.getColor(mActivity, R.color.ruvGreen));
             mToolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
                 @Override
                 public boolean onMenuItemClick(MenuItem item) {
@@ -370,6 +363,11 @@ public class EditFragment extends DialogFragment {
         ruvPhoto2 = (ImageView) mView.findViewById(R.id.ruvPic2);
         ruvPhoto3 = (ImageView) mView.findViewById(R.id.ruvPic3);
 
+        cEt1 = (EditText) mView.findViewById(R.id.ruvComment1);
+        cEt2 = (EditText) mView.findViewById(R.id.ruvComment2);
+        cEt3 = (EditText) mView.findViewById(R.id.ruvComment3);
+
+
         if (fileCount > 0) {
             if (fileUrls != null) {
                 if (fileUrls[0] != null && !fileUrls[0].equals("") && ruvPhoto1.getDrawable() == null) {
@@ -379,6 +377,8 @@ public class EditFragment extends DialogFragment {
                             .fitCenter()
                             .diskCacheStrategy(DiskCacheStrategy.RESULT)
                             .into(ruvPhoto1);
+                    if (fileComments[0] != null && !fileComments[0].equals(""))
+                        cEt1.setText(fileComments[0]);
                 }
                 if (fileUrls[1] != null && !fileUrls[1].equals("") && ruvPhoto2.getDrawable() == null) {
                     Glide.with(mActivity)
@@ -387,6 +387,8 @@ public class EditFragment extends DialogFragment {
                             .fitCenter()
                             .diskCacheStrategy(DiskCacheStrategy.RESULT)
                             .into(ruvPhoto2);
+                    if (fileComments[1] != null && !fileComments[1].equals(""))
+                        cEt2.setText(fileComments[1]);
                 }
                 if (fileUrls[2] != null && !fileUrls[2].equals("") && ruvPhoto3.getDrawable() == null) {
                     //                    ruvPhoto3 = (ImageView) mView.findViewById(R.id.ruvPic3);
@@ -396,6 +398,8 @@ public class EditFragment extends DialogFragment {
                             .fitCenter()
                             .diskCacheStrategy(DiskCacheStrategy.RESULT)
                             .into(ruvPhoto3);
+                    if (fileComments[2] != null && !fileComments[2].equals(""))
+                        cEt3.setText(fileComments[2]);
                 }
             }
         }
@@ -407,6 +411,7 @@ public class EditFragment extends DialogFragment {
                 Bundle picEditArgs = new Bundle();
                 putBundleData(picEditArgs);
                 picEditArgs.putString("editImgUrl", fileUrls[0]);
+                picEditArgs.putString("editCommentText", fileComments[0]);
                 picEditArgs.putInt("editIndex", 0);
                 mListener.editFragInteraction(picEditArgs, RUV_IMAGE_EDIT);
             }
@@ -418,6 +423,7 @@ public class EditFragment extends DialogFragment {
                 Bundle picEditArgs = new Bundle();
                 putBundleData(picEditArgs);
                 picEditArgs.putString("editImgUrl", fileUrls[1]);
+                picEditArgs.putString("editCommentText", fileComments[1]);
                 picEditArgs.putInt("editIndex", 1);
                 mListener.editFragInteraction(picEditArgs, RUV_IMAGE_EDIT);
             }
@@ -429,6 +435,7 @@ public class EditFragment extends DialogFragment {
                 Bundle picEditArgs = new Bundle();
                 putBundleData(picEditArgs);
                 picEditArgs.putString("editImgUrl", fileUrls[2]);
+                picEditArgs.putString("editCommentText", fileComments[2]);
                 picEditArgs.putInt("editIndex", 2);
                 mListener.editFragInteraction(picEditArgs, RUV_IMAGE_EDIT);
             }
@@ -612,6 +619,9 @@ public class EditFragment extends DialogFragment {
         if (this.fileUrls != null) {
             bundle.putStringArray("fileUrls", this.fileUrls);
         }
+        if (this.fileComments != null) {
+            bundle.putStringArray("fileComments", this.fileComments);
+        }
         bundle.putInt("editMode", this.actionMode);
     }
 //        if (fileUrls != null && fileUrls.length > 0) {
@@ -787,7 +797,7 @@ public class EditFragment extends DialogFragment {
                 rFileInfo = new RuvFileInfo();
                 rFileInfo.setFilePath(imageUri);
                 rFileInfo.setFilename(imageUri.substring(imageUri.lastIndexOf('/') + 1));
-                rFileInfo.setNum(fileCount);
+//                rFileInfo.setNum(fileCount);
                 boolean added = false;
                 ruvFiles.add(rFileInfo);
                 if (EditFragment.this.ruvFileUrls == null) {

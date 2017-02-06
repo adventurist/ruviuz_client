@@ -16,8 +16,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.view.menu.MenuBuilder;
 import android.support.v7.view.menu.MenuPopupHelper;
 import android.support.v7.widget.Toolbar;
-import android.text.InputType;
-import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -25,19 +23,15 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-
-import java.util.ArrayList;
 
 import stronglogic.ruviuz.CameraActivity;
 import stronglogic.ruviuz.MainActivity;
@@ -60,8 +54,8 @@ public class FileFragment extends DialogFragment {
     private static final int CAMERA_PERMISSION = 6;
     private final static int RESULT_LOAD_IMAGE = 17;
     private final static int COMMENT_1 = 101;
-    private final static int COMMENT_2 = 101;
-    private final static int COMMENT_3 = 101;
+    private final static int COMMENT_2 = 102;
+    private final static int COMMENT_3 = 103;
 
     private FileFragListener mListener;
 
@@ -69,14 +63,13 @@ public class FileFragment extends DialogFragment {
 
     private MainActivity mActivity;
 
-    private EditText commentEt1, commentEt2, commentEt3;
+    private EditText cEt1, cEt2, cEt3;
     private ImageView ruvpic1, ruvpic2, ruvpic3;
     private ImageButton cameraBtn, uploadBtn, okayBtn;
 
     private int fileCount;
     private String[] fileUrls;
     private String[] fileComments = new String[3];
-    private ArrayList<EditText> commentEts = new ArrayList<EditText>();
 
     public FileFragment() {
         // Required empty public constructor
@@ -206,48 +199,209 @@ public class FileFragment extends DialogFragment {
 //        LinearLayout imageLayout = (LinearLayout) mView.findViewById(R.id.fileWrap);
 
         if (fileUrls[0] != null && !fileUrls[0].equals("")) {
+            ruvpic1.setVisibility(View.VISIBLE);
             Glide.with(mActivity)
                     .load(fileUrls[0])
                     .fitCenter()
                     .diskCacheStrategy(DiskCacheStrategy.RESULT)
                     .into(ruvpic1);
+            Button commentBtn1 = (Button)mView.findViewById(R.id.cBtn1);
+            commentBtn1.setVisibility(View.VISIBLE);
+            
+            commentBtn1.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    cEt1 = (EditText) mView.findViewById(R.id.commentEt1);
+                    cEt1.setText(fileComments[0]);
+                    cEt1.setVisibility(View.VISIBLE);
+                }
+            });
 
-            GridLayout imageLayout = (GridLayout) mView.findViewById(R.id.picwrap1);
-            imageLayout.setVisibility(View.VISIBLE);
-            addMainBtn(imageLayout);
-            Button commentBtn1 = addCommentBtn(imageLayout, 0);
-//            if (fileComments[0] != null) addCommentEditText(imageLayout, commentBtn1, 0);
-            addDeleteBtn(imageLayout, 0);
+            Button mainBtn1 = (Button) mView.findViewById(R.id.mainBtn1);
+            mainBtn1.setVisibility(View.VISIBLE);
+
+            final Button delBtn1 = (Button) mView.findViewById(R.id.delBtn1);
+            delBtn1.setVisibility(View.VISIBLE);
+            delBtn1.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    MenuBuilder menuBuilder = new MenuBuilder(mActivity);
+                    MenuInflater inflater = new MenuInflater(mActivity);
+                    inflater.inflate(R.menu.del_menu, menuBuilder);
+                    final MenuPopupHelper deleteMenu = new MenuPopupHelper(mActivity, menuBuilder, delBtn1);
+                    deleteMenu.setForceShowIcon(true);
+
+                    menuBuilder.setCallback(new MenuBuilder.Callback() {
+                        @Override
+                        public boolean onMenuItemSelected(MenuBuilder menu, MenuItem item) {
+                            switch (item.getItemId()) {
+                                case R.id.yesDelete:
+                                    Log.d(TAG, "Deleting Image");
+                                    if (FileFragment.this.fileUrls != null && FileFragment.this.fileUrls[0] != null) {
+                                        FileFragment.this.fileUrls[0] = "";
+                                        FileFragment.this.fileCount--;
+                                        Bundle mBundle = new Bundle();
+                                        putBundleData(mBundle);
+                                        FileFragment.this.mListener.fileFragInteraction(fileUrls, fileComments, fileCount, 69 );
+                                        FileFragment.this.dismiss();
+                                    }
+                                    return true;
+                                case R.id.noDelete:
+                                    Log.d(TAG, "Cancelling delete");
+                                    if (deleteMenu.isShowing()) deleteMenu.dismiss();
+                                    return true;
+                                default:
+                                    return false;
+                            }
+                        }
+
+                        @Override
+                        public void onMenuModeChange(MenuBuilder menu) {
+                        }
+                    });
+                    deleteMenu.show();
+                }
+            });
+
         }
 
         if (fileUrls[1] != null && !fileUrls[1].equals("")) {
+            ruvpic2.setVisibility(View.VISIBLE);
             Glide.with(mActivity)
                     .load(fileUrls[1])
                     .fitCenter()
                     .diskCacheStrategy(DiskCacheStrategy.RESULT)
                     .into(ruvpic2);
 
-            GridLayout imageLayout = (GridLayout) mView.findViewById(R.id.picwrap2);
-            imageLayout.setVisibility(View.VISIBLE);
-            addMainBtn(imageLayout);
-            Button commentBtn2 = addCommentBtn(imageLayout, 1);
-//            if (fileComments[1] != null) addCommentEditText(imageLayout, commentBtn2, 1);
-            addDeleteBtn(imageLayout, 1);
+            Button commentBtn2 = (Button)mView.findViewById(R.id.cBtn2);
+            commentBtn2.setVisibility(View.VISIBLE);
+            cEt2 = (EditText) mView.findViewById(R.id.commentEt2);
+            cEt2.setText(fileComments[1]);
+
+
+            commentBtn2.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    cEt2.setVisibility(View.VISIBLE);
+                }
+            });
+
+            Button mainBtn2 = (Button) mView.findViewById(R.id.mainBtn2);
+            mainBtn2.setVisibility(View.VISIBLE);
+
+            final Button delBtn2 = (Button) mView.findViewById(R.id.delBtn2);
+            delBtn2.setVisibility(View.VISIBLE);
+
+            delBtn2.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    MenuBuilder menuBuilder = new MenuBuilder(mActivity);
+                    MenuInflater inflater = new MenuInflater(mActivity);
+                    inflater.inflate(R.menu.del_menu, menuBuilder);
+                    final MenuPopupHelper deleteMenu = new MenuPopupHelper(mActivity, menuBuilder, delBtn2);
+                    deleteMenu.setForceShowIcon(true);
+
+                    menuBuilder.setCallback(new MenuBuilder.Callback() {
+                        @Override
+                        public boolean onMenuItemSelected(MenuBuilder menu, MenuItem item) {
+                            switch (item.getItemId()) {
+                                case R.id.yesDelete:
+                                    Log.d(TAG, "Deleting Image");
+                                    if (FileFragment.this.fileUrls != null && FileFragment.this.fileUrls[1] != null) {
+                                        FileFragment.this.fileUrls[1] = "";
+                                        FileFragment.this.fileCount--;
+                                        Bundle mBundle = new Bundle();
+                                        putBundleData(mBundle);
+                                        FileFragment.this.mListener.fileFragInteraction(fileUrls, fileComments, fileCount, 69 );
+                                        FileFragment.this.dismiss();
+                                    }
+                                    return true;
+                                case R.id.noDelete:
+                                    Log.d(TAG, "Cancelling delete");
+                                    if (deleteMenu.isShowing()) deleteMenu.dismiss();
+                                    return true;
+                                default:
+                                    return false;
+                            }
+                        }
+
+                        @Override
+                        public void onMenuModeChange(MenuBuilder menu) {
+                        }
+                    });
+                    deleteMenu.show();
+                }
+            });
         }
 
         if (fileUrls[2] != null && !fileUrls[2].equals("")) {
+            ruvpic3.setVisibility(View.VISIBLE);
             Glide.with(mActivity)
                     .load(fileUrls[2])
                     .fitCenter()
                     .diskCacheStrategy(DiskCacheStrategy.RESULT)
                     .into(ruvpic3);
-//
-            GridLayout imageLayout = (GridLayout) mView.findViewById(R.id.picwrap3);
-            imageLayout.setVisibility(View.VISIBLE);
-            addMainBtn(imageLayout);
-            Button commentBtn3 = addCommentBtn(imageLayout, 2);
-//            if (fileComments[2] != null) addCommentEditText(imageLayout, commentBtn3, 2);
-            addDeleteBtn(imageLayout, 2);
+            
+            Button commentBtn3 = (Button)mView.findViewById(R.id.cBtn3);
+            commentBtn3.setVisibility(View.VISIBLE);
+
+            commentBtn3.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    cEt3 = (EditText) mView.findViewById(R.id.commentEt3);
+                    Log.d(TAG, String.valueOf(cEt3.getViewTreeObserver()));
+                    cEt3.setVisibility(View.VISIBLE);
+                    cEt3.setText(fileComments[2]);
+                }
+            });
+
+            Button mainBtn3 = (Button) mView.findViewById(R.id.mainBtn3);
+            mainBtn3.setVisibility(View.VISIBLE);
+
+            final Button delBtn3 = (Button) mView.findViewById(R.id.delBtn3);
+            delBtn3.setVisibility(View.VISIBLE);
+
+            delBtn3.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    MenuBuilder menuBuilder = new MenuBuilder(mActivity);
+                    MenuInflater inflater = new MenuInflater(mActivity);
+                    inflater.inflate(R.menu.del_menu, menuBuilder);
+                    final MenuPopupHelper deleteMenu = new MenuPopupHelper(mActivity, menuBuilder, delBtn3);
+                    deleteMenu.setForceShowIcon(true);
+
+                    menuBuilder.setCallback(new MenuBuilder.Callback() {
+                        @Override
+                        public boolean onMenuItemSelected(MenuBuilder menu, MenuItem item) {
+                            switch (item.getItemId()) {
+                                case R.id.yesDelete:
+                                    Log.d(TAG, "Deleting Image");
+                                    if (FileFragment.this.fileUrls != null && FileFragment.this.fileUrls[2] != null) {
+                                        FileFragment.this.fileUrls[2] = "";
+                                        FileFragment.this.fileCount--;
+                                        Bundle mBundle = new Bundle();
+                                        putBundleData(mBundle);
+                                        FileFragment.this.mListener.fileFragInteraction(fileUrls, fileComments, fileCount, 69 );
+                                        FileFragment.this.dismiss();
+                                    }
+                                    return true;
+                                case R.id.noDelete:
+                                    Log.d(TAG, "Cancelling delete");
+                                    if (deleteMenu.isShowing()) deleteMenu.dismiss();
+                                    return true;
+                                default:
+                                    return false;
+                            }
+                        }
+
+                        @Override
+                        public void onMenuModeChange(MenuBuilder menu) {
+                        }
+                    });
+                    deleteMenu.show();
+                }
+            });
+            
         }
 
         cameraBtn = (ImageButton) mView.findViewById(R.id.takePicBtn);
@@ -279,62 +433,15 @@ public class FileFragment extends DialogFragment {
                         "Select Picture"), RESULT_LOAD_IMAGE);
             }
         });
-
-//        deleteBtn = (Button) mView.findViewById(R.id.deleteBtn);
-//        deleteBtn.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                MenuBuilder menuBuilder = new MenuBuilder(mActivity);
-//                MenuInflater inflater = new MenuInflater(mActivity);
-//                inflater.inflate(R.menu.del_menu, menuBuilder);
-//                final MenuPopupHelper deleteMenu = new MenuPopupHelper(mActivity, menuBuilder, deleteBtn);
-//                deleteMenu.setForceShowIcon(true);
-//
-//                menuBuilder.setCallback(new MenuBuilder.Callback() {
-//                    @Override
-//                    public boolean onMenuItemSelected(MenuBuilder menu, MenuItem item) {
-//                        switch (item.getItemId()) {
-////                            case R.id.yesDelete:
-////                                Log.d(TAG, "Deleting Image");
-////                                if (FileFragment.this.fileUrls != null && FileFragment.this.fileUrls[editIndex] != null) {
-////                                    FileFragment.this.fileUrls[editIndex] = "";
-////                                    FileFragment.this.fileCount--;
-////                                    Bundle mBundle = new Bundle();
-////                                    putBundleData(mBundle);
-////                                    FileFragment.this.mListener.fileFragInteraction(mBundle, MainActivity.RUV_IMGEDIT_DELETE);
-////                                    FileFragment.this.dismiss();
-////                                }
-////                                return true;
-////                            case R.id.noDelete:
-////                                Log.d(TAG, "Cancelling delete");
-////                                if (deleteMenu.isShowing()) deleteMenu.dismiss();
-////                                return true;
-//                            default:
-//                                return false;
-//                        }
-//                    }
-//
-//                    @Override
-//                    public void onMenuModeChange(MenuBuilder menu) {
-//                    }
-//                });
-//                deleteMenu.show();
-//            }
-//        });
-
         okayBtn = (ImageButton) mView.findViewById(R.id.okayBtn);
         okayBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                for (EditText et : commentEts) {
-                    int id = et.getId() - 1;
-                    Log.d(TAG, et.getText().toString());
-                    Log.d(TAG, String.valueOf(id));
-                    if (id < 3) {
-                        FileFragment.this.fileComments[id] = et.getText().toString();
-                    }
-                }
+                fileComments[0] = cEt1.getText().toString();
+                fileComments[1] = cEt2.getText().toString();
+                fileComments[2] = cEt3.getText().toString();
+
                 mListener.fileFragInteraction(FileFragment.this.fileUrls, FileFragment.this.fileComments, FileFragment.this.fileCount, MainActivity.RUV_ADD_FILES);
                 mActivity.revealActivity();
                 dismiss();
@@ -366,14 +473,6 @@ public class FileFragment extends DialogFragment {
     }
 
 
-    protected void addButtonToView(Button button, LinearLayout.LayoutParams params, int viewId, View parent) {
-        LinearLayout imageLayout = (LinearLayout) parent.findViewById(R.id.fileWrap);
-//        params.addRule(RelativeLayout.BELOW, viewId);
-        button.setLayoutParams(params);
-        imageLayout.addView(button, params);
-        String TestCruft = "CRUFT";
-    }
-
     protected void addMainBtn(GridLayout gridLayout) {
         Button setMainBtn = new Button(mActivity);
         setMainBtn.setText(mActivity.getResources().getString(R.string.set_main));
@@ -386,156 +485,128 @@ public class FileFragment extends DialogFragment {
         gridLayout.addView(setMainBtn);
     }
 
-    protected Button addCommentBtn(final GridLayout gridLayout, final int index) {
-        final Button commentBtn = new Button(mActivity);
-        commentBtn.setText(R.string.comment);
-        commentBtn.setTextSize(12);
-        commentBtn.setBackgroundResource(R.drawable.ruvbtn_wt);
-        GridLayout.LayoutParams cBtnParams = new GridLayout.LayoutParams(GridLayout.spec(GridLayout.UNDEFINED, 1f),      GridLayout.spec(GridLayout.UNDEFINED, 1f));
-        cBtnParams.setGravity(Gravity.CENTER_HORIZONTAL);
-        commentBtn.setLayoutParams(cBtnParams);
-        gridLayout.addView(commentBtn);
-
-        commentBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-//                LinearLayout ll = new LinearLayout(mActivity);
-//                GridLayout.LayoutParams lp =
-//                        new GridLayout.LayoutParams
-////                        new GridLayout.LayoutParams();
-//                        (GridLayout.spec(GridLayout.UNDEFINED), GridLayout.spec(3));
-////                        new GridLayout.LayoutParams(GridLayout.spec(GridLayout.UNDEFINED, 1f),      GridLayout.spec(GridLayout.UNDEFINED, 3f));
-////                lp.columnSpec = GridLayout.spec(GridLayout.UNDEFINED, 3f);
-//                ll.setLayoutParams(lp);
-//                ll.setBackgroundResource(R.drawable.thin_outline);
-
-//                addCommentEditText(gridLayout, commentBtn, index);
-                EditText commentEt = new EditText(mActivity);
-                commentEt.setTextSize(12);
-                commentEt.setPadding(12, 12, 12, 12);
-                commentEt.setHint(R.string.enter_comment);
-//                commentEt.setInputType(InputType.TYPE_TEXT_FLAG_MULTI_LINE);
-                commentEt.setSingleLine(false);
-                commentEt.setImeOptions(EditorInfo.IME_FLAG_NO_ENTER_ACTION);
-                commentEt.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_MULTI_LINE);
-                commentEt.setMinLines(5);
-                commentEt.setMaxLines(35);
-                commentEt.setVerticalScrollBarEnabled(true);
-                commentEt.setMovementMethod(ScrollingMovementMethod.getInstance());
-                commentEt.setScrollBarStyle(View.SCROLLBARS_INSIDE_INSET);
-                commentEt.setBackgroundResource(R.drawable.thin_outline);
-                GridLayout.LayoutParams cEtParams = new GridLayout.LayoutParams(GridLayout.spec(GridLayout.UNDEFINED, 1f),      GridLayout.spec(1, 3f));
-                cEtParams.setGravity(Gravity.CENTER_HORIZONTAL);
-                cEtParams.setMargins(0, 8, 0, 0);
-//                cEtParams.columnSpec = GridLayout.spec(2);
-                commentEt.setLayoutParams(cEtParams);
-                commentEt.setMinHeight(96);
-                commentEt.setMinWidth(32);
-                commentEt.setMaxWidth(320);
-                commentEt.setLayoutParams(cEtParams);
+//    protected Button addCommentBtn(final GridLayout gridLayout, final int index) {
+//        final Button commentBtn = new Button(mActivity);
+//        commentBtn.setText(R.string.comment);
+//        commentBtn.setTextSize(12);
+//        commentBtn.setBackgroundResource(R.drawable.ruvbtn_wt);
+//        GridLayout.LayoutParams cBtnParams = new GridLayout.LayoutParams(GridLayout.spec(GridLayout.UNDEFINED, 1f),      GridLayout.spec(GridLayout.UNDEFINED, 1f));
+//        cBtnParams.setGravity(Gravity.CENTER_HORIZONTAL);
+//        commentBtn.setLayoutParams(cBtnParams);
+//        gridLayout.addView(commentBtn);
+//
+//        commentBtn.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                EditText commentEt = new EditText(mActivity);
+//                commentEt.setTextSize(12);
+//                commentEt.setPadding(12, 12, 12, 12);
+//                commentEt.setHint(R.string.enter_comment);
+//                commentEt.setSingleLine(false);
+//                commentEt.setImeOptions(EditorInfo.IME_FLAG_NO_ENTER_ACTION);
+//                commentEt.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_MULTI_LINE);
+//                commentEt.setMinLines(5);
+//                commentEt.setMaxLines(35);
+//                commentEt.setVerticalScrollBarEnabled(true);
+//                commentEt.setMovementMethod(ScrollingMovementMethod.getInstance());
+//                commentEt.setScrollBarStyle(View.SCROLLBARS_INSIDE_INSET);
+//                commentEt.setBackgroundResource(R.drawable.thin_outline);
+//                GridLayout.LayoutParams cEtParams = new GridLayout.LayoutParams(GridLayout.spec(GridLayout.UNDEFINED, 1f),      GridLayout.spec(1, 3f));
+//                cEtParams.setGravity(Gravity.CENTER_HORIZONTAL);
+//                cEtParams.setMargins(0, 8, 0, 0);
+//                commentEt.setLayoutParams(cEtParams);
+//                commentEt.setMinHeight(96);
+//                commentEt.setMinWidth(32);
+//                commentEt.setMaxWidth(320);
+//                commentEt.setLayoutParams(cEtParams);
 //                gridLayout.addView(commentEt);
-//                ll.addView(commentEt);
-                gridLayout.addView(commentEt);
-                commentEt.setId(View.generateViewId());
-                if (fileComments[index] != null) {
-                    commentEt.setText(fileComments[index]);
-                }
-                Log.d(TAG, String.valueOf(commentEt.getId()));
-                commentEts.add(commentEt);
-
-            }
-        });
-        return commentBtn;
-    }
-
-    protected void addCommentEditText(GridLayout gridLayout, Button commentBtn, int index) {
-        EditText commentEt = new EditText(mActivity);
-        commentEt.setTextSize(12);
-//        commentEt.setPadding(12, 12, 12, 12);
-        commentEt.setHint(R.string.enter_comment);
-//                commentEt.setInputType(InputType.TYPE_TEXT_FLAG_MULTI_LINE);
-        commentEt.setSingleLine(false);
-        commentEt.setImeOptions(EditorInfo.IME_FLAG_NO_ENTER_ACTION);
-        commentEt.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_MULTI_LINE);
-//        commentEt.setMinLines(5);
-//        commentEt.setMaxLines(35);
-//        commentEt.setVerticalScrollBarEnabled(true);
-//        commentEt.setMovementMethod(ScrollingMovementMethod.getInstance());
-//        commentEt.setScrollBarStyle(View.SCROLLBARS_INSIDE_INSET);
-//        commentEt.setBackgroundResource(R.drawable.thin_outline);
-        GridLayout.LayoutParams cEtParams = new GridLayout.LayoutParams(GridLayout.spec(GridLayout.UNDEFINED, 1f),      GridLayout.spec(1, 2f));
-        cEtParams.setGravity(Gravity.CENTER_HORIZONTAL);
-//        cEtParams.setMargins(0, 8, 0, 0);
-//        commentEt.setMinHeight(96);
-//        commentEt.setMinWidth(32);
-//        commentEt.setMaxWidth(320);
-        commentEt.setLayoutParams(cEtParams);
-        gridLayout.addView(commentEt);
-        commentEt.setId(View.generateViewId());
-        if (fileComments[index] != null) {
-            commentEt.setText(fileComments[index]);
-        }
-        Log.d(TAG, String.valueOf(commentEt.getId()));
-        commentEts.add(commentEt);
-        commentBtn.setOnClickListener(null);
-    }
-
-    protected void addDeleteBtn(GridLayout gridLayout, final int index) {
-        final Button deleteBtn = new Button(mActivity);
-        deleteBtn.setBackgroundResource(R.drawable.ruvbtn_wt);
-        deleteBtn.setText(mActivity.getResources().getString(R.string.delete));
-        deleteBtn.setTextSize(12);
-        GridLayout.LayoutParams delBtnParams = new GridLayout.LayoutParams();
-        delBtnParams.setGravity(Gravity.END);
-        delBtnParams.setMarginEnd(48);
-        deleteBtn.setLayoutParams(delBtnParams);
-        gridLayout.addView(deleteBtn);
-        
-        deleteBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                MenuBuilder menuBuilder = new MenuBuilder(mActivity);
-                MenuInflater inflater = new MenuInflater(mActivity);
-                inflater.inflate(R.menu.del_menu, menuBuilder);
-                final MenuPopupHelper deleteMenu = new MenuPopupHelper(mActivity, menuBuilder, deleteBtn);
-                deleteMenu.setForceShowIcon(true);
-
-                menuBuilder.setCallback(new MenuBuilder.Callback() {
-                    @Override
-                    public boolean onMenuItemSelected(MenuBuilder menu, MenuItem item) {
-                        switch (item.getItemId()) {
-                            case R.id.yesDelete:
-                                Log.d(TAG, "Deleting Image");
-                                if (FileFragment.this.fileUrls != null && FileFragment.this.fileUrls[index] != null) {
-                                    FileFragment.this.fileUrls[index] = "";
-                                    fileComments[index] = "";
-                                    FileFragment.this.fileCount--;
-                                    Bundle mBundle = new Bundle();
-                                    putBundleData(mBundle);
-//                                    FileFragment.this.mListener.fileFragInteraction(mBundle, MainActivity.RUV_IMGEDIT_DELETE);
-                                    FileFragment.this.dismiss();
-                                }
-                                return true;
-                            case R.id.noDelete:
-                                Log.d(TAG, "Cancelling delete");
-                                if (deleteMenu.isShowing()) deleteMenu.dismiss();
-                                return true;
-                            default:
-                                return false;
-                        }
-                    }
-
-                    @Override
-                    public void onMenuModeChange(MenuBuilder menu) {
-                    }
-                });
-                deleteMenu.show();
-            }
-        });
-
-    }
-
+//                commentEt.setId(View.generateViewId());
+//                if (fileComments[index] != null) {
+//                    commentEt.setText(fileComments[index]);
+//                }
+//                Log.d(TAG, String.valueOf(commentEt.getId()));
+//                commentEts.add(commentEt);
+//
+//            }
+//        });
+//        return commentBtn;
+//    }
+//
+//    protected void addCommentEditText(GridLayout gridLayout, Button commentBtn, int index) {
+//        EditText commentEt = new EditText(mActivity);
+//        commentEt.setTextSize(12);
+//        commentEt.setHint(R.string.enter_comment);
+//        commentEt.setSingleLine(false);
+//        commentEt.setImeOptions(EditorInfo.IME_FLAG_NO_ENTER_ACTION);
+//        commentEt.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_MULTI_LINE);
+//        GridLayout.LayoutParams cEtParams = new GridLayout.LayoutParams(GridLayout.spec(GridLayout.UNDEFINED, 1f),      GridLayout.spec(1, 2f));
+//        cEtParams.setGravity(Gravity.CENTER_HORIZONTAL);
+//        commentEt.setLayoutParams(cEtParams);
+//        gridLayout.addView(commentEt);
+//        commentEt.setId(View.generateViewId());
+//        if (fileComments[index] != null) {
+//            commentEt.setText(fileComments[index]);
+//        }
+//        Log.d(TAG, String.valueOf(commentEt.getId()));
+//        commentEts.add(commentEt);
+//        commentBtn.setOnClickListener(null);
+//    }
+//
+//    protected void addDeleteBtn(GridLayout gridLayout, final int index) {
+//        final Button deleteBtn = new Button(mActivity);
+//        deleteBtn.setBackgroundResource(R.drawable.ruvbtn_wt);
+//        deleteBtn.setText(mActivity.getResources().getString(R.string.delete));
+//        deleteBtn.setTextSize(12);
+//        GridLayout.LayoutParams delBtnParams = new GridLayout.LayoutParams();
+//        delBtnParams.setGravity(Gravity.END);
+//        delBtnParams.setMarginEnd(48);
+//        deleteBtn.setLayoutParams(delBtnParams);
+//        gridLayout.addView(deleteBtn);
+//
+//        deleteBtn.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                MenuBuilder menuBuilder = new MenuBuilder(mActivity);
+//                MenuInflater inflater = new MenuInflater(mActivity);
+//                inflater.inflate(R.menu.del_menu, menuBuilder);
+//                final MenuPopupHelper deleteMenu = new MenuPopupHelper(mActivity, menuBuilder, deleteBtn);
+//                deleteMenu.setForceShowIcon(true);
+//
+//                menuBuilder.setCallback(new MenuBuilder.Callback() {
+//                    @Override
+//                    public boolean onMenuItemSelected(MenuBuilder menu, MenuItem item) {
+//                        switch (item.getItemId()) {
+//                            case R.id.yesDelete:
+//                                Log.d(TAG, "Deleting Image");
+//                                if (FileFragment.this.fileUrls != null && FileFragment.this.fileUrls[index] != null) {
+//                                    FileFragment.this.fileUrls[index] = "";
+//                                    fileComments[index] = "";
+//                                    FileFragment.this.fileCount--;
+//                                    Bundle mBundle = new Bundle();
+//                                    putBundleData(mBundle);
+////                                    FileFragment.this.mListener.fileFragInteraction(mBundle, MainActivity.RUV_IMGEDIT_DELETE);
+//                                    FileFragment.this.dismiss();
+//                                }
+//                                return true;
+//                            case R.id.noDelete:
+//                                Log.d(TAG, "Cancelling delete");
+//                                if (deleteMenu.isShowing()) deleteMenu.dismiss();
+//                                return true;
+//                            default:
+//                                return false;
+//                        }
+//                    }
+//
+//                    @Override
+//                    public void onMenuModeChange(MenuBuilder menu) {
+//                    }
+//                });
+//                deleteMenu.show();
+//            }
+//        });
+//
+//    }
+//
 
     public interface FileFragListener {
         void fileFragInteraction(String[] fileUrls, String[] fileComments, int fileCount, int result);
@@ -543,46 +614,11 @@ public class FileFragment extends DialogFragment {
 
     public void getBundleData(Bundle bundle) {
         Log.d(TAG, "getBundleData");
-//        if (this.length <= 0 )
-//            this.length = bundle.getFloat("length");
-//        if (this.width <= 0)
-//            this.width = bundle.getFloat("width");
-//        if (this.slope <= 0)
-//            this.slope = bundle.getFloat("slope");
-//        if (this.material == null || this.material.equals(""))
-//            this.material = bundle.getString("material");
-//        if (this.address == null || this.address.equals(""))
-//            this.address = bundle.getString("address");
-//        if (this.city == null || this.city.equals(""))
-//            this.city = bundle.getString("city");
-//        if (this.region == null || this.region.equals(""))
-//            this.region = bundle.getString("region");
-//        if (this.postal == null || this.postal.equals(""))
-//            this.postal = bundle.getString("postal");
-//        if (this.firstName== null || this.firstName.equals(""))
-//            this.firstName = bundle.getString("firstName");
-//        if (this.lastName == null || this.lastName.equals(""))
-//            this.lastName = bundle.getString("lastName");
-//        if (this.email == null || this.email.equals(""))
-//            this.email = bundle.getString("email");
-//        if (this.phone == null || this.phone.equals(""))
-//            this.phone = bundle.getString("phone");
-//        if (this.prefix == null || this.prefix.equals(""))
-//            this.prefix = bundle.getString("prefix");
-//        if (bundle.getString("price") != null && this.price == null)
-//            this.price = new BigDecimal(bundle.getString("price"));
         if (this.fileCount <= 0)
             this.fileCount = bundle.getInt("fileCount", 0);
-//        if (bundle.getStringArrayList("fileUrls") != null && (this.ruvFiles != null && !ruvFileUrls.get(0).equals(""))) {
-//            this.ruvFileUrls = (ArrayList<String>)bundle.getStringArrayList("fileUrls");
-//        }
         if (bundle.getStringArray("fileUrls") != null) {
             if (this.fileUrls == null) this.fileUrls = new String[3];
             this.fileUrls = bundle.getStringArray("fileUrls");
-//            if (this.ruvFileUrls == null) this.ruvFileUrls = new ArrayList<String>();
-//            for (int i = 0; i < fileUrls.length; i++) {
-//                ruvFileUrls.add(fileUrls[i]);
-//            }
         }
         if (bundle.getStringArray("fileComments") != null) {
             this.fileComments = bundle.getStringArray("fileComments");

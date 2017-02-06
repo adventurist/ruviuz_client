@@ -672,15 +672,15 @@
                 >
 
                 <ImageView
-                    android:layout_width="92dp"
+                    android:layout_width="96dp"
                     android:layout_height="wrap_content"
                     android:id="@+id/ruvPic1"
                     android:adjustViewBounds="true"
                     android:layout_alignParentStart="true"
                     android:contentDescription="@string/ruvhomephoto"/>
-
+                
                 <ImageView
-                    android:layout_width="92dp"
+                    android:layout_width="96dp"
                     android:layout_height="wrap_content"
                     android:id="@+id/ruvPic2"
                     android:adjustViewBounds="true"
@@ -688,12 +688,42 @@
                     android:contentDescription="@string/ruvhomephoto"/>
 
                 <ImageView
-                    android:layout_width="92dp"
+                    android:layout_width="96dp"
                     android:layout_height="wrap_content"
                     android:id="@+id/ruvPic3"
                     android:adjustViewBounds="true"
                     android:layout_alignParentEnd="true"
                     android:contentDescription="@string/ruvhomephoto"/>
+
+                <EditText
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/enter_comment"
+                    android:maxWidth="102dp"
+                    android:textSize="12sp"
+                    android:layout_below="@id/ruvPic1"
+                    android:layout_alignParentStart="true"
+                    android:id="@+id/ruvComment1"/>
+
+                <EditText
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:maxWidth="102dp"
+                    android:textSize="12sp"
+                    android:hint="@string/enter_comment"
+                    android:layout_below="@id/ruvPic1"
+                    android:layout_centerHorizontal="true"
+                    android:id="@+id/ruvComment2"/>
+
+                <EditText
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/enter_comment"
+                    android:maxWidth="102dp"
+                    android:textSize="12sp"
+                    android:layout_below="@id/ruvPic1"
+                    android:layout_alignParentEnd="true"
+                    android:id="@+id/ruvComment3"/>
 
 
 

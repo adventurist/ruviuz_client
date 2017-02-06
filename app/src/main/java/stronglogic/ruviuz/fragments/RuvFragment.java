@@ -404,7 +404,7 @@ public class RuvFragment extends DialogFragment {
                 rFileInfo = new RuvFileInfo();
                 rFileInfo.setFilePath(file.getPath());
                 rFileInfo.setFilename(filepath.substring(filepath.lastIndexOf('/') + 1));
-                rFileInfo.setNum(fileCount);
+//                rFileInfo.setNum(fileCount);
                 Uri imgUri = Uri.parse(imageUri);
                 ruvFiles.add(rFileInfo);
                 if (fileCount == 0) {

@@ -151,128 +151,355 @@
             android:layout_above="@id/fileBtnWrap"
             android:id="@+id/dataWrap">
 
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/mainTitle"
             android:orientation="vertical"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
             android:id="@+id/fileWrap"
             android:layout_marginTop="24dp"
             android:paddingBottom="72dp"
             >
-            <GridLayout
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/ruvpic1"
+            android:layout_marginTop="4dp"
+            android:layout_alignParentTop="true"
+            android:layout_marginBottom="12dp"
+            android:visibility="gone"
+            android:layout_centerHorizontal="true"
+            />
+
+            <Button
+                android:id="@+id/mainBtn1"
+                android:text="@string/set_main"
+                android:background="@drawable/ruvbtn_wt"
+                android:scaleType="fitCenter"
+                android:layout_alignWithParentIfMissing="false"
+                android:padding="4dp"
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/ruvpic1"
+                android:textAllCaps="false"
+                android:layout_width="96dp"
+                android:layout_height="42dp"
+                android:layout_marginBottom="4dp"
+                android:visibility="gone"
+                android:layout_marginStart="16dp"
+                android:layout_alignParentBottom="false" />
+
+            <Button
+                android:id="@+id/cBtn1"
+                android:text="@string/comment"
+                android:background="@drawable/ruvbtn_wt"
+                android:scaleType="fitCenter"
+                android:layout_alignWithParentIfMissing="false"
+                android:padding="4dp"
+                android:layout_below="@+id/ruvpic1"
+                android:textAllCaps="false"
+                android:layout_width="96dp"
+                android:layout_height="42dp"
+                android:layout_centerHorizontal="true"
+                android:visibility="gone"
+                android:layout_marginBottom="4dp"
+                android:layout_alignParentBottom="false" />
+
+            <Button
+                android:id="@+id/delBtn1"
+                android:text="@string/delete"
+                android:background="@drawable/ruvbtn_wt"
+                android:scaleType="fitCenter"
+                android:layout_alignParentEnd="true"
+                android:textAllCaps="false"
+                android:padding="4dp"
+                android:layout_below="@+id/ruvpic1"
+                android:layout_width="96dp"
+                android:layout_height="42dp"
+                android:layout_marginBottom="4dp"
+                android:visibility="gone"
+                android:layout_marginEnd="16dp"
+                android:layout_alignParentBottom="false" />
+
+            <EditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/picwrap1"
-                android:layout_marginBottom="16dp"
-                android:padding="12dp"
-                android:columnCount="3"
-                android:background="@drawable/border_top_bottom"
-                android:visibility="invisible"
-                >
+                android:layout_below="@id/mainBtn1"
+                android:hint="@string/enter_comment"
+                android:textSize="14sp"
+                android:id="@+id/commentEt1"
+                android:layout_marginTop="24dp"
+                android:layout_marginBottom="24dp"
+                android:minHeight="64dp"
+                android:padding="8dp"
+                android:layout_marginStart="24dp"
+                android:layout_marginEnd="24dp"
+                android:background="@drawable/thin_outline"
+                android:visibility="gone"
+                android:inputType="textLongMessage|textMultiLine"/>
+
             <ImageView
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
-                android:layout_marginBottom="4dp"
-                android:id="@+id/ruvpic1"
-                android:layout_columnSpan="3"
+                android:layout_below="@id/commentEt1"
+                android:layout_marginBottom="12dp"
+                android:id="@+id/ruvpic2"
                 android:layout_centerHorizontal="true"
                 />
 
-                <!--<Button-->
-                    <!--android:id="@+id/pic1"-->
-                    <!--android:text="@string/set_main"-->
-                    <!--android:background="@drawable/ruvbtn_wt"-->
-                    <!--android:scaleType="fitCenter"-->
-                    <!--android:layout_alignWithParentIfMissing="false"-->
-                    <!--android:padding="4dp"-->
-                    <!--android:layout_above="@+id/takePicTxt"-->
-                    <!--android:layout_width="48dp"-->
-                    <!--android:layout_height="32dp"-->
-                    <!--android:layout_marginBottom="4dp"-->
-                    <!--android:layout_marginStart="20dp"-->
-                    <!--android:layout_alignParentBottom="false" />-->
+            <Button
+                android:id="@+id/mainBtn2"
+                android:text="@string/set_main"
+                android:background="@drawable/ruvbtn_wt"
+                android:scaleType="fitCenter"
+                android:layout_alignWithParentIfMissing="false"
+                android:padding="4dp"
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/ruvpic2"
+                android:textAllCaps="false"
+                android:layout_width="96dp"
+                android:layout_height="42dp"
+                android:layout_marginBottom="4dp"
+                android:visibility="gone"
+                android:layout_marginStart="16dp"
+                android:layout_alignParentBottom="false" />
 
-                <!--<Button-->
-                    <!--android:id="@+id/"-->
-                    <!--android:text="@string/set_main"-->
-                    <!--android:background="@drawable/ruvbtn_wt"-->
-                    <!--android:scaleType="fitCenter"-->
-                    <!--android:layout_alignWithParentIfMissing="false"-->
-                    <!--android:padding="4dp"-->
-                    <!--android:layout_above="@+id/takePicTxt"-->
-                    <!--android:layout_width="48dp"-->
-                    <!--android:layout_height="32dp"-->
-                    <!--android:layout_marginBottom="4dp"-->
-                    <!--android:layout_marginStart="20dp"-->
-                    <!--android:layout_alignParentBottom="false" />-->
+            <Button
+                android:id="@+id/cBtn2"
+                android:text="@string/comment"
+                android:background="@drawable/ruvbtn_wt"
+                android:scaleType="fitCenter"
+                android:layout_alignWithParentIfMissing="false"
+                android:padding="4dp"
+                android:layout_below="@+id/ruvpic2"
+                android:textAllCaps="false"
+                android:layout_width="96dp"
+                android:layout_height="42dp"
+                android:layout_centerHorizontal="true"
+                android:visibility="gone"
+                android:layout_marginBottom="4dp"
+                android:layout_alignParentBottom="false" />
 
-                <!--<Button-->
-                    <!--android:id="@+id/pic1"-->
-                    <!--android:text="@string/set_main"-->
-                    <!--android:background="@drawable/ruvbtn_wt"-->
-                    <!--android:scaleType="fitCenter"-->
-                    <!--android:layout_alignWithParentIfMissing="false"-->
-                    <!--android:padding="4dp"-->
-                    <!--android:layout_above="@+id/takePicTxt"-->
-                    <!--android:layout_width="48dp"-->
-                    <!--android:layout_height="32dp"-->
-                    <!--android:layout_marginBottom="4dp"-->
-                    <!--android:layout_marginStart="20dp"-->
-                    <!--android:layout_alignParentBottom="false" />-->
+            <Button
+                android:id="@+id/delBtn2"
+                android:text="@string/delete"
+                android:background="@drawable/ruvbtn_wt"
+                android:scaleType="fitCenter"
+                android:layout_alignParentEnd="true"
+                android:textAllCaps="false"
+                android:padding="4dp"
+                android:layout_below="@+id/ruvpic2"
+                android:layout_width="96dp"
+                android:layout_height="42dp"
+                android:layout_marginBottom="4dp"
+                android:visibility="gone"
+                android:layout_marginEnd="16dp"
+                android:layout_alignParentBottom="false" />
 
-
-
-            </GridLayout>
-
-            <GridLayout
+            <EditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                android:padding="12dp"
-                android:id="@+id/picwrap2"
-                android:columnCount="3"
-                android:background="@drawable/border_top_bottom"
-                android:visibility="invisible"
-                android:orientation="horizontal">
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+                android:layout_below="@id/mainBtn2"
+                android:id="@+id/commentEt2"
+                android:layout_marginTop="24dp"
+                android:layout_marginBottom="24dp"
+                android:minHeight="64dp"
+                android:layout_marginStart="24dp"
+                android:padding="8dp"
+                android:hint="@string/enter_comment"
+                android:elegantTextHeight="true"
+                android:layout_marginEnd="24dp"
+                android:background="@drawable/thin_outline"
+                android:visibility="gone"
+                android:inputType="textLongMessage|textMultiLine"/>
 
-            android:id="@+id/ruvpic2"
-            android:layout_marginBottom="4dp"
-            android:layout_below="@id/ruvpic1"
-            android:layout_columnSpan="3"
-            android:layout_centerHorizontal="true"
-            />
 
-                </GridLayout>
 
-            <GridLayout
+
+            <ImageView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                android:padding="12dp"
-                android:columnCount="3"
-                android:background="@drawable/border_top_bottom"
-                android:visibility="invisible"
-                android:id="@+id/picwrap3"
-                android:orientation="horizontal">
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/ruvpic3"
-            android:layout_below="@id/ruvpic2"
-            android:layout_centerHorizontal="true"
-            android:layout_columnSpan="3"
+                android:id="@+id/ruvpic3"
+                android:layout_below="@id/commentEt2"
+                android:layout_marginBottom="12dp"
+                android:layout_centerHorizontal="true"
             />
-                </GridLayout>
 
+            <Button
+                android:id="@+id/mainBtn3"
+                android:text="@string/set_main"
+                android:background="@drawable/ruvbtn_wt"
+                android:scaleType="fitCenter"
+                android:layout_alignWithParentIfMissing="false"
+                android:padding="4dp"
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/ruvpic3"
+                android:textAllCaps="false"
+                android:layout_width="96dp"
+                android:layout_height="42dp"
+                android:layout_marginBottom="4dp"
+                android:visibility="gone"
+                android:layout_marginStart="16dp"
+                android:layout_alignParentBottom="false" />
 
-            </LinearLayout>
+            <Button
+                android:id="@+id/cBtn3"
+                android:text="@string/comment"
+                android:background="@drawable/ruvbtn_wt"
+                android:scaleType="fitCenter"
+                android:layout_alignWithParentIfMissing="false"
+                android:padding="4dp"
+                android:layout_below="@+id/ruvpic3"
+                android:textAllCaps="false"
+                android:layout_width="96dp"
+                android:layout_height="42dp"
+                android:layout_centerHorizontal="true"
+                android:visibility="gone"
+                android:layout_marginBottom="4dp"
+                android:layout_alignParentBottom="false" />
+
+            <Button
+                android:id="@+id/delBtn3"
+                android:text="@string/delete"
+                android:background="@drawable/ruvbtn_wt"
+                android:scaleType="fitCenter"
+                android:layout_alignParentEnd="true"
+                android:textAllCaps="false"
+                android:padding="4dp"
+                android:layout_below="@+id/ruvpic3"
+                android:layout_width="96dp"
+                android:layout_height="42dp"
+                android:layout_marginBottom="4dp"
+                android:visibility="gone"
+                android:layout_marginEnd="16dp"
+                android:layout_alignParentBottom="false" />
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/mainBtn3"
+                android:minHeight="64dp"
+                android:id="@+id/commentEt3"
+                android:layout_marginTop="24dp"
+                android:layout_marginBottom="24dp"
+                android:padding="8dp"
+                android:hint="@string/enter_comment"
+                android:layout_marginStart="24dp"
+                android:layout_marginEnd="24dp"
+                android:background="@drawable/thin_outline"
+                android:visibility="gone"
+                android:inputType="textLongMessage|textMultiLine"/>
+        </RelativeLayout>
         </ScrollView>
     </RelativeLayout>
 </FrameLayout>
+
+
+<!--<GridLayout-->
+<!--android:layout_width="match_parent"-->
+<!--android:layout_height="wrap_content"-->
+<!--android:id="@+id/picwrap1"-->
+<!--android:layout_marginBottom="16dp"-->
+<!--android:padding="12dp"-->
+<!--android:columnCount="3"-->
+<!--android:background="@drawable/border_top_bottom"-->
+<!--android:visibility="invisible"-->
+    <!--&gt;-->
+<!--<ImageView-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_alignParentTop="true"-->
+    <!--android:layout_marginBottom="4dp"-->
+    <!--android:id="@+id/ruvpic1"-->
+    <!--android:layout_columnSpan="3"-->
+    <!--android:layout_centerHorizontal="true"-->
+    <!--/>-->
+
+<!--&lt;!&ndash;<Button&ndash;&gt;-->
+<!--&lt;!&ndash;android:id="@+id/pic1"&ndash;&gt;-->
+<!--&lt;!&ndash;android:text="@string/set_main"&ndash;&gt;-->
+<!--&lt;!&ndash;android:background="@drawable/ruvbtn_wt"&ndash;&gt;-->
+<!--&lt;!&ndash;android:scaleType="fitCenter"&ndash;&gt;-->
+<!--&lt;!&ndash;android:layout_alignWithParentIfMissing="false"&ndash;&gt;-->
+<!--&lt;!&ndash;android:padding="4dp"&ndash;&gt;-->
+<!--&lt;!&ndash;android:layout_above="@+id/takePicTxt"&ndash;&gt;-->
+<!--&lt;!&ndash;android:layout_width="48dp"&ndash;&gt;-->
+<!--&lt;!&ndash;android:layout_height="32dp"&ndash;&gt;-->
+<!--&lt;!&ndash;android:layout_marginBottom="4dp"&ndash;&gt;-->
+<!--&lt;!&ndash;android:layout_marginStart="20dp"&ndash;&gt;-->
+<!--&lt;!&ndash;android:layout_alignParentBottom="false" />&ndash;&gt;-->
+
+<!--&lt;!&ndash;<Button&ndash;&gt;-->
+<!--&lt;!&ndash;android:id="@+id/"&ndash;&gt;-->
+<!--&lt;!&ndash;android:text="@string/set_main"&ndash;&gt;-->
+<!--&lt;!&ndash;android:background="@drawable/ruvbtn_wt"&ndash;&gt;-->
+<!--&lt;!&ndash;android:scaleType="fitCenter"&ndash;&gt;-->
+<!--&lt;!&ndash;android:layout_alignWithParentIfMissing="false"&ndash;&gt;-->
+<!--&lt;!&ndash;android:padding="4dp"&ndash;&gt;-->
+<!--&lt;!&ndash;android:layout_above="@+id/takePicTxt"&ndash;&gt;-->
+<!--&lt;!&ndash;android:layout_width="48dp"&ndash;&gt;-->
+<!--&lt;!&ndash;android:layout_height="32dp"&ndash;&gt;-->
+<!--&lt;!&ndash;android:layout_marginBottom="4dp"&ndash;&gt;-->
+<!--&lt;!&ndash;android:layout_marginStart="20dp"&ndash;&gt;-->
+<!--&lt;!&ndash;android:layout_alignParentBottom="false" />&ndash;&gt;-->
+
+<!--&lt;!&ndash;<Button&ndash;&gt;-->
+<!--&lt;!&ndash;android:id="@+id/pic1"&ndash;&gt;-->
+<!--&lt;!&ndash;android:text="@string/set_main"&ndash;&gt;-->
+<!--&lt;!&ndash;android:background="@drawable/ruvbtn_wt"&ndash;&gt;-->
+<!--&lt;!&ndash;android:scaleType="fitCenter"&ndash;&gt;-->
+<!--&lt;!&ndash;android:layout_alignWithParentIfMissing="false"&ndash;&gt;-->
+<!--&lt;!&ndash;android:padding="4dp"&ndash;&gt;-->
+<!--&lt;!&ndash;android:layout_above="@+id/takePicTxt"&ndash;&gt;-->
+<!--&lt;!&ndash;android:layout_width="48dp"&ndash;&gt;-->
+<!--&lt;!&ndash;android:layout_height="32dp"&ndash;&gt;-->
+<!--&lt;!&ndash;android:layout_marginBottom="4dp"&ndash;&gt;-->
+<!--&lt;!&ndash;android:layout_marginStart="20dp"&ndash;&gt;-->
+<!--&lt;!&ndash;android:layout_alignParentBottom="false" />&ndash;&gt;-->
+
+
+
+<!--</GridLayout>-->
+
+<!--&lt;!&ndash;<GridLayout&ndash;&gt;-->
+<!--&lt;!&ndash;android:layout_width="match_parent"&ndash;&gt;-->
+<!--&lt;!&ndash;android:layout_height="wrap_content"&ndash;&gt;-->
+<!--&lt;!&ndash;android:layout_marginBottom="16dp"&ndash;&gt;-->
+<!--&lt;!&ndash;android:padding="12dp"&ndash;&gt;-->
+<!--&lt;!&ndash;android:id="@+id/picwrap2"&ndash;&gt;-->
+<!--&lt;!&ndash;android:columnCount="3"&ndash;&gt;-->
+<!--&lt;!&ndash;android:background="@drawable/border_top_bottom"&ndash;&gt;-->
+<!--&lt;!&ndash;android:visibility="invisible"&ndash;&gt;-->
+<!--&lt;!&ndash;android:orientation="horizontal">&ndash;&gt;-->
+<!--&lt;!&ndash;<ImageView&ndash;&gt;-->
+    <!--&lt;!&ndash;android:layout_width="wrap_content"&ndash;&gt;-->
+    <!--&lt;!&ndash;android:layout_height="wrap_content"&ndash;&gt;-->
+
+    <!--&lt;!&ndash;android:id="@+id/ruvpic2"&ndash;&gt;-->
+    <!--&lt;!&ndash;android:layout_marginBottom="4dp"&ndash;&gt;-->
+    <!--&lt;!&ndash;android:layout_below="@id/ruvpic1"&ndash;&gt;-->
+    <!--&lt;!&ndash;android:layout_columnSpan="3"&ndash;&gt;-->
+    <!--&lt;!&ndash;android:layout_centerHorizontal="true"&ndash;&gt;-->
+    <!--&lt;!&ndash;/>&ndash;&gt;-->
+
+<!--&lt;!&ndash;</GridLayout>&ndash;&gt;-->
+
+<!--&lt;!&ndash;<GridLayout&ndash;&gt;-->
+<!--&lt;!&ndash;android:layout_width="match_parent"&ndash;&gt;-->
+<!--&lt;!&ndash;android:layout_height="wrap_content"&ndash;&gt;-->
+<!--&lt;!&ndash;android:layout_marginBottom="16dp"&ndash;&gt;-->
+<!--&lt;!&ndash;android:padding="12dp"&ndash;&gt;-->
+<!--&lt;!&ndash;android:columnCount="3"&ndash;&gt;-->
+<!--&lt;!&ndash;android:background="@drawable/border_top_bottom"&ndash;&gt;-->
+<!--&lt;!&ndash;android:visibility="invisible"&ndash;&gt;-->
+<!--&lt;!&ndash;android:id="@+id/picwrap3"&ndash;&gt;-->
+<!--&lt;!&ndash;android:orientation="horizontal">&ndash;&gt;-->
+<!--&lt;!&ndash;<ImageView&ndash;&gt;-->
+    <!--&lt;!&ndash;android:layout_width="wrap_content"&ndash;&gt;-->
+    <!--&lt;!&ndash;android:layout_height="wrap_content"&ndash;&gt;-->
+    <!--&lt;!&ndash;android:id="@+id/ruvpic3"&ndash;&gt;-->
+    <!--&lt;!&ndash;android:layout_below="@id/ruvpic2"&ndash;&gt;-->
+    <!--&lt;!&ndash;android:layout_centerHorizontal="true"&ndash;&gt;-->
+    <!--&lt;!&ndash;android:layout_columnSpan="3"&ndash;&gt;-->
+    <!--&lt;!&ndash;/>&ndash;&gt;-->
+<!--&lt;!&ndash;</GridLayout>&ndash;&gt;-->

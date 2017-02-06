@@ -58,7 +58,7 @@ public class RuuvComment implements Runnable {
     }
 
     private boolean sendComment() {
-        String endpoint = baseUrl + "/roof/add";
+        String endpoint = baseUrl + "/comment/add";
         JSONObject commentJson = new JSONObject();
 
         if (mBundle != null) {
@@ -68,8 +68,8 @@ public class RuuvComment implements Runnable {
                 final SimpleDateFormat sdf = new SimpleDateFormat(TIME_FORMAT, Locale.CANADA);
                 final String nowTime = sdf.format(Calendar.getInstance().getTime());
 
-                commentJson.put("comment_body", mBundle.getString("commentBody"));
-                commentJson.put("ruvfid", mBundle.getString("ruvFid"));
+                commentJson.put("comment_body", mBundle.getString("comment_body"));
+                commentJson.put("ruvfid", mBundle.getString("ruvfid"));
                 commentJson.put("entry_date", nowTime);
             } catch (JSONException e) {
                 e.printStackTrace();

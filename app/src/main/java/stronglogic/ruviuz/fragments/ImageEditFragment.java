@@ -5,6 +5,7 @@ import android.app.DialogFragment;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.view.menu.MenuBuilder;
 import android.support.v7.view.menu.MenuPopupHelper;
@@ -48,7 +49,10 @@ public class ImageEditFragment extends DialogFragment {
 
     private Button commentBtn, deleteBtn, setMainBtn;
 
+    private FloatingActionButton okayBtn;
+
     private String editImgUrl;
+    private String editCommentText;
     private int editIndex, fileCount;
     private String[] fileUrls;
     private String[] fileComments;
@@ -82,6 +86,7 @@ public class ImageEditFragment extends DialogFragment {
         if (getArguments() != null) {
             editImgUrl = getArguments().getString("editImgUrl");
             editIndex = getArguments().getInt("editIndex");
+            editCommentText = getArguments().getString("editCommentText");
             getBundleData(getArguments());
         }
     }
@@ -187,9 +192,21 @@ public class ImageEditFragment extends DialogFragment {
                 .into(editIv);
 
         commentEt = (EditText) mView.findViewById(R.id.commentEt);
-        if (fileComments != null) {
-            commentEt.setText(fileComments[0]);
+        if (editIndex > -1) {
+            commentEt.setText(fileComments[editIndex]);
         }
+
+        commentBtn = (Button) mView.findViewById(R.id.addComment);
+        commentBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (commentEt.getVisibility() == View.GONE) {
+                    commentEt.setVisibility(View.VISIBLE);
+                } else {
+                    commentEt.setVisibility(View.GONE);
+                }
+            }
+        });
 
         deleteBtn = (Button) mView.findViewById(R.id.deleteBtn);
         deleteBtn.setOnClickListener(new View.OnClickListener() {
@@ -209,6 +226,7 @@ public class ImageEditFragment extends DialogFragment {
                                 Log.d(TAG, "Deleting Image");
                                 if (ImageEditFragment.this.fileUrls != null && ImageEditFragment.this.fileUrls[editIndex] != null) {
                                     ImageEditFragment.this.fileUrls[editIndex] = "";
+                                    ImageEditFragment.this.fileComments[editIndex] = "";
                                     ImageEditFragment.this.fileCount--;
                                     Bundle mBundle = new Bundle();
                                     putBundleData(mBundle);
@@ -230,6 +248,17 @@ public class ImageEditFragment extends DialogFragment {
                     }
                 });
                 deleteMenu.show();
+            }
+        });
+
+        okayBtn = (FloatingActionButton) mView.findViewById(R.id.okayBtn);
+        okayBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                fileComments[editIndex] = commentEt.getText().toString();
+                Bundle sendBundle = new Bundle();
+                putBundleData(sendBundle);
+                ImageEditFragment.this.mListener.imageFragInteraction(sendBundle, MainActivity.RUV_IMGEDIT_FINISH);
             }
         });
 
@@ -322,6 +351,8 @@ public class ImageEditFragment extends DialogFragment {
         if (this.fileUrls != null) {
             bundle.putStringArray("fileUrls", this.fileUrls);
         }
+        if (this.fileComments != null)
+            bundle.putStringArray("fileComments", this.fileComments);
         bundle.putInt("editMode", MainActivity.RUV_IMGEDIT_DELETE);
     }
 }

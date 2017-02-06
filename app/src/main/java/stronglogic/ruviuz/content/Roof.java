@@ -24,6 +24,8 @@ public class Roof extends LauncherActivity.ListItem implements Serializable  {
 
     private ArrayList<String> photos;
 
+    private ArrayList<RuvFileInfo> ruvFiles;
+
 
     public void setAddress(String address)    {
         this.address = address;
@@ -86,6 +88,19 @@ public class Roof extends LauncherActivity.ListItem implements Serializable  {
             return this.photos;
         } else {
             return new ArrayList<String>();
+        }
+    }
+
+
+    public void setFiles (ArrayList<RuvFileInfo> files)  {
+        this.ruvFiles = files;
+    }
+
+    public ArrayList<RuvFileInfo> getFiles() {
+        if (this.ruvFiles != null) {
+            return this.ruvFiles;
+        } else {
+            return new ArrayList<RuvFileInfo>();
         }
     }
 

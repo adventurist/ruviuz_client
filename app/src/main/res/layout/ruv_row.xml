@@ -188,6 +188,7 @@
         android:layout_width="96dp"
         android:layout_alignParentStart="true">
     </ImageView>
+
     <ImageView
         android:layout_height="wrap_content"
         android:layout_marginStart="2dp"
@@ -206,6 +207,30 @@
         android:adjustViewBounds="true"
         android:maxWidth="96dp"
         android:layout_width="96dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxWidth="96dp"
+            android:layout_below="@id/ruvPhoto1"
+            android:layout_alignParentStart="true"
+            android:id="@+id/ruvComment1"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxWidth="96dp"
+            android:layout_below="@id/ruvPhoto1"
+            android:layout_centerHorizontal="true"
+            android:id="@+id/ruvComment2"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxWidth="96dp"
+            android:layout_below="@id/ruvPhoto1"
+            android:layout_alignParentEnd="true"
+            android:id="@+id/ruvComment3"/>
     </RelativeLayout>
     <LinearLayout
         android:layout_width="match_parent"

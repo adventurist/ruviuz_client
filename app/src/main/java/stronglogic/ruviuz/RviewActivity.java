@@ -36,6 +36,7 @@ import java.util.ArrayList;
 
 import stronglogic.ruviuz.content.Customer;
 import stronglogic.ruviuz.content.Roof;
+import stronglogic.ruviuz.content.RuvFileInfo;
 import stronglogic.ruviuz.fragments.RuvFragment;
 import stronglogic.ruviuz.tasks.RviewTask;
 import stronglogic.ruviuz.views.RuvAdapter;
@@ -152,7 +153,6 @@ public class RviewActivity extends AppCompatActivity implements RuvFragment.RuvF
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 Log.d(TAG, item.toString());
-                Intent mIntent = new Intent();
                 switch (item.getTitle().toString()) {
                     case ("Roof List"):
                         Intent reloadIntent = new Intent(RviewActivity.this, IndexViewActivity.class);
@@ -250,7 +250,6 @@ public class RviewActivity extends AppCompatActivity implements RuvFragment.RuvF
     public boolean parseData(String data) {
 
         try {
-
             JSONObject dataJson = new JSONObject(data);
             JSONArray rvJsonArray = new JSONArray(dataJson.getString("Roofs"));
             for (int i = 0; i < rvJsonArray.length(); i++) {
@@ -267,15 +266,16 @@ public class RviewActivity extends AppCompatActivity implements RuvFragment.RuvF
                     JSONArray rFiles = new JSONArray(roofJson.getString("files"));
                     int fileNum = rFiles.length();
                     Log.d(TAG, "Number of files for" + roof.getId() + ": " + String.valueOf(fileNum));
-                    ArrayList<String> photoArray = new ArrayList<>();
+                    ArrayList<RuvFileInfo> filesArray = new ArrayList<>();
                     for (int fNum = 0; fNum < fileNum; fNum++) {
                         JSONObject fileObject = rFiles.getJSONObject(fNum);
-                        photoArray.add(fNum, baseUrl + "/files/" + fileObject.getString(String.valueOf(fNum)));
-                        Log.d(TAG, "Photo path is: " + photoArray.get(fNum));
+                        RuvFileInfo rFile = new RuvFileInfo();
+                        rFile.setUrl(baseUrl + "/files/" + fileObject.getString(String.valueOf(fNum)));
+                        if (fileObject.has("comment")) rFile.setComment(fileObject.getString("comment"));
+                        filesArray.add(rFile);
                     }
-                roof.setPhotos(photoArray);
+                    roof.setFiles(filesArray);
                 }
-
                 roofArrayList.add(roof);
             }
             return true;

@@ -21,6 +21,7 @@ import java.util.ArrayList;
 
 import stronglogic.ruviuz.R;
 import stronglogic.ruviuz.content.Roof;
+import stronglogic.ruviuz.content.RuvFileInfo;
 import stronglogic.ruviuz.fragments.RuvFragment;
 import stronglogic.ruviuz.fragments.UpdateFragment;
 
@@ -59,13 +60,13 @@ public class RuvAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
 
-    static class RuvHolder extends RecyclerView.ViewHolder  {
-        TextView addressTv, priceTv, idTv, widthTv, lengthTv, slopeTv;
+    private static class RuvHolder extends RecyclerView.ViewHolder  {
+        TextView addressTv, priceTv, idTv, widthTv, lengthTv, slopeTv, cTv1, cTv2, cTv3;
         ImageView ruvPhoto1, ruvPhoto2, ruvPhoto3;
         Button roofOptions;
         
         
-        public RuvHolder(View mView) {
+        RuvHolder(View mView) {
             super(mView);
             priceTv = (TextView) mView.findViewById(R.id.priceTv);
             addressTv = (TextView) mView.findViewById(R.id.addressTv);
@@ -76,6 +77,9 @@ public class RuvAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             ruvPhoto1 = (ImageView) mView.findViewById(R.id.ruvPhoto1);
             ruvPhoto2  = (ImageView) mView.findViewById(R.id.ruvPhoto2);
             ruvPhoto3  = (ImageView) mView.findViewById(R.id.ruvPhoto3);
+            cTv1 = (TextView) mView.findViewById(R.id.ruvComment1);
+            cTv2 = (TextView) mView.findViewById(R.id.ruvComment2);
+            cTv3 = (TextView) mView.findViewById(R.id.ruvComment3);
             roofOptions = (Button) mView.findViewById(R.id.roofOptions);
         }
     }
@@ -112,31 +116,38 @@ public class RuvAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             ruvHolder.lengthTv.setText(String.valueOf(Roof.getLength()));
             ruvHolder.slopeTv.setText(String.valueOf(Roof.getSlope()));
             ruvHolder.priceTv.setText(ruvPrice);
-            ArrayList<String> rPics = Roof.getPhotos();
-            if (rPics.size() > 0)  {
-                Glide.with(mActivity)
-                        .load(Roof.getPhotos().get(0))
+            ArrayList<RuvFileInfo> rFiles = Roof.getFiles();
+            if (rFiles.size() > 0) {
+                    Glide.with(mActivity)
+                        .load(Roof.getFiles().get(0).getUrl())
                         .fitCenter()
                         .diskCacheStrategy(DiskCacheStrategy.RESULT)
                         .into(ruvHolder.ruvPhoto1);
-                if (rPics.size() > 1 && rPics.get(1) != null) {
+                if (!Roof.getFiles().get(0).getComment().equals(""))
+                    ruvHolder.cTv1.setText(Roof.getFiles().get(0).getComment());
+                if (rFiles.size() > 1 && rFiles.get(1) != null) {
                     Glide.with(mActivity)
-                            .load(Roof.getPhotos().get(1))
+                            .load(Roof.getFiles().get(1).getUrl())
                             .fitCenter()
                             .diskCacheStrategy(DiskCacheStrategy.RESULT)
                             .into(ruvHolder.ruvPhoto2);
+                    if (!Roof.getFiles().get(1).getComment().equals(""))
+                        ruvHolder.cTv2.setText(Roof.getFiles().get(1).getComment());
                 } else {
                     Glide.clear(ruvHolder.ruvPhoto2);
                 }
-                if (rPics.size() > 2 && rPics.get(2) != null) {
+                if (rFiles.size() > 2 && rFiles.get(2) != null) {
                     Glide.with(mActivity)
-                            .load(Roof.getPhotos().get(2))
+                            .load(Roof.getFiles().get(2).getUrl())
                             .fitCenter()
                             .diskCacheStrategy(DiskCacheStrategy.RESULT)
                             .into(ruvHolder.ruvPhoto3);
+                    if (!Roof.getFiles().get(2).getComment().equals(""))
+                        ruvHolder.cTv3.setText(Roof.getFiles().get(2).getComment());
                 } else {
                     Glide.clear(ruvHolder.ruvPhoto3);
-                }
+                }                
+            
             } else {
                 Glide.clear(ruvHolder.ruvPhoto1);
                 Glide.clear(ruvHolder.ruvPhoto2);

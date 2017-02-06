@@ -117,6 +117,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
     public static final int RUV_IMAGE_EDIT = 71;
     public static final int RUV_FINISH_EDIT = 72;
     public static final int RUV_IMGEDIT_DELETE = 73;
+    public static final int RUV_IMGEDIT_FINISH = 74;
     public static final int RUV_EDIT_OFF = 79;
 
     public static final String baseUrl = "http://52.43.250.94:5000";
@@ -575,35 +576,34 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
             if (fileUrls != null && (fileUrls.length > 0 || fileCount == 0)) {
                 int realCount = 0;
 
-                if (fileUrls.length == fileComments.length) {
-                    if (this.ruvFiles == null) {
-                        this.ruvFiles = new HashMap<>();
-
-                    }
-                    for (int i = fileUrls.length; i > 0; i--) {
-                        if (fileUrls[i - 1] != null && !fileUrls[i - 1].equals("") &&
-                                fileComments[i - 1] != null && !fileComments[i- 1].equals("")) {
-                            RuvFileInfo rFile = new RuvFileInfo();
-                            rFile.setUrl(fileUrls[i - 1]);
-                            rFile.setFilename(fileUrls[i - 1].substring(fileUrls[i - 1].lastIndexOf('/') + 1));
-                            rFile.setComment(fileComments[i - 1]);
-                            ruvFiles.put(fileUrls[i - 1], rFile);
-                        }
-                    }
-                }
-
                 for (int i = fileUrls.length; i > 0; i--) {
-                    realCount = !fileUrls[i - 1].equals("") ? realCount + 1 : realCount;
+                    realCount = (fileUrls[i - 1] != null && !fileUrls[i - 1].equals("")) ? realCount + 1 : realCount;
                 }
                 this.fileCount = realCount;
             }
             if (fileComments != null && (fileComments.length > 0 || commentCount == 0)) {
                 int realCount = 0;
                 for (int i = fileComments.length; i > 0; i--) {
-                    realCount = !fileComments[i - 1].equals("") ? realCount + 1 : realCount;
+                    realCount = (fileComments[i-1] != null && !fileComments[i - 1].equals("")) ? realCount + 1 : realCount;
                 }
                 this.commentCount = realCount;
             }
+            if (this.ruvFiles == null) {
+                this.ruvFiles = new HashMap<>();
+
+            }
+            if (fileUrls != null)
+                for (int i = fileUrls.length; i > 0; i--) {
+                    if (fileUrls[i - 1] != null && !fileUrls[i - 1].equals("") &&
+                            fileComments[i - 1] != null && !fileComments[i- 1].equals("")) {
+                        RuvFileInfo rFile = new RuvFileInfo();
+                        rFile.setUrl(fileUrls[i - 1]);
+                        rFile.setFilename(fileUrls[i - 1].substring(fileUrls[i - 1].lastIndexOf('/') + 1));
+                        rFile.setComment(fileComments[i - 1]);
+                        ruvFiles.put(rFile.getFilename(), rFile);
+                    }
+                }
+
 
             if (xIntent.hasExtra("uri")) {
                 if (fileCount + 1 == 4) {
@@ -619,6 +619,9 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
                     Bundle stuff = xIntent.getExtras();
                     String uriS = stuff.getString("uri");
                     fileUrls[fileCount - 1] = uriS;
+                    if (fileComments[fileCount - 1] != null && !fileComments[fileCount - 1].equals("")) {
+                        fileComments[fileCount - 1] = "";
+                    }
                 }
             }
             if (xIntent.hasExtra("callingClass")) {
@@ -900,6 +903,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
 //                editFiles.add(fileUrl);
 //            }
         mBundle.putStringArray("fileUrls", fileUrls);
+            mBundle.putStringArray("fileComments", fileComments);
         }
         if (mCustomer != null) {
             mBundle.putString("firstName", mCustomer.getFirstname());
@@ -1302,9 +1306,10 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
 
     @Override
     public void imageFragInteraction(Bundle bundle, int request) {
-        if (request == RUV_IMGEDIT_DELETE) {
+        if (request == RUV_IMGEDIT_DELETE || request == RUV_IMGEDIT_FINISH) {
             if (bundle.getStringArray("fileUrls") != null) {
                 this.fileUrls = bundle.getStringArray("fileUrls");
+                this.fileComments = bundle.getStringArray("fileComments");
             }
             this.fileCount = bundle.getInt("fileCount");
             this.editMode = bundle.getInt("editMode");
@@ -2042,6 +2047,8 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         if (metricFrag != null && metricFrag.isAdded()) metricFrag.dismiss();
         if (slopeFrag != null && slopeFrag.isAdded()) slopeFrag.dismiss();
         if (editFrag != null && editFrag.isAdded()) editFrag.dismiss();
+        if (fileFrag != null && fileFrag.isAdded()) fileFrag.dismiss();
+        if (imgEditFrag != null && imgEditFrag.isAdded()) imgEditFrag.dismiss();
     }
 
     public void dismissOtherDialogs(Class mClass) {
@@ -2052,6 +2059,8 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         if (metricFrag != null && metricFrag.isAdded() && metricFrag.getClass() != mClass) metricFrag.dismiss();
         if (slopeFrag != null && slopeFrag.isAdded() && slopeFrag.getClass() != mClass) slopeFrag.dismiss();
         if (editFrag != null && editFrag.isAdded() && editFrag.getClass() != mClass) editFrag.dismiss();
+        if (fileFrag != null && fileFrag.isAdded() && fileFrag.getClass() != mClass) fileFrag.dismiss();
+        if (imgEditFrag != null && imgEditFrag.isAdded() && imgEditFrag.getClass() != mClass) imgEditFrag.dismiss();
     }
 
     public static int getStatusBarHeight(Activity a) {

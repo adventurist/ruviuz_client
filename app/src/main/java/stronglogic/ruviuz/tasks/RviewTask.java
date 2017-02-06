@@ -15,6 +15,8 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import stronglogic.ruviuz.MainActivity;
+
 /**
  * Created by logicp on 11/27/16.
  * Logs into Ruviuz
@@ -61,6 +63,7 @@ public class RviewTask extends AsyncTask<String[], String, boolean[]> {
 
 
     private boolean getRoofs(String authToken) {
+        baseUrl = baseUrl == null ? MainActivity.baseUrl : baseUrl;
         String loginUrl = baseUrl + "/roofs/all";
         HttpURLConnection connection;
         BufferedReader reader;
