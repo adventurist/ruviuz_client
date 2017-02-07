@@ -31,6 +31,8 @@ import android.support.v7.widget.Toolbar;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.style.ImageSpan;
+import android.transition.Transition;
+import android.transition.TransitionInflater;
 import android.util.Base64;
 import android.util.Log;
 import android.view.Menu;
@@ -194,6 +196,8 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
                 View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                         | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
                         | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+
+        setupWindowAnimations();
 
         mToolbar = (Toolbar) findViewById(R.id.app_bar);
 
@@ -562,6 +566,11 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         };
     }
 
+    private void setupWindowAnimations() {
+        Transition slide = TransitionInflater.from(this).inflateTransition(R.transition.slide);
+        slide.setDuration(1000);
+        getWindow().setExitTransition(slide);
+    }
 
     @Override
     public void onResume() {
@@ -914,18 +923,20 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         }
         saveEditFragState(mBundle);
         FragmentManager fm = getFragmentManager();
+
         if (editFrag == null) {
-            editFrag= new EditFragment();
-            editFrag.setArguments(mBundle);
-            if (!editFrag.isAdded()) {
-                editFrag.show(fm, "Please Enter Metrics");
-            }
+            editFrag = new EditFragment();
         } else {
             fm.beginTransaction().remove(editFrag).commit();
-            editFrag= null;
+            editFrag = null;
             editFrag = new EditFragment();
+        }
+
+        if (!editFrag.isAdded()) {
             editFrag.setArguments(mBundle);
+
             editFrag.show(fm, "Please Enter Metrics");
+
         }
     }
 
@@ -1774,12 +1785,6 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         roofSlope.setVisibility(View.INVISIBLE);
         if (currentPrice != null)
         currentPrice.setVisibility(View.INVISIBLE);
-//        if (addressBtn != null)
-//        addressBtn.setVisibility(View.INVISIBLE);
-//        if (metricBtn != null)
-//        metricBtn.setVisibility(View.INVISIBLE);
-//        if (draftBtn != null)
-//        draftBtn.setVisibility(View.INVISIBLE);
         if (ruuvBtn != null)
         ruuvBtn.setVisibility(View.INVISIBLE);
         if (editBtn != null)
@@ -1806,12 +1811,6 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         currentPrice.setVisibility(View.VISIBLE);
         if (currentPrice != null)
             currentPrice.setVisibility(View.VISIBLE);
-//        if (addressBtn != null)
-//            addressBtn.setVisibility(View.VISIBLE);
-//        if (metricBtn != null)
-//            metricBtn.setVisibility(View.VISIBLE);
-//        if (draftBtn != null)
-//            draftBtn.setVisibility(View.VISIBLE);
         if (ruuvBtn != null)
             ruuvBtn.setVisibility(View.VISIBLE);
         if (editBtn != null)

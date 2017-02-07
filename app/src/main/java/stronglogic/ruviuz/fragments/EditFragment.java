@@ -136,6 +136,18 @@ public class EditFragment extends DialogFragment {
             int height = ViewGroup.LayoutParams.MATCH_PARENT;
             d.getWindow().setLayout(width, height);
 
+            final View decorView = d.getWindow()
+                    .getDecorView();
+
+//            decorView.animate().translationY(-100)
+//                    .setStartDelay(300)
+//                    .setDuration(3000)
+//                    .start();
+            decorView.animate().rotationBy(360f)
+                    .setStartDelay(50)
+                    .setDuration(700)
+                    .start();
+
         }
     }
 
@@ -367,7 +379,6 @@ public class EditFragment extends DialogFragment {
         cEt2 = (EditText) mView.findViewById(R.id.ruvComment2);
         cEt3 = (EditText) mView.findViewById(R.id.ruvComment3);
 
-
         if (fileCount > 0) {
             if (fileUrls != null) {
                 if (fileUrls[0] != null && !fileUrls[0].equals("") && ruvPhoto1.getDrawable() == null) {
@@ -377,8 +388,10 @@ public class EditFragment extends DialogFragment {
                             .fitCenter()
                             .diskCacheStrategy(DiskCacheStrategy.RESULT)
                             .into(ruvPhoto1);
-                    if (fileComments[0] != null && !fileComments[0].equals(""))
+                    if (fileComments[0] != null && !fileComments[0].equals("")) {
+                        cEt1.setVisibility(View.VISIBLE);
                         cEt1.setText(fileComments[0]);
+                    }
                 }
                 if (fileUrls[1] != null && !fileUrls[1].equals("") && ruvPhoto2.getDrawable() == null) {
                     Glide.with(mActivity)
@@ -387,8 +400,10 @@ public class EditFragment extends DialogFragment {
                             .fitCenter()
                             .diskCacheStrategy(DiskCacheStrategy.RESULT)
                             .into(ruvPhoto2);
-                    if (fileComments[1] != null && !fileComments[1].equals(""))
+                    if (fileComments[1] != null && !fileComments[1].equals("")) {
+                        cEt2.setVisibility(View.VISIBLE);
                         cEt2.setText(fileComments[1]);
+                    }
                 }
                 if (fileUrls[2] != null && !fileUrls[2].equals("") && ruvPhoto3.getDrawable() == null) {
                     //                    ruvPhoto3 = (ImageView) mView.findViewById(R.id.ruvPic3);
@@ -398,8 +413,10 @@ public class EditFragment extends DialogFragment {
                             .fitCenter()
                             .diskCacheStrategy(DiskCacheStrategy.RESULT)
                             .into(ruvPhoto3);
-                    if (fileComments[2] != null && !fileComments[2].equals(""))
+                    if (fileComments[2] != null && !fileComments[2].equals("")) {
+                        cEt3.setVisibility(View.VISIBLE);
                         cEt3.setText(fileComments[2]);
+                    }
                 }
             }
         }

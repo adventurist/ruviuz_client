@@ -437,10 +437,12 @@ public class FileFragment extends DialogFragment {
         okayBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                fileComments[0] = cEt1.getText().toString();
-                fileComments[1] = cEt2.getText().toString();
-                fileComments[2] = cEt3.getText().toString();
+                if (cEt1 != null)
+                    fileComments[0] = cEt1.getText().toString();
+                if (cEt2 != null)
+                    fileComments[1] = cEt2.getText().toString();
+                if (cEt3 != null)
+                    fileComments[2] = cEt3.getText().toString();
 
                 mListener.fileFragInteraction(FileFragment.this.fileUrls, FileFragment.this.fileComments, FileFragment.this.fileCount, MainActivity.RUV_ADD_FILES);
                 mActivity.revealActivity();

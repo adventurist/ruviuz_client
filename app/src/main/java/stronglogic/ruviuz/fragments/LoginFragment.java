@@ -57,6 +57,16 @@ public class LoginFragment extends DialogFragment {
     }
 
     @Override
+    public void onStart()
+    {
+        if (getDialog() != null) {
+            getDialog().getWindow().setWindowAnimations(
+                    R.style.ruvanimate);
+            super.onStart();
+        }
+    }
+
+    @Override
     public void onCancel(DialogInterface dialog) {
         mActivity.welcomeDialog();
     }

@@ -352,7 +352,7 @@ public class IndexViewActivity extends AppCompatActivity
             layoutMgr.setRecycleChildrenOnDetach(true);
             rv.setLayoutManager(layoutMgr);
 //            rv.addItemDecoration(new HorizontalDividerItemDecoration.Builder(this).build());
-            ruvFilter = new RuvFilter(indexAdapter, roofArrayList);
+//            ruvFilter = new RuvFilter(indexAdapter, roofArrayList);
             this.filterType = RuvFilter.filterType.ADDRESS;
         }
     }
@@ -391,13 +391,6 @@ public class IndexViewActivity extends AppCompatActivity
         Button typeBtn = new Button(this);
         typeBtn.setBackground(getDrawable(R.drawable.choose));
 
-//        Button btnPrev = new Button(this);
-//        btnPrev.setBackground(IndexViewActivity.this.getDrawable(R.drawable.choose));
-
-//        searchStats = new TextView(this);
-
-//        ((LinearLayout) searchView.getChildAt(0)).addView(searchStats);
-//        ((LinearLayout) searchView.getChildAt(0)).addView(btnPrev, navButtonsParams);
         ((LinearLayout) searchView.getChildAt(0)).addView(typeBtn, navButtonsParams);
 
         ((LinearLayout) searchView.getChildAt(0)).setGravity(Gravity.BOTTOM);
@@ -415,16 +408,6 @@ public class IndexViewActivity extends AppCompatActivity
                 }
             }
         });
-//                .setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-//            @Override
-//            public boolean onMenuItemClick(MenuItem item) {
-//                ruvFilter.setType(RuvFilter.filterType.CUSTOMER);
-//                return false;
-//            }
-//        });
-
-
-//
         updateMenuWithIcon(menu.findItem(R.id.goHome), Color.WHITE);
         updateMenuWithIcon(menu.findItem(R.id.loginAction), Color.WHITE);
         updateMenuWithIcon(menu.findItem(R.id.geoLocate), Color.WHITE);

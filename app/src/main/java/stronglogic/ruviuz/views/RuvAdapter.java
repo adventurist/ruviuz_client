@@ -24,6 +24,7 @@ import stronglogic.ruviuz.content.Roof;
 import stronglogic.ruviuz.content.RuvFileInfo;
 import stronglogic.ruviuz.fragments.RuvFragment;
 import stronglogic.ruviuz.fragments.UpdateFragment;
+import stronglogic.ruviuz.util.RuvFilter;
 
 
 /**
@@ -32,9 +33,11 @@ import stronglogic.ruviuz.fragments.UpdateFragment;
  **/
 
 public class RuvAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-    private ArrayList<Roof> ruvList;
+    private ArrayList<Roof> filteredList;
     private LayoutInflater layoutInflater;
     private Activity mActivity;
+
+    public ArrayList<Roof> ruvList;
     
     private static final String TAG = "RuviuzRUVADAPTER";
     private final static int RUV_VIEW = 0;
@@ -46,6 +49,9 @@ public class RuvAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private int reopenDialog;
 
     private Bundle mBundle;
+
+    private RuvFilter ruvFilter;
+
 
 
     public RuvAdapter(Activity activity, ArrayList ruvList, String baseUrl, String authToken, int reopenDialog, String[] fileUrls)   {
@@ -61,7 +67,7 @@ public class RuvAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
 
     private static class RuvHolder extends RecyclerView.ViewHolder  {
-        TextView addressTv, priceTv, idTv, widthTv, lengthTv, slopeTv, cTv1, cTv2, cTv3;
+        TextView addressTv, custTv, priceTv, idTv, widthTv, lengthTv, slopeTv, cTv1, cTv2, cTv3;
         ImageView ruvPhoto1, ruvPhoto2, ruvPhoto3;
         Button roofOptions;
         
@@ -70,6 +76,7 @@ public class RuvAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             super(mView);
             priceTv = (TextView) mView.findViewById(R.id.priceTv);
             addressTv = (TextView) mView.findViewById(R.id.addressTv);
+            custTv = (TextView) mView.findViewById(R.id.custTv);
             idTv = (TextView) mView.findViewById(R.id.idTv );
             widthTv = (TextView) mView.findViewById(R.id.widthTv);
             lengthTv = (TextView) mView.findViewById((R.id.lengthTv));
@@ -112,6 +119,8 @@ public class RuvAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             String ruvPrice = "$" + String.valueOf(Roof.getPrice());
             ruvHolder.idTv.setText(String.valueOf(Roof.getId()));
             ruvHolder.addressTv.setText(Roof.getAddress());
+            if (!Roof.getCustomerName().equals(""))
+                ruvHolder.custTv.setText(Roof.getCustomerName());
             ruvHolder.widthTv.setText(String.valueOf(Roof.getWidth()));
             ruvHolder.lengthTv.setText(String.valueOf(Roof.getLength()));
             ruvHolder.slopeTv.setText(String.valueOf(Roof.getSlope()));
@@ -123,16 +132,20 @@ public class RuvAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                         .fitCenter()
                         .diskCacheStrategy(DiskCacheStrategy.RESULT)
                         .into(ruvHolder.ruvPhoto1);
-                if (!Roof.getFiles().get(0).getComment().equals(""))
+                if (!Roof.getFiles().get(0).getComment().equals("")) {
+                    ruvHolder.cTv1.setVisibility(View.VISIBLE);
                     ruvHolder.cTv1.setText(Roof.getFiles().get(0).getComment());
+                }
                 if (rFiles.size() > 1 && rFiles.get(1) != null) {
                     Glide.with(mActivity)
                             .load(Roof.getFiles().get(1).getUrl())
                             .fitCenter()
                             .diskCacheStrategy(DiskCacheStrategy.RESULT)
                             .into(ruvHolder.ruvPhoto2);
-                    if (!Roof.getFiles().get(1).getComment().equals(""))
+                    if (!Roof.getFiles().get(1).getComment().equals("")) {
+                        ruvHolder.cTv2.setVisibility(View.VISIBLE);
                         ruvHolder.cTv2.setText(Roof.getFiles().get(1).getComment());
+                    }
                 } else {
                     Glide.clear(ruvHolder.ruvPhoto2);
                 }
@@ -142,8 +155,10 @@ public class RuvAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                             .fitCenter()
                             .diskCacheStrategy(DiskCacheStrategy.RESULT)
                             .into(ruvHolder.ruvPhoto3);
-                    if (!Roof.getFiles().get(2).getComment().equals(""))
+                    if (!Roof.getFiles().get(2).getComment().equals("")) {
+                        ruvHolder.cTv3.setVisibility(View.VISIBLE);
                         ruvHolder.cTv3.setText(Roof.getFiles().get(2).getComment());
+                    }
                 } else {
                     Glide.clear(ruvHolder.ruvPhoto3);
                 }                

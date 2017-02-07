@@ -10,21 +10,28 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.style.ImageSpan;
+import android.transition.Transition;
+import android.transition.TransitionInflater;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import org.json.JSONArray;
@@ -33,12 +40,15 @@ import org.json.JSONObject;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 import stronglogic.ruviuz.content.Customer;
 import stronglogic.ruviuz.content.Roof;
 import stronglogic.ruviuz.content.RuvFileInfo;
 import stronglogic.ruviuz.fragments.RuvFragment;
 import stronglogic.ruviuz.tasks.RviewTask;
+import stronglogic.ruviuz.util.RuvFilter;
 import stronglogic.ruviuz.views.RuvAdapter;
 
 import static stronglogic.ruviuz.MainActivity.getStatusBarHeight;
@@ -72,14 +82,20 @@ public class RviewActivity extends AppCompatActivity implements RuvFragment.RuvF
 
     private ArrayList<Roof> roofArrayList;
     public RecyclerView rv;
+    private RuvAdapter ruvAdapter;
+    private RuvFilter ruvFilter;
+    private RuvFilter.filterType filterType = RuvFilter.filterType.ADDRESS;
 
     private DrawerLayout mDrawerLayout;
     private NavigationView mDrawerView;
+    private SearchView searchView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_rview);
+
+        setupWindowAnimations();
 
         getPrefsData();
 
@@ -155,7 +171,7 @@ public class RviewActivity extends AppCompatActivity implements RuvFragment.RuvF
                 Log.d(TAG, item.toString());
                 switch (item.getTitle().toString()) {
                     case ("Roof List"):
-                        Intent reloadIntent = new Intent(RviewActivity.this, IndexViewActivity.class);
+                        Intent reloadIntent = new Intent(RviewActivity.this, RviewActivity.class);
                         putIntentData(reloadIntent);
                         startActivity(reloadIntent);
                         break;
@@ -241,6 +257,15 @@ public class RviewActivity extends AppCompatActivity implements RuvFragment.RuvF
         };
     }
 
+    private void setupWindowAnimations() {
+        Transition fade = TransitionInflater.from(this).inflateTransition(R.transition.fade);
+
+//        Fade fade = new Fade();
+        fade.setDuration(1000);
+        getWindow().setEnterTransition(fade);
+    }
+
+
     public void goToMain(int request) {
         Intent mIntent = new Intent(RviewActivity.this, MainActivity.class);
         mIntent.putExtra("REQUEST", request);
@@ -262,6 +287,8 @@ public class RviewActivity extends AppCompatActivity implements RuvFragment.RuvF
                 roof.setWidth(Float.valueOf(roofJson.getString("width")));
                 roof.setSlope(Float.valueOf(roofJson.getString("slope")));
                 roof.setPrice(new BigDecimal(roofJson.getString("price")));
+                if (roofJson.has("customer"))
+                    roof.setCustomerName(roofJson.getString("customer"));
                 if (roofJson.has("files")) {
                     JSONArray rFiles = new JSONArray(roofJson.getString("files"));
                     int fileNum = rFiles.length();
@@ -278,6 +305,12 @@ public class RviewActivity extends AppCompatActivity implements RuvFragment.RuvF
                 }
                 roofArrayList.add(roof);
             }
+            Collections.sort(roofArrayList, new Comparator<Roof>() {
+                @Override
+                public int compare(Roof o1, Roof o2) {
+                    return o1.getId() > o2.getId() ? 1 : o1.getId() < o2.getId() ? -1 : 0;
+                }
+            });
             return true;
         } catch (JSONException e) {
             e.printStackTrace();
@@ -294,7 +327,7 @@ public class RviewActivity extends AppCompatActivity implements RuvFragment.RuvF
     public void updateUi()  {
         final ArrayList<Roof> feedList = getFeed();
         if (feedList.size() > 0) {
-            final RuvAdapter ruvAdapter = new RuvAdapter(RviewActivity.this, feedList, baseUrl, authToken, reopenDialog, fileUrls);
+            this.ruvAdapter = new RuvAdapter(RviewActivity.this, feedList, baseUrl, authToken, reopenDialog, fileUrls);
             rv = (RecyclerView) findViewById(R.id.recycView);
             rv.setAdapter(ruvAdapter);
             rv.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -315,13 +348,68 @@ public class RviewActivity extends AppCompatActivity implements RuvFragment.RuvF
             layoutMgr.setRecycleChildrenOnDetach(true);
             rv.setLayoutManager(layoutMgr);
 //            rv.addItemDecoration(new HorizontalDividerItemDecoration.Builder(this).build());
+            ruvFilter = new RuvFilter(ruvAdapter, roofArrayList);
+            this.filterType = RuvFilter.filterType.ADDRESS;
         }
     }
 
     @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                Log.d(TAG, "QueryTxt::" + query);
+                ruvFilter.setType(RviewActivity.this.filterType);
+                ruvFilter.filter(query);
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                Log.d(TAG, "TxtChng::" + newText);
+                ruvFilter.setType(RviewActivity.this.filterType);
+                ruvFilter.filter(newText);
+                return false;
+            }
+        });
+        return true;
+    }
+    
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.ruviuz_menu, menu);
+        getMenuInflater().inflate(R.menu.list_menu, menu);
+        final MenuItem searchItem = menu.findItem(R.id.search);
+        final MenuItem searchToggle = menu.findItem(R.id.actionType);
+        searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+
+        ViewGroup.LayoutParams navButtonsParams = new ViewGroup.LayoutParams(RviewActivity.this.mToolbar.getHeight() * 2 / 3, mToolbar.getHeight() * 2 / 3);
+
+        final Button typeBtn = new Button(this);
+        typeBtn.setBackground(getDrawable(R.drawable.mapmark));
+
+        ((LinearLayout) searchView.getChildAt(0)).addView(typeBtn, navButtonsParams);
+
+        ((LinearLayout) searchView.getChildAt(0)).setGravity(Gravity.BOTTOM);
+
+
+
+        typeBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(TAG, "Clicking Choose Button");
+                if (RviewActivity.this.filterType == null) {
+                    RviewActivity.this.filterType = RuvFilter.filterType.ADDRESS;
+                } else {
+                    if (RviewActivity.this.filterType == RuvFilter.filterType.ADDRESS) {
+                        RviewActivity.this.filterType = RuvFilter.filterType.CUSTOMER;
+                        typeBtn.setBackground(getDrawable(R.drawable.client));
+                    } else {
+                        RviewActivity.this.filterType = RuvFilter.filterType.ADDRESS;
+                        typeBtn.setBackground(getDrawable(R.drawable.mapmark));
+                    }
+                }
+            }
+        });
         updateMenuWithIcon(menu.findItem(R.id.goHome), Color.WHITE);
         updateMenuWithIcon(menu.findItem(R.id.loginAction), Color.WHITE);
         updateMenuWithIcon(menu.findItem(R.id.geoLocate), Color.WHITE);

@@ -678,7 +678,7 @@
                     android:adjustViewBounds="true"
                     android:layout_alignParentStart="true"
                     android:contentDescription="@string/ruvhomephoto"/>
-                
+
                 <ImageView
                     android:layout_width="96dp"
                     android:layout_height="wrap_content"
@@ -702,6 +702,7 @@
                     android:maxWidth="102dp"
                     android:textSize="12sp"
                     android:layout_below="@id/ruvPic1"
+                    android:visibility="gone"
                     android:layout_alignParentStart="true"
                     android:id="@+id/ruvComment1"/>
 
@@ -711,6 +712,7 @@
                     android:maxWidth="102dp"
                     android:textSize="12sp"
                     android:hint="@string/enter_comment"
+                    android:visibility="gone"
                     android:layout_below="@id/ruvPic1"
                     android:layout_centerHorizontal="true"
                     android:id="@+id/ruvComment2"/>
@@ -719,6 +721,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:hint="@string/enter_comment"
+                    android:visibility="gone"
                     android:maxWidth="102dp"
                     android:textSize="12sp"
                     android:layout_below="@id/ruvPic1"

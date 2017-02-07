@@ -6,7 +6,7 @@ import android.widget.Filter;
 import java.util.ArrayList;
 
 import stronglogic.ruviuz.content.Roof;
-import stronglogic.ruviuz.views.IndexAdapter;
+import stronglogic.ruviuz.views.RuvAdapter;
 
 /**
  * Created by logicp on 1/19/17.
@@ -20,13 +20,20 @@ public class RuvFilter extends Filter {
     private ArrayList<Roof> originalList;
     private ArrayList<Roof> filteredList;
 
-    private IndexAdapter adapter;
+    private RuvAdapter adapter;
 
     private filterType chosenType;
 
     public enum filterType { CUSTOMER, ADDRESS }
 
-    public RuvFilter (IndexAdapter adapter, ArrayList<Roof> originalList) {
+//    public RuvFilter (IndexAdapter adapter, ArrayList<Roof> originalList) {
+//        super();
+//        this.originalList = new ArrayList<>(originalList);
+//        this.filteredList = new ArrayList<>();
+//        this.adapter = adapter;
+//    }
+
+    public RuvFilter (RuvAdapter adapter, ArrayList<Roof> originalList) {
         super();
         this.originalList = new ArrayList<>(originalList);
         this.filteredList = new ArrayList<>();

@@ -236,6 +236,13 @@ public class RuvFragment extends DialogFragment {
     }
 
     @Override
+    public void onStart() {
+        if (getDialog().getWindow() != null) getDialog().getWindow().setWindowAnimations(
+                    R.style.ruvanimate);
+        super.onStart();
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup parent,
                              Bundle savedInstanceState) {
 

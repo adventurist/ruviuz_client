@@ -109,7 +109,7 @@ public class Roof extends LauncherActivity.ListItem implements Serializable  {
     }
 
     public String getCustomerName() {
-        return this.customerName;
+        return this.customerName == null ? "John Doe" : this.customerName;
     }
 
 
