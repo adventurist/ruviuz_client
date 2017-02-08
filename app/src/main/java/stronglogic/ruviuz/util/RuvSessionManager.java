@@ -8,6 +8,7 @@ import android.os.Message;
 import android.util.Base64;
 import android.util.Log;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -21,8 +22,11 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import stronglogic.ruviuz.MainActivity;
 import stronglogic.ruviuz.tasks.LoginTask;
 
+import static stronglogic.ruviuz.MainActivity.RUV_SESSION_FAIL;
+import static stronglogic.ruviuz.MainActivity.RUV_SESSION_SUCCESS;
 import static stronglogic.ruviuz.MainActivity.baseUrl;
 
 /**
@@ -30,7 +34,7 @@ import static stronglogic.ruviuz.MainActivity.baseUrl;
  * A class for managing sessions
  */
 
-class RuvSessionManager {
+public class RuvSessionManager {
 
     private final static String TAG = "RUVSESSIONMANAGER";
     private static String token;
@@ -39,35 +43,60 @@ class RuvSessionManager {
 
     private static String password;
 
-    private static CountDownTimer timer;
+    private CountDownTimer timer;
 
     private Activity mActivity;
     private SessionListener mListener;
+    private Handler mHandler;
 
 
-    public static void setToken(String token) { RuvSessionManager.token = token; }
+    private static void setToken(String token) { RuvSessionManager.token = token; }
 
     public static void setEmail(String email) { RuvSessionManager.email = email; }
 
     public static void setPass(String pass) { RuvSessionManager.password = pass; }
 
-    public static String getToken() { return RuvSessionManager.token; }
+    private static String getToken() { return RuvSessionManager.token; }
 
-    private RuvSessionManager(Activity activity, SessionListener listener) {
+    private static String getPass() { return RuvSessionManager.password; }
+
+    public RuvSessionManager(Activity activity, SessionListener listener) {
 
         this.mActivity = activity;
         this.mListener = listener;
 
-        if (RuvSessionManager.timer == null) {
-            RuvSessionManager.timer = new CountDownTimer(575000, 600) {
+        this.mHandler = new Handler(mActivity.getMainLooper()) {
+            @Override
+            public void handleMessage(Message inputMessage) {
+                if (inputMessage.getData().getString("tokenResponse") != null) {
+                    try {
+                        JSONObject tokenJson = new JSONObject(inputMessage.getData().getString("tokenResponse"));
+                        if (tokenJson.has("token")) {
+                            setToken(tokenJson.getString("token"));
+                            mListener.returnData(getToken(), RUV_SESSION_SUCCESS);
+                        } else {
+                            mListener.returnData(tokenJson.getString("error"), RUV_SESSION_FAIL);
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        };
+
+        if (RuvSessionManager.this.timer == null) {
+            RuvSessionManager.this.timer = new CountDownTimer(575000, 1000) {
                 @Override
                 public void onTick(long millisUntilFinished) {
-
+                    if (mActivity instanceof MainActivity) {
+                        ((MainActivity) mActivity).progressBar.setProgress((Math.round((millisUntilFinished/1000))));
+                    }
                 }
 
                 @Override
                 public void onFinish() {
-                    Refresher refresher = new Refresher(new Handler(mActivity.getMainLooper()), getToken());
+                    Log.d(TAG, "RuvTimer FINISHED");
+                    Refresher refresher = new Refresher(mHandler, getToken(), getPass());
                     Thread refreshThread = new Thread(refresher);
                     refreshThread.start();
                 }
@@ -76,8 +105,8 @@ class RuvSessionManager {
     }
 
 
-    interface SessionListener {
-        void returnData(String token);
+    public interface SessionListener {
+        void returnData(String token, int result);
     }
 
 
@@ -86,8 +115,18 @@ class RuvSessionManager {
             @Override
             public void processFinish(String output) {
                 Log.d(TAG, output);
-                mListener.returnData("STILL NEED TO PARSE DATA IN SESSION MANAGER");
-                setToken(output);
+                try {
+                    JSONObject respJson = new JSONObject(output);
+                    if (respJson.has("token")) {
+                        mListener.returnData(respJson.getString("token"), MainActivity.RUV_SESSION_SUCCESS);
+                        setToken(respJson.getString("token"));
+                        RuvSessionManager.this.timer.start();
+                    } else {
+                        mListener.returnData(respJson.getString("error"), RUV_SESSION_FAIL);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
         });
         loginTask.execute();
@@ -95,12 +134,13 @@ class RuvSessionManager {
 
     private static class Refresher implements Runnable {
 
-        private String oldToken;
+        private String oldToken, password;
         private Handler mHandler;
 
-        private Refresher(Handler handler, String oldToken) {
+        private Refresher(Handler handler, String oldToken, String pass) {
             this.mHandler = handler;
             this.oldToken = oldToken;
+            this.password = pass;
         }
 
         @Override
@@ -110,24 +150,24 @@ class RuvSessionManager {
 
         private boolean refreshToken() {
             String endpoint = baseUrl + "/token";
-            JSONObject ruuvJson = new JSONObject();
 
-            HttpURLConnection connection = null;
-            BufferedReader reader = null;
-            String response = null;
+            HttpURLConnection connection;
+            BufferedReader reader;
+            String response;
 
+            String mAuth = oldToken + ":" + password;
+            String mAuth64 = Base64.encodeToString(mAuth.trim().getBytes(), Base64.NO_WRAP);
             try {
                 URL url = new URL(endpoint);
-                String mAuth = this.oldToken + ":jigga";
                 connection = (HttpURLConnection) url.openConnection();
                 connection.setRequestMethod("POST");
-                connection.setRequestProperty("Content-Type", "application/json");
+//                connection.setRequestProperty("Content-Type", "application/json");
                 connection.setRequestProperty("Accept", "application/json");
-                connection.setRequestProperty("Authorization", "Basic " + Base64.encodeToString(mAuth.trim().getBytes(), Base64.NO_WRAP));
+                connection.setRequestProperty("Authorization", "Basic " + mAuth64);
                 connection.connect();
 
                 Writer writer = new BufferedWriter(new OutputStreamWriter(connection.getOutputStream(), "UTF-8"));
-                writer.write(ruuvJson.toString());
+//                writer.write(credsJson);
                 writer.close();
                 String respCode = String.valueOf(connection.getResponseCode());
                 Log.d(TAG, respCode);

@@ -14,6 +14,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import stronglogic.ruviuz.MainActivity;
 import stronglogic.ruviuz.R;
 import stronglogic.ruviuz.tasks.LoginTask;
@@ -130,7 +133,16 @@ public class LoginFragment extends DialogFragment {
                 @Override
                 public void processFinish(String output) {
                     Log.d(TAG, output);
-                    loginFragListener.loginFragInteraction(output);
+                    try {
+                        JSONObject respJson = new JSONObject(output);
+                        if (respJson.has("token")) {
+                            loginFragListener.loginFragInteraction(respJson.getString("token"));
+                        } else {
+                            Toast.makeText(mActivity, "Login Dialog Failed to Login", Toast.LENGTH_SHORT).show();
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                 }
             });
             loginTask.execute();

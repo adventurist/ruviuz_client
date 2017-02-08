@@ -67,6 +67,26 @@
             android:layout_gravity="center_horizontal"
             android:textColor="#000"
             />
+
+        <ImageButton
+            android:layout_width="168dp"
+            android:layout_height="42dp"
+            android:id="@+id/createQuote"
+            android:layout_gravity="center_horizontal"
+            android:selectAllOnFocus="true"
+            android:padding="4dp"
+            android:gravity="center"
+            android:background="@drawable/ruvbtn_wt"
+            android:scaleType="fitCenter"
+            android:src="@drawable/create_new"
+            android:layout_margin="8dp" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/create_new_quote"
+            android:layout_gravity="center_horizontal"
+            android:textColor="#000"
+            />
     </LinearLayout>
 
 </LinearLayout>

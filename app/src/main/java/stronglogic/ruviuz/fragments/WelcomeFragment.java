@@ -28,7 +28,7 @@ public class WelcomeFragment extends DialogFragment {
     private final static int REQUEST_LOGIN = 35;
 
 
-    private ImageButton loginBtn, newAccountBtn;
+    private ImageButton loginBtn, newAccountBtn, quoteBtn;
 
     private WelcomeFragListener mListener;
 
@@ -109,6 +109,15 @@ public class WelcomeFragment extends DialogFragment {
             @Override
             public void onClick(View v) {
                 mListener.welcomeInteraction(REQUEST_LOGIN);
+            }
+        });
+
+        quoteBtn = (ImageButton) mView.findViewById(R.id.createQuote);
+
+        quoteBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mListener.welcomeInteraction(MainActivity.CREATE_QUOTE);
             }
         });
 

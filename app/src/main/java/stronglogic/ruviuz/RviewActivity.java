@@ -77,6 +77,7 @@ public class RviewActivity extends AppCompatActivity implements RuvFragment.RuvF
     private boolean premium, ready;
     private String address, city, region, postal;
     private String[] fileUrls = new String[3];
+    private String[] fileComments = new String[3];
 
     private Customer mCustomer;
 
@@ -541,6 +542,7 @@ public class RviewActivity extends AppCompatActivity implements RuvFragment.RuvF
         intent.putExtra("currentRid", this.currentRid);
         intent.putExtra("fileCount", this.fileCount);
         intent.putExtra("fileUrls", this.fileUrls);
+        intent.putExtra("fileComments", this.fileComments);
         this.ready = intent.getBooleanExtra("ready", false);
         if (mCustomer != null) {
             try {
@@ -572,6 +574,7 @@ public class RviewActivity extends AppCompatActivity implements RuvFragment.RuvF
         this.currentRid = intent.getIntExtra("currentRid", -1);
         this.fileCount = intent.getIntExtra("fileCount", 0);
         this.fileUrls = intent.getStringArrayExtra("fileUrls");
+        this.fileComments = intent.getStringArrayExtra("fileComments");
         this.baseUrl = intent.getStringExtra("baseUrl");
         if (intent.hasExtra("customer"))
             try {

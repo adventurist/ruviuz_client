@@ -1,7 +1,6 @@
 package stronglogic.ruviuz.tasks;
 
 import android.os.AsyncTask;
-import android.util.Log;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -51,10 +50,11 @@ public class LoginTask extends AsyncTask<String[], String, boolean[]> {
     @Override
     protected void onPostExecute(boolean[] result) {
         if (!result[0]) {
-            delegate.processFinish("Login Failed");
+            delegate.processFinish("{\"error\":\"login failed\"}");
         } else {
             super.onPostExecute(result);
-            delegate.processFinish(this.authToken);
+            String returnString = "{\"token\":\"" + this.authToken + "\"}";
+            delegate.processFinish(returnString);
         }
     }
 
@@ -99,8 +99,18 @@ public class LoginTask extends AsyncTask<String[], String, boolean[]> {
                 buffer.append(line);
             }
 
-            return setData(buffer.toString());
-
+            try {
+                JSONObject respJson = new JSONObject(buffer.toString());
+                if (respJson.has("authToken")) {
+                    this.authToken = respJson.getString("authToken");
+                    return true;
+                } else {
+                    return false;
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return false;
         } catch (MalformedURLException e) {
             e.printStackTrace();
             return false;
@@ -120,18 +130,5 @@ public class LoginTask extends AsyncTask<String[], String, boolean[]> {
             }
         }
     }
-
-    private boolean setData(String result) {
-        try {
-            JSONObject resultJson = new JSONObject(result);
-            Log.d(TAG, result);
-            this.authToken = resultJson.getString("authToken");
-            return true;
-        } catch (JSONException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
 
 }
