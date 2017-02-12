@@ -20,6 +20,7 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import me.angrybyte.numberpicker.view.ActualNumberPicker;
 import stronglogic.ruviuz.MainActivity;
 import stronglogic.ruviuz.R;
 import stronglogic.ruviuz.RviewActivity;
@@ -41,7 +42,7 @@ public class MetricFragment extends DialogFragment {
 
     private static TextView slopeAngleText;
 
-    private me.angrybyte.numberpicker.view.ActualNumberPicker roofLengthFt, roofWidthFt;
+    private ActualNumberPicker roofLengthFt, roofWidthFt;
 
     private TextView roofSlope;
 
@@ -185,10 +186,10 @@ public class MetricFragment extends DialogFragment {
             });
         }
 
-        roofLengthFt = (me.angrybyte.numberpicker.view.ActualNumberPicker) mView.findViewById(R.id.lengthPickerFt);
+        roofLengthFt = (ActualNumberPicker) mView.findViewById(R.id.lengthPickerFt);
         roofLengthFt.setValue(Math.round(values[0]));
 
-        roofWidthFt = (me.angrybyte.numberpicker.view.ActualNumberPicker) mView.findViewById(R.id.widthPickerFt);
+        roofWidthFt = (ActualNumberPicker) mView.findViewById(R.id.widthPickerFt);
         roofWidthFt.setValue(Math.round(values[1]));
 //        roofSlope = (TextView) mView.findViewById(R.id.slopePicker);
 //        roofSlope.setText(String.valueOf(values[2]));

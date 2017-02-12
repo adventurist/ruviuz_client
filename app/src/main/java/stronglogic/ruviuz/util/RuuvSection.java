@@ -21,18 +21,15 @@ import java.lang.ref.WeakReference;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Locale;
 
 /**
  * Created by logicp on 12/24/16.
  * Making a publicly accessible class for sending files
  */
 
-public class RuuvComment implements Runnable {
+public class RuuvSection implements Runnable {
 
-    private static final String TAG = "RUVIUZRuuvComment";
+    private static final String TAG = "RUVIUZRuuvSection";
 
     private Handler mHandler;
     private WeakReference<Activity> mReference;
@@ -43,7 +40,7 @@ public class RuuvComment implements Runnable {
     private String baseUrl, authToken;
 
 
-    public RuuvComment(Activity mActivity, Handler mHandler, String baseUrl, String authToken, Bundle bundle) {
+    public RuuvSection(Activity mActivity, Handler mHandler, String baseUrl, String authToken, Bundle bundle) {
         this.mReference = new WeakReference<Activity>(mActivity);
         this.mHandler = mHandler;
         this.baseUrl = baseUrl;
@@ -54,23 +51,24 @@ public class RuuvComment implements Runnable {
 
     @Override
     public void run() {
-        sendComment();
+        sendSection();
     }
 
-    private boolean sendComment() {
-        String endpoint = baseUrl + "/comment/add";
-        JSONObject commentJson = new JSONObject();
+    private boolean sendSection() {
+        String endpoint = baseUrl + "/section/add";
+        JSONObject sectionJson = new JSONObject();
 
         if (mBundle != null) {
 
             try {
-                final String TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
-                final SimpleDateFormat sdf = new SimpleDateFormat(TIME_FORMAT, Locale.CANADA);
-                final String nowTime = sdf.format(Calendar.getInstance().getTime());
 
-                commentJson.put("comment_body", mBundle.getString("comment_body"));
-                commentJson.put("ruvfid", mBundle.getString("ruvfid"));
-                commentJson.put("entry_date", nowTime);
+                sectionJson.put("rid", mBundle.getInt("ruvId"));
+                sectionJson.put("length", mBundle.getFloat("length") > 0.0f ? mBundle.getFloat("length") : 0);
+                sectionJson.put("width", mBundle.getFloat("width") > 0.0f ? mBundle.getFloat("width") : 0);
+                sectionJson.put("slope", mBundle.getFloat("slope") > 0.0f ? mBundle.getFloat("slope") : 0);
+                sectionJson.put("empty", mBundle.getFloat("empty") > 0.0f ? mBundle.getFloat("empty") : 0);
+                sectionJson.put("full", mBundle.getBoolean("full"));
+
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -89,7 +87,7 @@ public class RuuvComment implements Runnable {
                 connection.connect();
 
                 Writer writer = new BufferedWriter(new OutputStreamWriter(connection.getOutputStream(), "UTF-8"));
-                writer.write(commentJson.toString());
+                writer.write(sectionJson.toString());
                 writer.close();
                 String respCode = String.valueOf(connection.getResponseCode());
                 Log.d(TAG, respCode);

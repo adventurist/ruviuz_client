@@ -197,229 +197,231 @@ public class FileFragment extends DialogFragment {
         ruvpic3 = (ImageView) mView.findViewById(R.id.ruvpic3);
 
 //        LinearLayout imageLayout = (LinearLayout) mView.findViewById(R.id.fileWrap);
+        if (fileUrls != null) {
+            if (fileUrls[0] != null && !fileUrls[0].equals("")) {
+                ruvpic1.setVisibility(View.VISIBLE);
+                Glide.with(mActivity)
+                        .load(fileUrls[0])
+                        .fitCenter()
+                        .diskCacheStrategy(DiskCacheStrategy.RESULT)
+                        .into(ruvpic1);
+                Button commentBtn1 = (Button) mView.findViewById(R.id.cBtn1);
+                commentBtn1.setVisibility(View.VISIBLE);
 
-        if (fileUrls[0] != null && !fileUrls[0].equals("")) {
-            ruvpic1.setVisibility(View.VISIBLE);
-            Glide.with(mActivity)
-                    .load(fileUrls[0])
-                    .fitCenter()
-                    .diskCacheStrategy(DiskCacheStrategy.RESULT)
-                    .into(ruvpic1);
-            Button commentBtn1 = (Button)mView.findViewById(R.id.cBtn1);
-            commentBtn1.setVisibility(View.VISIBLE);
-            
-            commentBtn1.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    cEt1 = (EditText) mView.findViewById(R.id.commentEt1);
-                    cEt1.setText(fileComments[0]);
-                    cEt1.setVisibility(View.VISIBLE);
-                }
-            });
+                commentBtn1.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        cEt1 = (EditText) mView.findViewById(R.id.commentEt1);
+                        cEt1.setText(fileComments[0]);
+                        cEt1.setVisibility(View.VISIBLE);
+                    }
+                });
 
-            Button mainBtn1 = (Button) mView.findViewById(R.id.mainBtn1);
-            mainBtn1.setVisibility(View.VISIBLE);
+                Button mainBtn1 = (Button) mView.findViewById(R.id.mainBtn1);
+                mainBtn1.setVisibility(View.VISIBLE);
 
-            final Button delBtn1 = (Button) mView.findViewById(R.id.delBtn1);
-            delBtn1.setVisibility(View.VISIBLE);
-            delBtn1.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    MenuBuilder menuBuilder = new MenuBuilder(mActivity);
-                    MenuInflater inflater = new MenuInflater(mActivity);
-                    inflater.inflate(R.menu.del_menu, menuBuilder);
-                    final MenuPopupHelper deleteMenu = new MenuPopupHelper(mActivity, menuBuilder, delBtn1);
-                    deleteMenu.setForceShowIcon(true);
+                final Button delBtn1 = (Button) mView.findViewById(R.id.delBtn1);
+                delBtn1.setVisibility(View.VISIBLE);
+                delBtn1.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        MenuBuilder menuBuilder = new MenuBuilder(mActivity);
+                        MenuInflater inflater = new MenuInflater(mActivity);
+                        inflater.inflate(R.menu.del_menu, menuBuilder);
+                        final MenuPopupHelper deleteMenu = new MenuPopupHelper(mActivity, menuBuilder, delBtn1);
+                        deleteMenu.setForceShowIcon(true);
 
-                    menuBuilder.setCallback(new MenuBuilder.Callback() {
-                        @Override
-                        public boolean onMenuItemSelected(MenuBuilder menu, MenuItem item) {
-                            switch (item.getItemId()) {
-                                case R.id.yesDelete:
-                                    Log.d(TAG, "Deleting Image");
-                                    if (FileFragment.this.fileUrls != null && FileFragment.this.fileUrls[0] != null) {
-                                        FileFragment.this.fileUrls[0] = "";
-                                        FileFragment.this.fileCount--;
-                                        Bundle mBundle = new Bundle();
-                                        putBundleData(mBundle);
-                                        FileFragment.this.mListener.fileFragInteraction(fileUrls, fileComments, fileCount, 69 );
-                                        FileFragment.this.dismiss();
-                                    }
-                                    return true;
-                                case R.id.noDelete:
-                                    Log.d(TAG, "Cancelling delete");
-                                    if (deleteMenu.isShowing()) deleteMenu.dismiss();
-                                    return true;
-                                default:
-                                    return false;
+                        menuBuilder.setCallback(new MenuBuilder.Callback() {
+                            @Override
+                            public boolean onMenuItemSelected(MenuBuilder menu, MenuItem item) {
+                                switch (item.getItemId()) {
+                                    case R.id.yesDelete:
+                                        Log.d(TAG, "Deleting Image");
+                                        if (FileFragment.this.fileUrls != null && FileFragment.this.fileUrls[0] != null) {
+                                            FileFragment.this.fileUrls[0] = "";
+                                            FileFragment.this.fileCount--;
+                                            Bundle mBundle = new Bundle();
+                                            putBundleData(mBundle);
+                                            FileFragment.this.mListener.fileFragInteraction(fileUrls, fileComments, fileCount, 69);
+                                            FileFragment.this.dismiss();
+                                        }
+                                        return true;
+                                    case R.id.noDelete:
+                                        Log.d(TAG, "Cancelling delete");
+                                        if (deleteMenu.isShowing()) deleteMenu.dismiss();
+                                        return true;
+                                    default:
+                                        return false;
+                                }
                             }
-                        }
 
-                        @Override
-                        public void onMenuModeChange(MenuBuilder menu) {
-                        }
-                    });
-                    deleteMenu.show();
-                }
-            });
-
-        }
-
-        if (fileUrls[1] != null && !fileUrls[1].equals("")) {
-            ruvpic2.setVisibility(View.VISIBLE);
-            Glide.with(mActivity)
-                    .load(fileUrls[1])
-                    .fitCenter()
-                    .diskCacheStrategy(DiskCacheStrategy.RESULT)
-                    .into(ruvpic2);
-
-            Button commentBtn2 = (Button)mView.findViewById(R.id.cBtn2);
-            commentBtn2.setVisibility(View.VISIBLE);
-            cEt2 = (EditText) mView.findViewById(R.id.commentEt2);
-            cEt2.setText(fileComments[1]);
-
-
-            commentBtn2.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    cEt2.setVisibility(View.VISIBLE);
-                }
-            });
-
-            Button mainBtn2 = (Button) mView.findViewById(R.id.mainBtn2);
-            mainBtn2.setVisibility(View.VISIBLE);
-
-            final Button delBtn2 = (Button) mView.findViewById(R.id.delBtn2);
-            delBtn2.setVisibility(View.VISIBLE);
-
-            delBtn2.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    MenuBuilder menuBuilder = new MenuBuilder(mActivity);
-                    MenuInflater inflater = new MenuInflater(mActivity);
-                    inflater.inflate(R.menu.del_menu, menuBuilder);
-                    final MenuPopupHelper deleteMenu = new MenuPopupHelper(mActivity, menuBuilder, delBtn2);
-                    deleteMenu.setForceShowIcon(true);
-
-                    menuBuilder.setCallback(new MenuBuilder.Callback() {
-                        @Override
-                        public boolean onMenuItemSelected(MenuBuilder menu, MenuItem item) {
-                            switch (item.getItemId()) {
-                                case R.id.yesDelete:
-                                    Log.d(TAG, "Deleting Image");
-                                    if (FileFragment.this.fileUrls != null && FileFragment.this.fileUrls[1] != null) {
-                                        FileFragment.this.fileUrls[1] = "";
-                                        FileFragment.this.fileCount--;
-                                        Bundle mBundle = new Bundle();
-                                        putBundleData(mBundle);
-                                        FileFragment.this.mListener.fileFragInteraction(fileUrls, fileComments, fileCount, 69 );
-                                        FileFragment.this.dismiss();
-                                    }
-                                    return true;
-                                case R.id.noDelete:
-                                    Log.d(TAG, "Cancelling delete");
-                                    if (deleteMenu.isShowing()) deleteMenu.dismiss();
-                                    return true;
-                                default:
-                                    return false;
+                            @Override
+                            public void onMenuModeChange(MenuBuilder menu) {
                             }
-                        }
+                        });
+                        deleteMenu.show();
+                    }
+                });
 
-                        @Override
-                        public void onMenuModeChange(MenuBuilder menu) {
-                        }
-                    });
-                    deleteMenu.show();
-                }
-            });
-        }
-
-        if (fileUrls[2] != null && !fileUrls[2].equals("")) {
-            ruvpic3.setVisibility(View.VISIBLE);
-            Glide.with(mActivity)
-                    .load(fileUrls[2])
-                    .fitCenter()
-                    .diskCacheStrategy(DiskCacheStrategy.RESULT)
-                    .into(ruvpic3);
-            
-            Button commentBtn3 = (Button)mView.findViewById(R.id.cBtn3);
-            commentBtn3.setVisibility(View.VISIBLE);
-
-            commentBtn3.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    cEt3 = (EditText) mView.findViewById(R.id.commentEt3);
-                    Log.d(TAG, String.valueOf(cEt3.getViewTreeObserver()));
-                    cEt3.setVisibility(View.VISIBLE);
-                    cEt3.setText(fileComments[2]);
-                }
-            });
-
-            Button mainBtn3 = (Button) mView.findViewById(R.id.mainBtn3);
-            mainBtn3.setVisibility(View.VISIBLE);
-
-            final Button delBtn3 = (Button) mView.findViewById(R.id.delBtn3);
-            delBtn3.setVisibility(View.VISIBLE);
-
-            delBtn3.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    MenuBuilder menuBuilder = new MenuBuilder(mActivity);
-                    MenuInflater inflater = new MenuInflater(mActivity);
-                    inflater.inflate(R.menu.del_menu, menuBuilder);
-                    final MenuPopupHelper deleteMenu = new MenuPopupHelper(mActivity, menuBuilder, delBtn3);
-                    deleteMenu.setForceShowIcon(true);
-
-                    menuBuilder.setCallback(new MenuBuilder.Callback() {
-                        @Override
-                        public boolean onMenuItemSelected(MenuBuilder menu, MenuItem item) {
-                            switch (item.getItemId()) {
-                                case R.id.yesDelete:
-                                    Log.d(TAG, "Deleting Image");
-                                    if (FileFragment.this.fileUrls != null && FileFragment.this.fileUrls[2] != null) {
-                                        FileFragment.this.fileUrls[2] = "";
-                                        FileFragment.this.fileCount--;
-                                        Bundle mBundle = new Bundle();
-                                        putBundleData(mBundle);
-                                        FileFragment.this.mListener.fileFragInteraction(fileUrls, fileComments, fileCount, 69 );
-                                        FileFragment.this.dismiss();
-                                    }
-                                    return true;
-                                case R.id.noDelete:
-                                    Log.d(TAG, "Cancelling delete");
-                                    if (deleteMenu.isShowing()) deleteMenu.dismiss();
-                                    return true;
-                                default:
-                                    return false;
-                            }
-                        }
-
-                        @Override
-                        public void onMenuModeChange(MenuBuilder menu) {
-                        }
-                    });
-                    deleteMenu.show();
-                }
-            });
-            
-        }
-
-        cameraBtn = (ImageButton) mView.findViewById(R.id.takePicBtn);
-        cameraBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d(TAG, "use Camera!!");
-                if (checkCameraHardware(mActivity)) {
-                    Intent intent = new Intent(mActivity, CameraActivity.class);
-                    mActivity.putIntentData(intent);
-                    intent.putExtra("callingClass", FileFragment.this.getClass().getSimpleName());
-                    mActivity.putPrefsData();
-                    startActivity(intent);
-                } else {
-                    Log.d(TAG, "No Camera Hardware on Device");
-                }
             }
-        });
+
+            if (fileUrls[1] != null && !fileUrls[1].equals("")) {
+                ruvpic2.setVisibility(View.VISIBLE);
+                Glide.with(mActivity)
+                        .load(fileUrls[1])
+                        .fitCenter()
+                        .diskCacheStrategy(DiskCacheStrategy.RESULT)
+                        .into(ruvpic2);
+
+                Button commentBtn2 = (Button) mView.findViewById(R.id.cBtn2);
+                commentBtn2.setVisibility(View.VISIBLE);
+                cEt2 = (EditText) mView.findViewById(R.id.commentEt2);
+                cEt2.setText(fileComments[1]);
+
+
+                commentBtn2.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        cEt2.setVisibility(View.VISIBLE);
+                    }
+                });
+
+                Button mainBtn2 = (Button) mView.findViewById(R.id.mainBtn2);
+                mainBtn2.setVisibility(View.VISIBLE);
+
+                final Button delBtn2 = (Button) mView.findViewById(R.id.delBtn2);
+                delBtn2.setVisibility(View.VISIBLE);
+
+                delBtn2.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        MenuBuilder menuBuilder = new MenuBuilder(mActivity);
+                        MenuInflater inflater = new MenuInflater(mActivity);
+                        inflater.inflate(R.menu.del_menu, menuBuilder);
+                        final MenuPopupHelper deleteMenu = new MenuPopupHelper(mActivity, menuBuilder, delBtn2);
+                        deleteMenu.setForceShowIcon(true);
+
+                        menuBuilder.setCallback(new MenuBuilder.Callback() {
+                            @Override
+                            public boolean onMenuItemSelected(MenuBuilder menu, MenuItem item) {
+                                switch (item.getItemId()) {
+                                    case R.id.yesDelete:
+                                        Log.d(TAG, "Deleting Image");
+                                        if (FileFragment.this.fileUrls != null && FileFragment.this.fileUrls[1] != null) {
+                                            FileFragment.this.fileUrls[1] = "";
+                                            FileFragment.this.fileCount--;
+                                            Bundle mBundle = new Bundle();
+                                            putBundleData(mBundle);
+                                            FileFragment.this.mListener.fileFragInteraction(fileUrls, fileComments, fileCount, 69);
+                                            FileFragment.this.dismiss();
+                                        }
+                                        return true;
+                                    case R.id.noDelete:
+                                        Log.d(TAG, "Cancelling delete");
+                                        if (deleteMenu.isShowing()) deleteMenu.dismiss();
+                                        return true;
+                                    default:
+                                        return false;
+                                }
+                            }
+
+                            @Override
+                            public void onMenuModeChange(MenuBuilder menu) {
+                            }
+                        });
+                        deleteMenu.show();
+                    }
+                });
+            }
+
+            if (fileUrls[2] != null && !fileUrls[2].equals("")) {
+                ruvpic3.setVisibility(View.VISIBLE);
+                Glide.with(mActivity)
+                        .load(fileUrls[2])
+                        .fitCenter()
+                        .diskCacheStrategy(DiskCacheStrategy.RESULT)
+                        .into(ruvpic3);
+
+                Button commentBtn3 = (Button) mView.findViewById(R.id.cBtn3);
+                commentBtn3.setVisibility(View.VISIBLE);
+
+                commentBtn3.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        cEt3 = (EditText) mView.findViewById(R.id.commentEt3);
+                        Log.d(TAG, String.valueOf(cEt3.getViewTreeObserver()));
+                        cEt3.setVisibility(View.VISIBLE);
+                        cEt3.setText(fileComments[2]);
+                    }
+                });
+
+                Button mainBtn3 = (Button) mView.findViewById(R.id.mainBtn3);
+                mainBtn3.setVisibility(View.VISIBLE);
+
+                final Button delBtn3 = (Button) mView.findViewById(R.id.delBtn3);
+                delBtn3.setVisibility(View.VISIBLE);
+
+                delBtn3.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        MenuBuilder menuBuilder = new MenuBuilder(mActivity);
+                        MenuInflater inflater = new MenuInflater(mActivity);
+                        inflater.inflate(R.menu.del_menu, menuBuilder);
+                        final MenuPopupHelper deleteMenu = new MenuPopupHelper(mActivity, menuBuilder, delBtn3);
+                        deleteMenu.setForceShowIcon(true);
+
+                        menuBuilder.setCallback(new MenuBuilder.Callback() {
+                            @Override
+                            public boolean onMenuItemSelected(MenuBuilder menu, MenuItem item) {
+                                switch (item.getItemId()) {
+                                    case R.id.yesDelete:
+                                        Log.d(TAG, "Deleting Image");
+                                        if (FileFragment.this.fileUrls != null && FileFragment.this.fileUrls[2] != null) {
+                                            FileFragment.this.fileUrls[2] = "";
+                                            FileFragment.this.fileCount--;
+                                            Bundle mBundle = new Bundle();
+                                            putBundleData(mBundle);
+                                            FileFragment.this.mListener.fileFragInteraction(fileUrls, fileComments, fileCount, 69);
+                                            FileFragment.this.dismiss();
+                                        }
+                                        return true;
+                                    case R.id.noDelete:
+                                        Log.d(TAG, "Cancelling delete");
+                                        if (deleteMenu.isShowing()) deleteMenu.dismiss();
+                                        return true;
+                                    default:
+                                        return false;
+                                }
+                            }
+
+                            @Override
+                            public void onMenuModeChange(MenuBuilder menu) {
+                            }
+                        });
+                        deleteMenu.show();
+                    }
+                });
+
+            }
+
+            cameraBtn = (ImageButton) mView.findViewById(R.id.takePicBtn);
+            cameraBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Log.d(TAG, "use Camera!!");
+                    if (checkCameraHardware(mActivity)) {
+                        Intent intent = new Intent(mActivity, CameraActivity.class);
+                        mActivity.putIntentData(intent);
+                        intent.putExtra("callingClass", FileFragment.this.getClass().getSimpleName());
+                        mActivity.putPrefsData();
+                        startActivity(intent);
+                    } else {
+                        Log.d(TAG, "No Camera Hardware on Device");
+                    }
+                }
+            });
+
+        }
         
         uploadBtn = (ImageButton) mView.findViewById(R.id.fileChooseBtn);
         uploadBtn.setOnClickListener(new View.OnClickListener() {

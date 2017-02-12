@@ -50,16 +50,6 @@ public class RuvSessionManager {
     private Handler mHandler;
 
 
-    private static void setToken(String token) { RuvSessionManager.token = token; }
-
-    public static void setEmail(String email) { RuvSessionManager.email = email; }
-
-    public static void setPass(String pass) { RuvSessionManager.password = pass; }
-
-    private static String getToken() { return RuvSessionManager.token; }
-
-    private static String getPass() { return RuvSessionManager.password; }
-
     public RuvSessionManager(Activity activity, SessionListener listener) {
 
         this.mActivity = activity;
@@ -74,6 +64,7 @@ public class RuvSessionManager {
                         if (tokenJson.has("token")) {
                             setToken(tokenJson.getString("token"));
                             mListener.returnData(getToken(), RUV_SESSION_SUCCESS);
+                            RuvSessionManager.this.timer.start();
                         } else {
                             mListener.returnData(tokenJson.getString("error"), RUV_SESSION_FAIL);
                         }
@@ -109,6 +100,16 @@ public class RuvSessionManager {
         void returnData(String token, int result);
     }
 
+    private static void setToken(String token) { RuvSessionManager.token = token; }
+
+    public static void setEmail(String email) { RuvSessionManager.email = email; }
+
+    public static void setPass(String pass) { RuvSessionManager.password = pass; }
+
+    private static String getToken() { return RuvSessionManager.token; }
+
+    private static String getPass() { return RuvSessionManager.password; }
+
 
     public void init_login() {
         LoginTask loginTask = new LoginTask(RuvSessionManager.email, RuvSessionManager.password, baseUrl, new LoginTask.AsyncResponse() {
@@ -118,6 +119,7 @@ public class RuvSessionManager {
                 try {
                     JSONObject respJson = new JSONObject(output);
                     if (respJson.has("token")) {
+                        //TODO possibly loses thread scope
                         mListener.returnData(respJson.getString("token"), MainActivity.RUV_SESSION_SUCCESS);
                         setToken(respJson.getString("token"));
                         RuvSessionManager.this.timer.start();

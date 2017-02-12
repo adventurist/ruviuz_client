@@ -45,7 +45,6 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
-import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -79,6 +78,7 @@ import java.util.Map;
 
 import stronglogic.ruviuz.content.Customer;
 import stronglogic.ruviuz.content.RuvFileInfo;
+import stronglogic.ruviuz.content.Section;
 import stronglogic.ruviuz.fragments.AddressFragment;
 import stronglogic.ruviuz.fragments.CustomerFragment;
 import stronglogic.ruviuz.fragments.EditFragment;
@@ -87,26 +87,28 @@ import stronglogic.ruviuz.fragments.ImageEditFragment;
 import stronglogic.ruviuz.fragments.LoginFragment;
 import stronglogic.ruviuz.fragments.MainFragment;
 import stronglogic.ruviuz.fragments.MetricFragment;
+import stronglogic.ruviuz.fragments.SectionFragment;
 import stronglogic.ruviuz.fragments.SlopeFragment;
 import stronglogic.ruviuz.fragments.WelcomeFragment;
 import stronglogic.ruviuz.util.RuuvComment;
 import stronglogic.ruviuz.util.RuuvFile;
+import stronglogic.ruviuz.util.RuuvSection;
 import stronglogic.ruviuz.util.RuvLocation;
 import stronglogic.ruviuz.util.RuvSessionManager;
 
-public class MainActivity extends AppCompatActivity implements LoginFragment.LoginFragListener, MainFragment.MainfragListener, WelcomeFragment.WelcomeFragListener, AddressFragment.AddressFragListener, MetricFragment.OnFragmentInteractionListener, SlopeFragment.SlopeFragListener, FileFragment.FileFragListener, CustomerFragment.CustomerFragListener, EditFragment.EditFragListener, ImageEditFragment.ImageFragListener, Handler.Callback {
+public class MainActivity extends AppCompatActivity implements LoginFragment.LoginFragListener, MainFragment.MainfragListener, WelcomeFragment.WelcomeFragListener, AddressFragment.AddressFragListener, SectionFragment.SectionListener, MetricFragment.OnFragmentInteractionListener, SlopeFragment.SlopeFragListener, FileFragment.FileFragListener, CustomerFragment.CustomerFragListener, EditFragment.EditFragListener, ImageEditFragment.ImageFragListener, Handler.Callback {
 
     private static final String TAG = "RuviuzMAINACTIVITY";
     
     private static final int CAMERA_PERMISSION = 6;
     private static final int RUVIUZ_DATA_PERSIST = 14;
     private static final int METRICFRAG_COMPLETE = 21;
+    public static final int SECTION_ACTIVITY_COMPLETE = 22;
     private static final int CURATION_MODE = 32;
     public final static int CREATE_QUOTE = 33;
     private final static int SEE_QUOTES = 34;
     private final static int REQUEST_LOGIN = 35;
     private final static int CREATE_ACCOUNT = 36;
-    private final static int FILE_ADD_MODE = 37;
     private final static int SLOPE_FRAG_SUCCESS = 39;
     public static final int RUV_ADD_FILES = 40;
     public static final int WELCOME_REQUEST = 60;
@@ -142,11 +144,9 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
     private ImageEditFragment imgEditFrag;
 
     private TextView addressTv, nameTv, phoneTv, emailTv, roofLength, roofWidth, roofSlope, currentPrice, materialTv;
-    private Switch isFlat, premiumMaterial;
     private ImageView photo1, photo2, photo3;
     private ImageButton ruuvBtn, calculateBtn;
-    private Button addressBtn, metricBtn, draftBtn, editBtn;
-    private ImageButton clearBtn, photoBtn, clientBtn;
+    private Button editBtn;
 
     private RuvSessionManager ruvSessionManager;
 
@@ -168,7 +168,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
     private String material, address, postal, city, region;
     private String[] fileUrls = new String[3];
     private String[] fileComments = new String[3];
-    private ArrayList<Map<String, String>> callbackFiles;
+    private ArrayList<Section> sectionList = new ArrayList<>();
     private Customer mCustomer;
     private boolean premium, ready, editing;
 
@@ -518,7 +518,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
             this.prefs = MainActivity.this.getSharedPreferences("RuviuzApp", Context.MODE_PRIVATE);
 
         if (getIntent() != null) {
-            getIntentData(getIntent());
+//            getIntentData(getIntent());
             Intent xIntent = getIntent();
 
             if (fileUrls != null && (fileUrls.length > 0 || fileCount == 0)) {
@@ -613,7 +613,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
             refreshUi();
         }
         draftCheck();
-        if (getIntent().hasExtra("authToken")) authToken = getIntent().getStringExtra("authToken");
+//        if (getIntent().hasExtra("authToken")) authToken = getIntent().getStringExtra("authToken");
         if (authToken == null) {
             hideActivity();
             dismissAllDialogs();
@@ -815,21 +815,27 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         mBundle.putFloat("length", length);
         mBundle.putFloat("width", width);
         mBundle.putFloat("slope", slope);
-        
-        FragmentManager fm = getFragmentManager();
-        if (metricFrag == null) {
-            metricFrag = new MetricFragment();
-            metricFrag.setArguments(mBundle);
-            if (!metricFrag.isAdded()) {
-                metricFrag.show(fm, "Please Enter Metrics");
-            }
-        } else {
-            fm.beginTransaction().remove(metricFrag).commit();
-            metricFrag = null;
-            metricFrag = new MetricFragment();
-            metricFrag.setArguments(mBundle);
-            metricFrag.show(fm, "Please Enter Metrics");
-        }
+
+        Intent intent = new Intent(MainActivity.this, SectionActivity.class);
+        putIntentData(intent);
+        startActivity(intent);
+//        FragmentManager fm = getFragmentManager();
+//        if (metricFrag == null) {
+//            metricFrag = new MetricFragment();
+//            metricFrag.setArguments(mBundle);
+//            if (!metricFrag.isAdded()) {
+//                metricFrag.show(fm, "Please Enter Metrics");
+//            }
+//        } else {
+//            fm.beginTransaction().remove(metricFrag).commit();
+//            metricFrag = null;
+//            metricFrag = new MetricFragment();
+//            metricFrag.setArguments(mBundle);
+//            metricFrag.show(fm, "Please Enter Metrics");
+//    }
+//        SectionFragment sectionFrag = new SectionFragment();
+//        fm.beginTransaction().add(R.id.section_fragment, sectionFrag).commit();
+
     }
 
 
@@ -977,6 +983,12 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         }
         if (!ready)
         getMetric();
+    }
+
+
+    @Override
+    public void sectionFragInteraction(Bundle bundle, int request) {
+
     }
 
 
@@ -1200,14 +1212,6 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
             this.price = new BigDecimal(priceString);
             this.fileCount = bundle.getInt("fileCount", 0);
             this.editMode = bundle.getInt("editMode", RUV_EDIT_OFF);
-//        if (bundle.getStringArrayList("fileUrls") != null) {
-//            ArrayList<String> fileUrls = bundle.getStringArrayList("fileUrls");
-//            if (this.fileUrls == null) this.fileUrls = new String[3];
-//
-//            for (int i = fileUrls.size() - 1; i >= 0; i--) {
-//                this.fileUrls[i] = fileUrls.get(i);
-//            }
-//        }
             if (bundle.getStringArray("fileUrls") != null) {
                 if (this.fileUrls == null) {
                     this.fileUrls = new String[3];
@@ -1289,7 +1293,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         if (inputMessage.getData().getString("RuuvResponse") != null) {
             String response = inputMessage.getData().getString("RuuvResponse");
             Log.d(TAG, response);
-            if (response.equals("Error")) {
+            if (response != null && response.equals("Error")) {
                 Snackbar.make(MainActivity.this.findViewById(R.id.MainParentView), "Error submitting quote", Snackbar.LENGTH_SHORT).show();
             } else {
                 try {
@@ -1298,6 +1302,18 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
                         JSONObject ruuvJson = new JSONObject(returnedJson.getString("Roof"));
                         if (ruuvJson.getString("id") != null) {
                             this.currentRid = Integer.valueOf(ruuvJson.getString("id"));
+
+                            for (Section section : sectionList) {
+                                Bundle sBundle = new Bundle();
+                                sBundle.putInt("ruvId", this.currentRid);
+                                sBundle.putFloat("length", section.getLength());
+                                sBundle.putFloat("width", section.getWidth());
+                                sBundle.putFloat("slope", section.getSlope());
+                                sBundle.putBoolean("full", section.isFull());
+                                if (!section.isFull()) sBundle.putFloat("missing", section.getMissing());
+                                RuuvSection ruvSection = new RuuvSection(MainActivity.this, mHandler, MainActivity.baseUrl, authToken, sBundle);
+                            }
+
                         }
                         Toast.makeText(MainActivity.this, "Created Roof:: " + returnedJson.getString("Roof"), Toast.LENGTH_SHORT).show();
                     }
@@ -1319,6 +1335,9 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
                     }
                     if (returnedJson.has("Comment")) {
                         Toast.makeText(MainActivity.this, "Created Comment:: " + returnedJson.getString("Comment"), Toast.LENGTH_SHORT).show();
+                    }
+                    if (returnedJson.has("Section")) {
+                        Toast.makeText(MainActivity.this, "Created Section:: " + returnedJson.getString("Section"), Toast.LENGTH_SHORT).show();
                     }
 
                     if (fileCount > 0) {
@@ -1435,12 +1454,16 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         prefEdit.putFloat("slope", slope);
         prefEdit.putBoolean("premium", premium);
         prefEdit.putInt("currentRid", currentRid);
-        prefEdit.putString("fileUrl1", fileUrls[0]);
-        prefEdit.putString("fileUrl2", fileUrls[1]);
-        prefEdit.putString("fileUrl3", fileUrls[2]);
-        prefEdit.putString("fileComment1", fileComments[0]);
-        prefEdit.putString("fileComment2", fileComments[1]);
-        prefEdit.putString("fileComment3", fileComments[2]);
+        if (fileUrls != null) {
+            prefEdit.putString("fileUrl1", fileUrls[0]);
+            prefEdit.putString("fileUrl2", fileUrls[1]);
+            prefEdit.putString("fileUrl3", fileUrls[2]);
+        }
+        if (fileComments != null) {
+            prefEdit.putString("fileComment1", fileComments[0]);
+            prefEdit.putString("fileComment2", fileComments[1]);
+            prefEdit.putString("fileComment3", fileComments[2]);
+        }
         if (mCustomer != null) {
             try {
                 JSONObject customerJson = new JSONObject();
@@ -1455,6 +1478,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
                 e.printStackTrace();
             }
         }
+        //TODO save SECTION data
         prefEdit.commit();
     }
 
@@ -1813,6 +1837,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
                 e.printStackTrace();
             }
         }
+        intent.putParcelableArrayListExtra("sectionList", sectionList);
     }
     
     public void getIntentData(Intent intent) {
@@ -1848,6 +1873,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         if (intent.hasExtra("REQUEST")) {
             handleRequest(extras.getInt("REQUEST", 0));
         }
+        this.sectionList = intent.getParcelableArrayListExtra("sectionList");
     }
 
 
@@ -1921,6 +1947,13 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
                     if (metricFrag != null && metricFrag.isAdded()) {
                         metricFrag.dismiss();
                     }
+                }
+                break;
+            case SECTION_ACTIVITY_COMPLETE:
+                if (resultCode == RESULT_OK) {
+                    Log.d(TAG, "SECTIONACTIVITY COMPLETE");
+                    putPrefsData();
+                    slopeDialog();
                 }
         }
     }

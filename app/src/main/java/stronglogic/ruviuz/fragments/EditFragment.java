@@ -641,23 +641,6 @@ public class EditFragment extends DialogFragment {
         }
         bundle.putInt("editMode", this.actionMode);
     }
-//        if (fileUrls != null && fileUrls.length > 0) {
-//            ArrayList<String> editFiles = new ArrayList<String>();
-//            for (String fileUrl : fileUrls) {
-//                editFiles.add(fileUrl);
-//            }
-//            bundle.putStringArray("fileUrls", fileUrls);
-//        }
-//        if (ruvFileUrls != null && ruvFileUrls.size() > 0) {
-//            String[] persistUrls = new String[ruvFileUrls.size()];
-//            for (int i = 0; i < ruvFileUrls.size(); i++) {
-//                persistUrls[i] = ruvFileUrls.get(i);
-//            }
-
-//        if (ruvFiles != null && ruvFiles.size() > 0) {
-//            bundle.putStringArrayList(ruvFiles);
-//        }
-
 
     public void getBundleData(Bundle bundle) {
         Log.d(TAG, "getBundleData");

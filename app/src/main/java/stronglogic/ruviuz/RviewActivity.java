@@ -46,6 +46,7 @@ import java.util.Comparator;
 import stronglogic.ruviuz.content.Customer;
 import stronglogic.ruviuz.content.Roof;
 import stronglogic.ruviuz.content.RuvFileInfo;
+import stronglogic.ruviuz.content.Section;
 import stronglogic.ruviuz.fragments.RuvFragment;
 import stronglogic.ruviuz.tasks.RviewTask;
 import stronglogic.ruviuz.util.RuvFilter;
@@ -82,6 +83,7 @@ public class RviewActivity extends AppCompatActivity implements RuvFragment.RuvF
     private Customer mCustomer;
 
     private ArrayList<Roof> roofArrayList;
+    private ArrayList<Section> sectionList;
     public RecyclerView rv;
     private RuvAdapter ruvAdapter;
     private RuvFilter ruvFilter;
@@ -298,7 +300,7 @@ public class RviewActivity extends AppCompatActivity implements RuvFragment.RuvF
                     for (int fNum = 0; fNum < fileNum; fNum++) {
                         JSONObject fileObject = rFiles.getJSONObject(fNum);
                         RuvFileInfo rFile = new RuvFileInfo();
-                        rFile.setUrl(baseUrl + "/files/" + fileObject.getString(String.valueOf(fNum)));
+                        rFile.setUrl(MainActivity.baseUrl + "/files/" + fileObject.getString(String.valueOf(fNum)));
                         if (fileObject.has("comment")) rFile.setComment(fileObject.getString("comment"));
                         filesArray.add(rFile);
                     }
@@ -542,7 +544,7 @@ public class RviewActivity extends AppCompatActivity implements RuvFragment.RuvF
         intent.putExtra("currentRid", this.currentRid);
         intent.putExtra("fileCount", this.fileCount);
         intent.putExtra("fileUrls", this.fileUrls);
-        intent.putExtra("fileComments", this.fileComments);
+        intent.putExtra("baseUrl", MainActivity.baseUrl);
         this.ready = intent.getBooleanExtra("ready", false);
         if (mCustomer != null) {
             try {
@@ -558,9 +560,11 @@ public class RviewActivity extends AppCompatActivity implements RuvFragment.RuvF
                 e.printStackTrace();
             }
         }
+        intent.putParcelableArrayListExtra("sectionList", sectionList);
     }
 
     public void getIntentData(Intent intent) {
+        Bundle extras = intent.getExtras();
         this.ready = intent.getBooleanExtra("ready", false);
         this.authToken = intent.getStringExtra("authToken");
         this.slope = intent.getFloatExtra("slope", 0);
@@ -575,7 +579,6 @@ public class RviewActivity extends AppCompatActivity implements RuvFragment.RuvF
         this.fileCount = intent.getIntExtra("fileCount", 0);
         this.fileUrls = intent.getStringArrayExtra("fileUrls");
         this.fileComments = intent.getStringArrayExtra("fileComments");
-        this.baseUrl = intent.getStringExtra("baseUrl");
         if (intent.hasExtra("customer"))
             try {
                 JSONObject customerJson = new JSONObject(intent.getStringExtra("customer"));
@@ -589,7 +592,9 @@ public class RviewActivity extends AppCompatActivity implements RuvFragment.RuvF
             } catch (JSONException e) {
                 e.printStackTrace();
             }
+        this.sectionList = intent.getParcelableArrayListExtra("sectionList");
     }
+
 
     public void putPrefsData() {
         SharedPreferences.Editor prefEdit = RviewActivity.this.getSharedPreferences("RuviuzApp", Context.MODE_PRIVATE).edit();

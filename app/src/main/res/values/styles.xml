@@ -1,8 +1,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.DayNight.NoActionBar">
-    </style>
+    <style name="AppTheme" parent="Theme.AppCompat.DayNight.NoActionBar"></style>
 
 
     <style name="RuvFragBar" parent="Theme.AppCompat.DayNight.NoActionBar">
@@ -20,7 +19,6 @@
         <item name="android:textSize">12sp</item>
         <item name="android:icon">@drawable/construction</item>
     </style>
-
 
 
     <!--<style name="ruviuzAppBtn">-->
@@ -42,13 +40,13 @@
     <!--<style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />-->
 
     <!--<style name="AppTheme.Picker">-->
-        <!--<item name="android:textColorPrimary">@android:color/holo_red_dark</item>-->
-        <!--<item name="android:textStyle">bold</item>-->
-        <!--<item name="android:textSize">16sp</item>-->
-        <!--<item name="android:background">@color/NumberBackground</item>-->
-        <!--<item name="android:color">@color/colorRow</item>-->
-        <!--<item name="android:centerColor">#ef00ff</item>-->
-        <!--<item name="android:colorFocusedHighlight">#ffffff</item>-->
+    <!--<item name="android:textColorPrimary">@android:color/holo_red_dark</item>-->
+    <!--<item name="android:textStyle">bold</item>-->
+    <!--<item name="android:textSize">16sp</item>-->
+    <!--<item name="android:background">@color/NumberBackground</item>-->
+    <!--<item name="android:color">@color/colorRow</item>-->
+    <!--<item name="android:centerColor">#ef00ff</item>-->
+    <!--<item name="android:colorFocusedHighlight">#ffffff</item>-->
     <!--</style>-->
 
     <style name="RuvFragActionBar" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
@@ -81,27 +79,27 @@
 
 
     <!--<style name="ruvanimate" parent="@android:style/Theme.Panel">-->
-        <!--<item name="android:windowAnimationStyle">@style/ruvanimate.Window</item>-->
+    <!--<item name="android:windowAnimationStyle">@style/ruvanimate.Window</item>-->
     <!--</style>-->
     <!---->
-    <style name="ruvanimate" >
+    <style name="ruvanimate">
         <item name="android:windowEnterAnimation">@anim/anim_in</item>
         <item name="android:windowExitAnimation">@anim/anim_out</item>
     </style>
 
 
     <!--<style name="Ruviuz.TransDialog" parent="Theme.AppCompat.DayNight.Dialog">-->
-        <!--<item name="android:windowIsFloating">true</item>-->
-        <!--<item name="android:windowSoftInputMode">stateUnspecified|adjustPan</item>-->
-        <!--<item name="android:windowActionModeOverlay">false</item>-->
-        <!--<item name="android:windowCloseOnTouchOutside">true</item>-->
-        <!--<item name="android:windowNoTitle">true</item>-->
-        <!--<item name="android:backgroundDimAmount">.70</item>-->
+    <!--<item name="android:windowIsFloating">true</item>-->
+    <!--<item name="android:windowSoftInputMode">stateUnspecified|adjustPan</item>-->
+    <!--<item name="android:windowActionModeOverlay">false</item>-->
+    <!--<item name="android:windowCloseOnTouchOutside">true</item>-->
+    <!--<item name="android:windowNoTitle">true</item>-->
+    <!--<item name="android:backgroundDimAmount">.70</item>-->
 
     <!--</style>-->
 
     <!--<style name="Ruviuz.rootFullView" parent="RuvFullFrag">-->
-        <!--<item name="android:windowDrawsSystemBarBackgrounds">true</item>-->
+    <!--<item name="android:windowDrawsSystemBarBackgrounds">true</item>-->
     <!--</style>-->
 
     <style name="RuvShadowText">
@@ -112,8 +110,20 @@
         <item name="android:shadowRadius">1</item>
     </style>
 
+    <style name="FullscreenTheme" parent="AppTheme">
+        <item name="android:actionBarStyle">@style/FullscreenActionBarStyle</item>
+        <item name="android:windowActionBarOverlay">true</item>
+        <item name="android:windowBackground">@null</item>
+        <item name="metaButtonBarStyle">?android:attr/buttonBarStyle</item>
+        <item name="metaButtonBarButtonStyle">?android:attr/buttonBarButtonStyle</item>
+    </style>
+
+    <style name="FullscreenActionBarStyle" parent="Widget.AppCompat.ActionBar">
+        <item name="android:background">@color/black_overlay</item>
+    </style>
+
     <!--<style name="RuvHintLight">-->
-        <!--<item name="android:textColorHint">@color/ruvGrey</item>-->
+    <!--<item name="android:textColorHint">@color/ruvGrey</item>-->
     <!--</style>-->
 
 

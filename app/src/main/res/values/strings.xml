@@ -148,5 +148,13 @@
     <string name="enter_comment">Enter Comment..</string>
     <string name="customer">Customer</string>
 
+    <string name="title_activity_section">SectionActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="addsection">Add A Section</string>
+    <string name="full">Full</string>
+    <string name="empty_length">Empty Length</string>
+    <string name="empty_width">Empty Width</string>
+
 
 </resources>
