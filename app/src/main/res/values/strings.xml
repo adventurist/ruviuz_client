@@ -155,6 +155,9 @@
     <string name="full">Full</string>
     <string name="empty_length">Empty Length</string>
     <string name="empty_width">Empty Width</string>
+    <string name="id">ID</string>
+    <string name="area">Area</string>
+    <string name="empty">Empty</string>
 
 
 </resources>

@@ -34,12 +34,11 @@ public class SectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         super();
         this.mActivity = activity;
         this.sectionList = sectionList;
-        layoutInflater = LayoutInflater.from(activity);
     }
 
 
     private static class SectionHolder extends RecyclerView.ViewHolder  {
-        TextView sectionId, sectionLength, sectionWidth, sectionArea;
+        TextView sectionId, sectionLength, sectionWidth, sectionArea, emptyArea, emptyLabel;
 
         SectionHolder(View mView) {
             super(mView);
@@ -47,6 +46,8 @@ public class SectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             sectionLength = (TextView) mView.findViewById(R.id.sectionLength);
             sectionWidth = (TextView) mView.findViewById(R.id.sectionWidth);
             sectionArea = (TextView) mView.findViewById(R.id.sectionArea);
+            emptyLabel = (TextView) mView.findViewById(R.id.emptyLabel);
+            emptyArea = (TextView) mView.findViewById(R.id.emptyArea);
         }
     }
 
@@ -75,10 +76,16 @@ public class SectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         Section section = sectionList.get(holder.getAdapterPosition());
         if (holder.getItemViewType() == SEC_VIEW) {
             final SectionHolder sectionHolder = (SectionHolder) holder;
-            sectionHolder.sectionId.setText(String.valueOf(position));
+            sectionHolder.sectionId.setText(String.valueOf(position + 1));
             sectionHolder.sectionLength.setText(String.valueOf(section.getLength()));
-            sectionHolder.sectionLength.setText(String.valueOf(section.getWidth()));
-            sectionHolder.sectionLength.setText(String.valueOf(section.getLength() * section.getWidth()));
+            sectionHolder.sectionWidth.setText(String.valueOf(section.getWidth()));
+            sectionHolder.sectionArea.setText(String.valueOf(section.getLength() * section.getWidth()));
+            if (section.getMissing() > 0) {
+                sectionHolder.emptyArea.setVisibility(View.VISIBLE);
+                sectionHolder.emptyLabel.setVisibility(View.VISIBLE);
+                sectionHolder.emptyArea.setText(String.valueOf(section.getMissing()));
+            }
+
         }
     }
 

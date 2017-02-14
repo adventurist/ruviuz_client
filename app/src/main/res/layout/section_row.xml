@@ -3,6 +3,7 @@
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_marginTop="4dp"
     android:layout_marginBottom="4dp"
     android:minHeight="25dp"
@@ -10,26 +11,88 @@
     android:background="@color/common_google_signin_btn_text_dark_disabled"
     android:id="@+id/sectionRow">
     <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_width="48dp"
+        android:layout_height="20dp"
         android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"
+        android:layout_margin="4dp"
+        android:id="@+id/idLabel"
+        android:text="@string/id"
+
+         />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="20dp"
+        android:layout_toEndOf="@id/idLabel"
+        android:layout_alignParentTop="true"
+        android:layout_margin="4dp"
         android:id="@+id/sectionId"/>
+    <TextView
+        android:layout_width="48dp"
+        android:layout_height="20dp"
+        android:layout_margin="4dp"
+        android:id="@+id/lengthLabel"
+        android:text="@string/length"
+        android:layout_below="@id/sectionId"
+
+         />
 
     <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_height="20dp"
+        android:layout_margin="4dp"
+        android:layout_toEndOf="@id/lengthLabel"
         android:layout_below="@id/sectionId"
         android:id="@+id/sectionLength"/>
+    <TextView
+        android:layout_width="48dp"
+        android:layout_height="20dp"
+        android:layout_margin="4dp"
+        android:text="@string/width"
+        android:layout_below="@id/sectionLength"
+        android:id="@+id/widthLabel"/>
 
     <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_height="20dp"
+        android:layout_margin="4dp"
+        android:layout_toEndOf="@id/widthLabel"
         android:layout_below="@id/sectionLength"
         android:id="@+id/sectionWidth"/>
 
     <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_width="48dp"
+        android:layout_height="20dp"
+        android:layout_margin="4dp"
+        android:layout_below="@id/sectionWidth"
+        android:id="@+id/areaLabel"
+        android:text="@string/area"
+
+        />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="20dp"
+        android:layout_margin="4dp"
+        android:layout_toEndOf="@id/areaLabel"
         android:layout_below="@id/sectionWidth"
         android:id="@+id/sectionArea"/>
+
+    <TextView
+        android:layout_width="48dp"
+        android:layout_height="20dp"
+        android:layout_margin="4dp"
+        android:layout_below="@id/sectionArea"
+        android:id="@+id/emptyLabel"
+        android:text="@string/empty"
+        android:visibility="gone"
+
+        />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="20dp"
+        android:layout_margin="4dp"
+        android:layout_toEndOf="@id/areaLabel"
+        android:layout_below="@id/sectionArea"
+        android:visibility="gone"
+        android:id="@+id/emptyArea"/>
     </RelativeLayout>

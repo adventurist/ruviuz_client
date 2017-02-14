@@ -27,6 +27,8 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
@@ -54,6 +56,7 @@ import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.appindexing.Thing;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.yqritc.recyclerviewflexibledivider.HorizontalDividerItemDecoration;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -95,6 +98,7 @@ import stronglogic.ruviuz.util.RuuvFile;
 import stronglogic.ruviuz.util.RuuvSection;
 import stronglogic.ruviuz.util.RuvLocation;
 import stronglogic.ruviuz.util.RuvSessionManager;
+import stronglogic.ruviuz.views.SectionAdapter;
 
 public class MainActivity extends AppCompatActivity implements LoginFragment.LoginFragListener, MainFragment.MainfragListener, WelcomeFragment.WelcomeFragListener, AddressFragment.AddressFragListener, SectionFragment.SectionListener, MetricFragment.OnFragmentInteractionListener, SlopeFragment.SlopeFragListener, FileFragment.FileFragListener, CustomerFragment.CustomerFragListener, EditFragment.EditFragListener, ImageEditFragment.ImageFragListener, Handler.Callback {
 
@@ -147,6 +151,9 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
     private ImageView photo1, photo2, photo3;
     private ImageButton ruuvBtn, calculateBtn;
     private Button editBtn;
+
+    public RecyclerView rv;
+    private SectionAdapter secAdapter;
 
     private RuvSessionManager ruvSessionManager;
 
@@ -235,7 +242,6 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         this.prefs = MainActivity.this.getSharedPreferences("RuviuzApp", Context.MODE_PRIVATE);
         getPrefsData();
 
-
         setSupportActionBar(mToolbar);
 
         if (getSupportActionBar()!= null) {
@@ -244,20 +250,13 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
             getSupportActionBar().setElevation(8f);
         }
 
-//        if (mGoogleApi == null) {
-//            mGoogleApi = new GoogleApiClient.Builder(this)
-//                    .addConnectionCallbacks(this)
-//                    .addOnConnectionFailedListener(this)
-//                    .addApi(LocationServices.API)
-//                    .build();
-//        }
-
-        roofLength = (TextView) findViewById(R.id.roofLength);
-        roofWidth = (TextView) findViewById(R.id.roofWidth);
+        setupRecycler();
+//        roofLength = (TextView) findViewById(R.id.roofLength);
+//        roofWidth = (TextView) findViewById(R.id.roofWidth);
         roofSlope = (TextView) findViewById(R.id.roofSlope);
 
-        roofLength.setText(String.valueOf(length));
-        roofWidth.setText(String.valueOf(width));
+//        roofLength.setText(String.valueOf(length));
+//        roofWidth.setText(String.valueOf(width));
         roofSlope.setText(String.valueOf(MainActivity.this.slope));
 
         addressTv = (TextView) findViewById(R.id.addressTv);
@@ -458,7 +457,9 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
 //            hideActivity();
 //            customerDialog();
 //        }
-        if (getIntent() != null && getIntent().hasExtra("PERSIST")) {
+        if (getIntent() != null
+//                && getIntent().hasExtra("PERSIST")
+                ) {
             getIntentData(getIntent());
         }
     }
@@ -540,6 +541,8 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
                 this.ruvFiles = new HashMap<>();
 
             }
+            if (this.fileUrls == null) { this.fileUrls = new String[3]; }
+            if (this.fileComments == null) { this.fileComments = new String[3]; }
             if (fileUrls != null)
                 for (int i = fileUrls.length; i > 0; i--) {
                     if (fileUrls[i - 1] != null && !fileUrls[i - 1].equals("") &&
@@ -563,6 +566,9 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
                     }
                     if (fileUrls[fileCount - 1] == null) {
                         fileUrls[fileCount - 1] = "";
+                    }
+                    if (this.fileComments == null) {
+                        this.fileComments = new String[3];
                     }
                     String uriS = xIntent.getStringExtra("uri");
                     fileUrls[fileCount - 1] = uriS;
@@ -613,7 +619,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
             refreshUi();
         }
         draftCheck();
-//        if (getIntent().hasExtra("authToken")) authToken = getIntent().getStringExtra("authToken");
+        if (getIntent().hasExtra("authToken")) authToken = getIntent().getStringExtra("authToken");
         if (authToken == null) {
             hideActivity();
             dismissAllDialogs();
@@ -667,10 +673,36 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
 //        }
     }
 
+    public void setupRecycler() {
+        if (MainActivity.this.sectionList != null && MainActivity.this.sectionList.size() > -1) {
+            this.secAdapter = new SectionAdapter(MainActivity.this, MainActivity.this.sectionList);
+            LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+            rv = (RecyclerView) findViewById(R.id.sectionView);
+            rv.setAdapter(secAdapter);
+            rv.setLayoutManager(layoutManager);
+            rv.addOnScrollListener(new RecyclerView.OnScrollListener() {
+                @Override
+                public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                    super.onScrollStateChanged(recyclerView, newState);
+//                    scrollChange(recyclerView, newState);
+                }
 
-    void setPremium(boolean checked) {
-        this.premium = checked;
+                @Override
+                public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+//                    scrolled(recyclerView, dx, dy);
+                }
+
+            });
+            LinearLayoutManager layoutMgr = new LinearLayoutManager(getBaseContext(),
+                    LinearLayoutManager.VERTICAL, false);
+            layoutMgr.setAutoMeasureEnabled(true);
+            layoutMgr.setRecycleChildrenOnDetach(true);
+            rv.setLayoutManager(layoutMgr);
+            rv.addItemDecoration(new HorizontalDividerItemDecoration.Builder(this).build());
+
+        }
     }
+
 
 
     BigDecimal calculatePrice() {
@@ -818,7 +850,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
 
         Intent intent = new Intent(MainActivity.this, SectionActivity.class);
         putIntentData(intent);
-        startActivity(intent);
+        startActivityForResult(intent,SECTION_ACTIVITY_COMPLETE);
 //        FragmentManager fm = getFragmentManager();
 //        if (metricFrag == null) {
 //            metricFrag = new MetricFragment();
@@ -869,7 +901,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
             mBundle.putString("phone", mCustomer.getPhone());
             mBundle.putString("prefix", mCustomer.getPrefix());
         }
-        saveEditFragState(mBundle);
+//        saveEditFragState(mBundle);
         FragmentManager fm = getFragmentManager();
 
         if (editFrag == null) {
@@ -897,14 +929,13 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         if (slopeFrag == null) {
             slopeFrag = new SlopeFragment();
             slopeFrag.setArguments(mBundle);
-            if (!slopeFrag.isAdded()) {
-                slopeFrag.show(fm, "Please Enter Slope");
-            }
         } else {
             fm.beginTransaction().remove(slopeFrag).commit();
             slopeFrag = null;
             slopeFrag = new SlopeFragment();
             slopeFrag.setArguments(mBundle);
+        }
+        if (!slopeFrag.isAdded()) {
             slopeFrag.show(fm, "Please Enter Slope");
         }
     }
@@ -1312,6 +1343,8 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
                                 sBundle.putBoolean("full", section.isFull());
                                 if (!section.isFull()) sBundle.putFloat("missing", section.getMissing());
                                 RuuvSection ruvSection = new RuuvSection(MainActivity.this, mHandler, MainActivity.baseUrl, authToken, sBundle);
+                                Thread sectionThread = new Thread(ruvSection);
+                                sectionThread.start();
                             }
 
                         }
@@ -1532,8 +1565,8 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
     }
 
     public void updateValues() {
-        this.width = Float.parseFloat(String.valueOf(roofWidth.getText()));
-        this.length = Float.parseFloat(String.valueOf(roofLength.getText()));
+//        this.width = Float.parseFloat(String.valueOf(roofWidth.getText()));
+//        this.length = Float.parseFloat(String.valueOf(roofLength.getText()));
         this.slope = Float.parseFloat(String.valueOf(roofSlope.getText()));
     }
 
@@ -1554,8 +1587,8 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         putPrefsData();
 
 //        premiumMaterial.setChecked(false);
-        roofLength.setText("0");
-        roofWidth.setText("0");
+//        roofLength.setText("0");
+//        roofWidth.setText("0");
         roofSlope.setText("0");
         currentPrice.setText(R.string.zero);
         Glide.clear(photo1); Glide.clear(photo2); Glide.clear(photo3);
@@ -1756,10 +1789,10 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
             MainActivity.this.findViewById(R.id.MainParentView).setVisibility(View.INVISIBLE);
             MainActivity.this.findViewById(R.id.side_menu).setVisibility(View.INVISIBLE);
         }
-        if (roofLength != null)
-        roofLength.setVisibility(View.INVISIBLE);
-        if (roofWidth != null)
-        roofWidth.setVisibility(View.INVISIBLE);
+//        if (roofLength != null)
+//        roofLength.setVisibility(View.INVISIBLE);
+//        if (roofWidth != null)
+//        roofWidth.setVisibility(View.INVISIBLE);
         if (roofSlope != null)
         roofSlope.setVisibility(View.INVISIBLE);
         if (currentPrice != null)
@@ -1784,8 +1817,8 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
     public void revealActivity() {
         MainActivity.this.findViewById(R.id.MainParentView).setVisibility(View.VISIBLE);
         MainActivity.this.findViewById(R.id.side_menu).setVisibility(View.VISIBLE);
-        roofLength.setVisibility(View.VISIBLE);
-        roofWidth.setVisibility(View.VISIBLE);
+//        roofLength.setVisibility(View.VISIBLE);
+//        roofWidth.setVisibility(View.VISIBLE);
         roofSlope.setVisibility(View.VISIBLE);
         currentPrice.setVisibility(View.VISIBLE);
         if (currentPrice != null)
@@ -1837,7 +1870,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
                 e.printStackTrace();
             }
         }
-        intent.putParcelableArrayListExtra("sectionList", sectionList);
+        intent.putExtra("sectionList", sectionList);
     }
     
     public void getIntentData(Intent intent) {
@@ -1873,7 +1906,15 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         if (intent.hasExtra("REQUEST")) {
             handleRequest(extras.getInt("REQUEST", 0));
         }
+        int preNum = this.sectionList == null ? 0 : this.sectionList.size();
         this.sectionList = intent.getParcelableArrayListExtra("sectionList");
+        if (this.sectionList != null) {
+            if (preNum != this.sectionList.size()) {
+                if (this.secAdapter != null) {
+                    secAdapter.notifyDataSetChanged();
+                }
+            }
+        }
     }
 
 
@@ -1932,7 +1973,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
 
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         Log.d(TAG, "onActivityResult");
         switch (requestCode) {
@@ -1950,9 +1991,10 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
                 }
                 break;
             case SECTION_ACTIVITY_COMPLETE:
-                if (resultCode == RESULT_OK) {
+                if (resultCode > -2) {
                     Log.d(TAG, "SECTIONACTIVITY COMPLETE");
-                    putPrefsData();
+                    getIntentData(data);
+//                    if (this.secAdapter != null) { this.secAdapter.notifyDataSetChanged(); }
                     slopeDialog();
                 }
         }

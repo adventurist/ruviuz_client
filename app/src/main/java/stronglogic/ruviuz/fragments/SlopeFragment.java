@@ -94,10 +94,10 @@ public class SlopeFragment extends DialogFragment {
         if (getArguments() != null) {
             this.slope = getArguments().getFloat("slope");
         }
-        if (!((MainActivity) getActivity()).readyStatus()) {
-            ((MainActivity)getActivity()).hideActivity();
-            ((MainActivity)getActivity()).dismissOtherDialogs(SlopeFragment.this.getClass());
-        }
+//        if (!((MainActivity) getActivity()).readyStatus()) {
+//            ((MainActivity)getActivity()).hideActivity();
+//            ((MainActivity)getActivity()).dismissOtherDialogs(SlopeFragment.this.getClass());
+//        }
         setStyle(DialogFragment.STYLE_NORMAL, R.style.RuvFullFrag);
     }
 
@@ -116,14 +116,16 @@ public class SlopeFragment extends DialogFragment {
         return new Dialog(getActivity(), getTheme()){
             @Override
             public void onBackPressed() {
-                mActivity.getMetric();
+                mActivity.revealActivity();
+                SlopeFragment.this.dismiss();
             }
         };
     }
 
     @Override
     public void onCancel(DialogInterface dialog) {
-        mActivity.getMetric();
+        mActivity.revealActivity();
+        SlopeFragment.this.dismiss();
     }
 
     @Override

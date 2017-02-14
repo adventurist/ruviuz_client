@@ -57,7 +57,7 @@ public class Section extends LauncherActivity.ListItem implements Parcelable {
     }
 
 
-    public void setMissing(float area) { this.missing = missing;
+    public void setMissing(float area) { this.missing = area;
     }
 
     public float getMissing() { return this.missing; }

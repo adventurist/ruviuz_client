@@ -32,7 +32,7 @@ public class SectionFragment extends Fragment {
     private Activity mActivity;
     private SectionListener mListener;
     
-    private TextView sectionLength, sectionWidth, emptyLength, emptyWidth;
+    private TextView sectionLength, sectionWidth, emptyLength, emptyWidth, sectionLengthIn, sectionWidthIn, emptyLengthIn, emptyWidthIn;
 
     public SectionFragment() {
         // Required empty public constructor
@@ -74,6 +74,11 @@ public class SectionFragment extends Fragment {
         sectionWidth = (TextView) mView.findViewById(R.id.sectionWidth);
         emptyLength = (TextView) mView.findViewById(R.id.emptyLength);
         emptyWidth = (TextView) mView.findViewById(R.id.emptyWidth);
+
+        sectionLengthIn = (TextView) mView.findViewById(R.id.sectionLengthIn);
+        sectionWidthIn = (TextView) mView.findViewById(R.id.sectionWidthIn);
+        emptyLengthIn = (TextView) mView.findViewById(R.id.emptyLengthIn);
+        emptyWidthIn = (TextView) mView.findViewById(R.id.emptyWidthIn);
 
 //        RuvDrawable vDrawable = new RuvDrawable(Color.BLACK,Color.GREEN,Color.LTGRAY,2,Color.RED,50);
 //        View vView = new View(mActivity);

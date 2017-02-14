@@ -1,6 +1,6 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
+    android:layout_width="wrap_content"
     android:layout_height="match_parent"
     android:id="@+id/section_content"
     tools:context="stronglogic.ruviuz.fragments.SectionFragment">
@@ -8,43 +8,77 @@
     <!-- TODO: Update blank fragment layout -->
 
     <TextView
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/sectionLength"
-        android:gravity="center"
         android:layout_alignParentTop="true"
-         />
+        android:layout_marginStart="8dp"
+        />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/sectionLengthIn"
+        android:layout_toEndOf="@id/sectionLength"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="8dp"
+        />
 
     <TextView
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/sectionWidth"
         android:layout_below="@id/sectionLength"
-        android:gravity="center"
-         />
+        android:layout_marginStart="8dp"
+        />
 
     <TextView
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/sectionWidthIn"
+        android:layout_toEndOf="@id/sectionWidth"
+        android:layout_below="@id/sectionLength"
+        android:layout_marginStart="8dp"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/sectionWidth"
         android:id="@+id/emptyLength"
-        android:gravity="center"
+        android:layout_marginStart="8dp"
         />
 
     <TextView
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/sectionWidth"
+        android:id="@+id/emptyLengthIn"
+        android:layout_toEndOf="@id/emptyLength"
+        android:layout_marginStart="8dp"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/emptyLength"
         android:id="@+id/emptyWidth"
-        android:gravity="center"
+        android:layout_marginStart="8dp"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/emptyLength"
+        android:id="@+id/emptyWidthIn"
+        android:layout_toEndOf="@id/emptyWidth"
+        android:layout_marginStart="8dp"
         />
 
     <LinearLayout
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/drawLayout"
+        android:layout_marginStart="8dp"
         android:orientation="horizontal"/>
-
-
 
 </RelativeLayout>

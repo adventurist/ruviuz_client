@@ -712,14 +712,14 @@ public class EditFragment extends DialogFragment {
         Log.d(TAG, "onDestroy");
     }
 
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        Log.d(TAG, "onDestroyView");
-        Bundle args = new Bundle();
-        putBundleData(args);
-        mActivity.saveEditFragState(args);
-    }
+//    @Override
+//    public void onDestroyView() {
+//        super.onDestroyView();
+//        Log.d(TAG, "onDestroyView");
+//        Bundle args = new Bundle();
+//        putBundleData(args);
+//        mActivity.saveEditFragState(args);
+//    }
 
 
     public interface EditFragListener {
@@ -819,7 +819,10 @@ public class EditFragment extends DialogFragment {
                 EditFragment.this.fileCount++;
                 Bundle persistData = new Bundle();
                 putBundleData(persistData);
-                mActivity.saveEditFragState(persistData);
+//                mActivity.saveEditFragState(persistData);
+                mListener.editFragInteraction(persistData, RUV_FINISH_EDIT);
+
+
             } else {
                 Toast.makeText(mActivity, "Unable to get content URI", Toast.LENGTH_SHORT).show();
             }
