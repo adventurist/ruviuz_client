@@ -11,6 +11,19 @@ import android.os.Parcelable;
  */
 public class Section extends LauncherActivity.ListItem implements Parcelable {
 
+    public final static String CHIMNEY = "Chimney";
+    public final static String SKY_LIGHT = "Skylight";
+    public final static String OTHER = "Other";
+
+//    @StringDef({EmptyType.CHIMNEY, EmptyType.SKY_LIGHT, EmptyType.OTHER})
+//    @Retention(RetentionPolicy.SOURCE)
+//    public @interface EmptyType {
+//        String CHIMNEY = "Chimney";
+//        String SKY_LIGHT = "Skylight";
+//        String OTHER = "Other";
+//    }
+
+
     public Section() {
         this.slope = 0;
         this.width = 0;
@@ -24,16 +37,26 @@ public class Section extends LauncherActivity.ListItem implements Parcelable {
     private boolean full;
     private int id;
 
+    private String emptyType;
+
+    private String eTypeParcelable;
+
+
+    public void setEmptyType(String emptyType) {
+        this.emptyType = emptyType;
+    }
+    public String getEmptyType() {
+        return this.emptyType;
+    }
+
     public void toggleFull() {
         this.full = !this.full;
     }
-
     public boolean isFull() { return this.full; }
 
     public void setSlope(float slope)  {
         this.slope = slope;
     }
-
     public float getSlope()  {
         return this.slope;
     }
@@ -42,7 +65,6 @@ public class Section extends LauncherActivity.ListItem implements Parcelable {
     public void setWidth (float width)  {
         this.width = width;
     }
-
     public float getWidth()  {
         return width;
     }
@@ -51,15 +73,12 @@ public class Section extends LauncherActivity.ListItem implements Parcelable {
     public void setLength(float length)  {
         this.length = length;
     }
-
     public float getLength()  {
         return this.length;
     }
 
 
-    public void setMissing(float area) { this.missing = area;
-    }
-
+    public void setMissing(float area) { this.missing = area; }
     public float getMissing() { return this.missing; }
 
     public void setId(int id) { this.id = id;}
@@ -78,7 +97,7 @@ public class Section extends LauncherActivity.ListItem implements Parcelable {
         this.length = in.readFloat();
         this.missing = in.readFloat();
         this.id = in.readInt();
-
+        this.emptyType = in.readString();
     }
 
     public static final Parcelable.Creator<Section> CREATOR =
@@ -86,7 +105,6 @@ public class Section extends LauncherActivity.ListItem implements Parcelable {
                 public Section createFromParcel(Parcel in)  {
                     return new Section(in);
                 }
-
                 public Section[] newArray(int size) {
                     return new Section[size];
                 }
@@ -99,5 +117,6 @@ public class Section extends LauncherActivity.ListItem implements Parcelable {
         out.writeFloat(length);
         out.writeFloat(width);
         out.writeFloat(missing);
+        out.writeString(emptyType);
     }
 }

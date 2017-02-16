@@ -155,9 +155,20 @@
     <string name="full">Full</string>
     <string name="empty_length">Empty Length</string>
     <string name="empty_width">Empty Width</string>
+    <string name="e_len">E.Length</string>
+    <string name="e_wid">E.Width</string>
     <string name="id">ID</string>
     <string name="area">Area</string>
     <string name="empty">Empty</string>
+    <string name="section">Section</string>
+    <string name="chimney">Chimney</string>
+    <string name="skylight">Skylight</string>
+    <string name="other">Other</string>
+    <string name="type">Type</string>
+    <string name="lng">Lng</string>
+    <string name="e_lng">E.Lng</string>
+    <string name="lgt">Lgt</string>
+    <string name="wdt">Wdt</string>
 
 
 </resources>

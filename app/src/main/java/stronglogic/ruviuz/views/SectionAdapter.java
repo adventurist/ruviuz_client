@@ -38,7 +38,7 @@ public class SectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
 
     private static class SectionHolder extends RecyclerView.ViewHolder  {
-        TextView sectionId, sectionLength, sectionWidth, sectionArea, emptyArea, emptyLabel;
+        TextView sectionId, sectionLength, sectionWidth, sectionArea, emptyArea, emptyLabel, emptyTypeLabel, emptyType;
 
         SectionHolder(View mView) {
             super(mView);
@@ -48,6 +48,8 @@ public class SectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             sectionArea = (TextView) mView.findViewById(R.id.sectionArea);
             emptyLabel = (TextView) mView.findViewById(R.id.emptyLabel);
             emptyArea = (TextView) mView.findViewById(R.id.emptyArea);
+            emptyTypeLabel = (TextView) mView.findViewById(R.id.emptyTypeLabel);
+            emptyType = (TextView) mView.findViewById(R.id.emptyType);
         }
     }
 
@@ -68,7 +70,7 @@ public class SectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
 
     @Override
-    public int getItemCount()  {return this.sectionList.size();}
+    public int getItemCount()  { return this.sectionList.size(); }
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
@@ -84,9 +86,16 @@ public class SectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 sectionHolder.emptyArea.setVisibility(View.VISIBLE);
                 sectionHolder.emptyLabel.setVisibility(View.VISIBLE);
                 sectionHolder.emptyArea.setText(String.valueOf(section.getMissing()));
+                sectionHolder.emptyTypeLabel.setVisibility(View.VISIBLE);
+                sectionHolder.emptyType.setVisibility(View.VISIBLE);
+                sectionHolder.emptyType.setText((section.getEmptyType()));
             }
-
         }
+    }
+
+    public void swapData(ArrayList<Section> list) {
+        this.sectionList.clear();
+        this.sectionList.addAll(list);
     }
 
 }

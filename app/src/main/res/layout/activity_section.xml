@@ -495,6 +495,38 @@
                     android:layout_alignParentEnd="true"
                     android:layout_marginEnd="72dp" />
 
+                <RadioGroup xmlns:android="http://schemas.android.com/apk/res/android"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layout_widthPercent="100%"
+                    android:id="@+id/emptyType"
+                    android:orientation="horizontal"
+                    android:gravity="center"
+                    android:visibility="gone"
+                    android:layout_below="@id/emptyWidthFtTv"
+                    android:layout_marginBottom="16dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_alignParentBottom="true">
+                    <RadioButton android:id="@+id/chimney"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="36dp"
+                        android:text="@string/chimney"
+                        />
+                    <RadioButton android:id="@+id/skylight"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:text="@string/skylight"
+                        />
+                    <RadioButton android:id="@+id/emptyOther"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="36dp"
+                        android:text="@string/other"
+                        />
+                </RadioGroup>
+
             </RelativeLayout>
 
         </ScrollView>

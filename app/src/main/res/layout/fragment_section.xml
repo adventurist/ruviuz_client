@@ -8,71 +8,182 @@
     <!-- TODO: Update blank fragment layout -->
 
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="40dp"
         android:layout_height="wrap_content"
+        android:id="@+id/secLenLabel"
+        android:text="@string/lng"/>
+    <TextView
+        android:layout_width="40dp"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/secLenLabel"
         android:id="@+id/sectionLength"
         android:layout_alignParentTop="true"
-        android:layout_marginStart="8dp"
-        />
+        android:layout_marginStart="8dp"/>
+
+        <TextView
+            android:layout_width="14dp"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@id/sectionLength"
+            android:id="@+id/lenft"
+            android:text="@string/ft"/>
+
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="40dp"
         android:layout_height="wrap_content"
         android:id="@+id/sectionLengthIn"
-        android:layout_toEndOf="@id/sectionLength"
+        android:layout_toEndOf="@id/lenft"
         android:layout_alignParentTop="true"
-        android:layout_marginStart="8dp"
         />
 
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="14dp"
         android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/sectionLengthIn"
+        android:layout_marginStart="8dp"
+        android:id="@+id/lenin"
+        android:text="@string/inches"/>
+
+    <TextView
+        android:layout_width="40dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/sectionLength"
+        android:id="@+id/secWidLabel"
+        android:text="@string/wdt"/>
+
+    <TextView
+        android:layout_height="wrap_content"
+        android:layout_width="40dp"
+        android:layout_toEndOf="@id/secWidLabel"
         android:id="@+id/sectionWidth"
         android:layout_below="@id/sectionLength"
         android:layout_marginStart="8dp"
         />
 
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="14dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/secLenLabel"
+        android:layout_toEndOf="@id/sectionLength"
+        android:id="@+id/widft"
+        android:text="@string/ft"/>
+
+    <TextView
+        android:layout_width="40dp"
         android:layout_height="wrap_content"
         android:id="@+id/sectionWidthIn"
-        android:layout_toEndOf="@id/sectionWidth"
+        android:layout_toEndOf="@id/widft"
         android:layout_below="@id/sectionLength"
-        android:layout_marginStart="8dp"
         />
 
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="14dp"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/sectionWidthIn"
+        android:layout_below="@id/sectionLength"
+        android:layout_marginStart="8dp"
+        android:id="@+id/widin"
+        android:text="@string/inches"/>
+
+    <TextView
+        android:layout_width="40dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/emptyLenLabel"
+        android:layout_below="@id/sectionWidth"
+        android:text="@string/e_lng"/>
+    <TextView
+        android:layout_width="40dp"
         android:layout_height="wrap_content"
         android:layout_below="@id/sectionWidth"
+        android:layout_toEndOf="@id/emptyLenLabel"
         android:id="@+id/emptyLength"
         android:layout_marginStart="8dp"
         />
+    <TextView
+        android:layout_width="14dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/sectionWidth"
+        android:layout_toEndOf="@id/emptyLength"
+        android:id="@+id/elenft"
+        android:text="@string/ft"/>
 
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="40dp"
         android:layout_height="wrap_content"
         android:layout_below="@id/sectionWidth"
         android:id="@+id/emptyLengthIn"
-        android:layout_toEndOf="@id/emptyLength"
-        android:layout_marginStart="8dp"
+        android:layout_toEndOf="@id/elenft"
         />
 
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="14dp"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/emptyLengthIn"
+        android:layout_below="@id/sectionWidth"
+        android:layout_marginStart="8dp"
+        android:id="@+id/elenin"
+        android:text="@string/inches"/>
+
+    <TextView
+        android:layout_width="40dp"
         android:layout_height="wrap_content"
         android:layout_below="@id/emptyLength"
+        android:id="@+id/emptyWidLabel"
+        android:text="E.Wdt"/>
+
+    <TextView
+        android:layout_width="40dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/emptyLength"
+        android:layout_toEndOf="@id/emptyWidLabel"
         android:id="@+id/emptyWidth"
         android:layout_marginStart="8dp"
         />
 
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="14dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/emptyLength"
+        android:layout_toEndOf="@id/emptyWidth"
+        android:id="@+id/ewidft"
+        android:text="@string/ft"/>
+
+    <TextView
+        android:layout_width="40dp"
         android:layout_height="wrap_content"
         android:layout_below="@id/emptyLength"
         android:id="@+id/emptyWidthIn"
-        android:layout_toEndOf="@id/emptyWidth"
+        android:layout_toEndOf="@id/ewidft"
+
+        />
+
+    <TextView
+        android:layout_width="14dp"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/emptyWidthIn"
+        android:layout_below="@id/emptyLength"
+        android:layout_marginStart="8dp"
+        android:id="@+id/ewidin"
+        android:text="@string/inches"/>
+
+    <TextView
+        android:layout_width="40dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/emptyWidth"
+        android:text="E.Typ"
+        android:id="@+id/eTypeLabel"
+        android:layout_alignParentStart="true"
+
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/emptyWidth"
+        android:layout_toEndOf="@id/eTypeLabel"
+        android:id="@+id/eType"
         android:layout_marginStart="8dp"
         />
+
 
     <LinearLayout
         android:layout_width="wrap_content"

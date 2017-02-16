@@ -17,7 +17,7 @@
         android:layout_alignParentStart="true"
         android:layout_margin="4dp"
         android:id="@+id/idLabel"
-        android:text="@string/id"
+        android:text="@string/section"
 
          />
     <TextView
@@ -95,4 +95,26 @@
         android:layout_below="@id/sectionArea"
         android:visibility="gone"
         android:id="@+id/emptyArea"/>
-    </RelativeLayout>
+
+    <TextView
+        android:layout_width="48dp"
+        android:layout_height="20dp"
+        android:layout_margin="4dp"
+        android:layout_below="@id/emptyLabel"
+        android:id="@+id/emptyTypeLabel"
+        android:text="@string/type"
+        android:visibility="gone"
+
+        />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="20dp"
+        android:layout_margin="4dp"
+        android:layout_toEndOf="@id/emptyTypeLabel"
+        android:layout_below="@id/emptyLabel"
+        android:visibility="gone"
+        android:id="@+id/emptyType"/>
+
+
+
+</RelativeLayout>

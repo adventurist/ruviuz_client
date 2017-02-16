@@ -12,6 +12,8 @@ import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -39,6 +41,8 @@ public class SectionActivity extends AppCompatActivity implements SectionFragmen
     private Button sectionBtn;
     private FloatingActionButton doneBtn;
     private Switch fullToggle;
+    private RadioGroup emptyTypeGroup;
+    private RadioButton chimney, skylight, emptyOther;
     private RelativeLayout widgetWrap;
 
     private SectionFragment sectionFrag;
@@ -46,7 +50,7 @@ public class SectionActivity extends AppCompatActivity implements SectionFragmen
     public RecyclerView rv;
     private SectionAdapter secAdapter;
 
-    private String authToken;
+    private String authToken, emptyType;
 
 //    private MainActivity.IncomingHandler mHandler;
 //
@@ -131,6 +135,19 @@ public class SectionActivity extends AppCompatActivity implements SectionFragmen
 
                                 float emptyArea = emLen * emWid;
 
+                                if (emptyTypeGroup.getCheckedRadioButtonId() != -1) {
+                                    RadioButton selectedButton = (RadioButton) findViewById(emptyTypeGroup.getCheckedRadioButtonId());
+                                    if (selectedButton.getText().toString().equals(Section.CHIMNEY)) {
+                                        section.setEmptyType(Section.CHIMNEY);
+                                    }
+                                    if (selectedButton.getText().toString().equals(Section.SKY_LIGHT)) {
+                                        section.setEmptyType(Section.SKY_LIGHT);
+                                    }
+                                    if (selectedButton.getText().toString().equals(Section.OTHER)) {
+                                        section.setEmptyType(Section.OTHER);
+                                    }
+                                }
+
                                 section.toggleFull();
                                 section.setMissing(emptyArea);
                                 sEmptyLengthTv.setText("");
@@ -147,6 +164,10 @@ public class SectionActivity extends AppCompatActivity implements SectionFragmen
                                 sEmptyWidthPickIn.setValue(0);
 
                             }
+                        }
+
+                        if (SectionActivity.this.slope > -1) {
+                            section.setSlope(SectionActivity.this.slope);
                         }
 
                         sectionList.add(section);
@@ -305,11 +326,33 @@ public class SectionActivity extends AppCompatActivity implements SectionFragmen
                 Intent mIntent = new Intent(SectionActivity.this, MainActivity.class);
                 putIntentData(mIntent);
                 setResult(MainActivity.SECTION_ACTIVITY_COMPLETE, mIntent);
-//                startActivityForResult(mIntent, MainActivity.SECTION_ACTIVITY_COMPLETE);
-//                startActivity(mIntent);
                 finish();
             }
         });
+
+        emptyTypeGroup = (RadioGroup) findViewById(R.id.emptyType);
+        chimney = (RadioButton) findViewById(R.id.chimney);
+        if (this.emptyType != null && this.emptyType.equals("Chimney"))
+            chimney.setChecked(true);
+        skylight = (RadioButton) findViewById(R.id.skylight);
+        if (this.emptyType != null && this.emptyType.equals("Skylight"))
+            skylight.setChecked(true);
+        emptyOther = (RadioButton) findViewById(R.id.emptyOther);
+        if (this.emptyType != null && this.emptyType.equals("Other"))
+            emptyOther.setChecked(true);
+
+        emptyTypeGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                RadioButton radioBtn = (RadioButton) findViewById(checkedId);
+                if (sectionFrag.getView() != null) {
+                    TextView sEtypeTv = (TextView) sectionFrag.getView().findViewById(R.id.eType);
+                    SectionActivity.this.emptyType = radioBtn.getText().toString();
+                    sEtypeTv.setText(SectionActivity.this.emptyType);
+                }
+            }
+        });
+        
         addSectionFragment();
         setupRecycler();
     }
@@ -383,6 +426,8 @@ public class SectionActivity extends AppCompatActivity implements SectionFragmen
         SectionActivity.this.sEmptyWidthPickIn.setVisibility(View.VISIBLE);
         if (SectionActivity.this.sEmptyWidthInTv == null) SectionActivity.this.sEmptyWidthInTv = (TextView) findViewById(R.id.emptyWidthInTv);
         SectionActivity.this.sEmptyWidthInTv.setVisibility(View.VISIBLE);
+        if (SectionActivity.this.emptyTypeGroup == null) SectionActivity.this.emptyTypeGroup = (RadioGroup) findViewById(R.id.emptyType);
+        SectionActivity.this.emptyTypeGroup.setVisibility(View.VISIBLE);
     }
 
     private void emptyPickersHidden() {
@@ -406,6 +451,8 @@ public class SectionActivity extends AppCompatActivity implements SectionFragmen
         SectionActivity.this.sEmptyWidthPickIn.setVisibility(View.GONE);
         if (SectionActivity.this.sEmptyWidthInTv == null) SectionActivity.this.sEmptyWidthInTv = (TextView) findViewById(R.id.emptyWidthInTv);
         SectionActivity.this.sEmptyWidthInTv.setVisibility(View.GONE);
+        if (SectionActivity.this.emptyTypeGroup == null) SectionActivity.this.emptyTypeGroup = (RadioGroup) findViewById(R.id.emptyType);
+        SectionActivity.this.emptyTypeGroup.setVisibility(View.GONE);
     }
 
 

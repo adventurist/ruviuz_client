@@ -20,19 +20,11 @@ import stronglogic.ruviuz.R;
  * create an instance of this fragment.
  */
 public class SectionFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
 
     private Activity mActivity;
     private SectionListener mListener;
     
-    private TextView sectionLength, sectionWidth, emptyLength, emptyWidth, sectionLengthIn, sectionWidthIn, emptyLengthIn, emptyWidthIn;
+    private TextView sectionLength, sectionWidth, emptyLength, emptyWidth, sectionLengthIn, sectionWidthIn, emptyLengthIn, emptyWidthIn, eType;
 
     public SectionFragment() {
         // Required empty public constructor
@@ -50,8 +42,6 @@ public class SectionFragment extends Fragment {
     public static SectionFragment newInstance(String param1, String param2) {
         SectionFragment fragment = new SectionFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
         return fragment;
     }
@@ -60,8 +50,6 @@ public class SectionFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
         }
     }
 
@@ -79,6 +67,8 @@ public class SectionFragment extends Fragment {
         sectionWidthIn = (TextView) mView.findViewById(R.id.sectionWidthIn);
         emptyLengthIn = (TextView) mView.findViewById(R.id.emptyLengthIn);
         emptyWidthIn = (TextView) mView.findViewById(R.id.emptyWidthIn);
+
+        eType = (TextView) mView.findViewById(R.id.eType);
 
 //        RuvDrawable vDrawable = new RuvDrawable(Color.BLACK,Color.GREEN,Color.LTGRAY,2,Color.RED,50);
 //        View vView = new View(mActivity);
