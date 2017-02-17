@@ -174,6 +174,20 @@ public class AddressFragment extends DialogFragment {
             provinceEt.setText(mPrefs.getString("region", ""));
         }
 
+        Button geoBtn = (Button) view.findViewById(R.id.geoBtn);
+
+        geoBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mActivity != null) {
+                    mActivity.getGeoLocation();
+                    String[] newAddress = mActivity.getAddress();
+                    cityEt.setText(newAddress[0]);
+                    provinceEt.setText(newAddress[1]);
+                }
+            }
+        });
+
         Button addressBtn = (Button)view.findViewById(R.id.addressBtn);
 
         addressBtn.setOnClickListener(new View.OnClickListener()    {

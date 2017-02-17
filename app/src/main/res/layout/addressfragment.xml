@@ -50,6 +50,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/loginUI"
+            android:padding="8dp"
             android:orientation="vertical"
             android:background="@color/colorRow">
 
@@ -76,7 +77,9 @@
                 android:layout_height="38dp"
                 android:layout_marginStart="2dp"
                 android:layout_marginEnd="2dp"
+                android:orientation="horizontal"
                 android:layout_marginBottom="1dp">
+
                 <EditText
                     android:layout_width="0dp"
                     android:layout_height="38dp"
@@ -101,6 +104,12 @@
                     android:layout_weight="0.35"
                     android:textAlignment="center"
                     android:inputType="textPostalAddress" />
+                <Button
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:id="@+id/geoBtn"
+                    android:background="@drawable/ruvbtn_geo"
+                    android:paddingTop="5dp"/>
             </LinearLayout>
             <EditText
                 android:layout_width="match_parent"

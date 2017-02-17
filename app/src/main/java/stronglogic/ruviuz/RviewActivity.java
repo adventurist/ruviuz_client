@@ -286,9 +286,9 @@ public class RviewActivity extends AppCompatActivity implements RuvFragment.RuvF
                 Roof roof = new Roof();
                 roof.setId(Integer.valueOf(roofJson.getString("id")));
                 roof.setAddress(roofJson.getString("address"));
-                roof.setLength(Float.valueOf(roofJson.getString("length")));
-                roof.setWidth(Float.valueOf(roofJson.getString("width")));
-                roof.setSlope(Float.valueOf(roofJson.getString("slope")));
+//                roof.setLength(Float.valueOf(roofJson.getString("length")));
+//                roof.setWidth(Float.valueOf(roofJson.getString("width")));
+//                roof.setSlope(Float.valueOf(roofJson.getString("slope")));
                 roof.setPrice(new BigDecimal(roofJson.getString("price")));
                 if (roofJson.has("customer"))
                     roof.setCustomerName(roofJson.getString("customer"));

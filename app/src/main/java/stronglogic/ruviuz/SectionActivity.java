@@ -2,12 +2,23 @@ package stronglogic.ruviuz;
 
 import android.app.FragmentManager;
 import android.content.Intent;
+import android.graphics.Color;
+import android.location.Address;
+import android.location.Geocoder;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
@@ -17,23 +28,32 @@ import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.yqritc.recyclerviewflexibledivider.HorizontalDividerItemDecoration;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
 import me.angrybyte.numberpicker.listener.OnValueChangeListener;
 import me.angrybyte.numberpicker.view.ActualNumberPicker;
 import stronglogic.ruviuz.content.Customer;
 import stronglogic.ruviuz.content.Section;
 import stronglogic.ruviuz.fragments.SectionFragment;
+import stronglogic.ruviuz.util.RuvLocation;
 import stronglogic.ruviuz.views.SectionAdapter;
+
+import static stronglogic.ruviuz.MainActivity.updateMenuWithIcon;
 
 
 public class SectionActivity extends AppCompatActivity implements SectionFragment.SectionListener {
+
+    private static final String TAG = "RuviuzSECTIONACTIVITY";
 
     private me.angrybyte.numberpicker.view.ActualNumberPicker sWidthPickFt, sWidthPickIn, sLengthPickFt, sLengthPickIn, sEmptyLengthPickFt, sEmptyLengthPickIn, sEmptyWidthPickFt, sEmptyWidthPickIn;
     private TextView sEmptyLength, sEmptyWidth, sEmptyWidthFtTv, sEmptyWidthInTv, sEmptyLengthFtTv, sEmptyLengthInTv;
@@ -71,6 +91,8 @@ public class SectionActivity extends AppCompatActivity implements SectionFragmen
     private Customer mCustomer;
     private boolean premium, ready, editing;
 
+    private Toolbar mToolbar;
+
     private View sectionFragView;
 
 
@@ -81,6 +103,17 @@ public class SectionActivity extends AppCompatActivity implements SectionFragmen
         setContentView(R.layout.activity_section);
         Window w = getWindow();
         w.setStatusBarColor(ContextCompat.getColor(SectionActivity.this, R.color.ruvGreenStatus));
+
+        mToolbar = (Toolbar) findViewById(R.id.app_bar);
+
+        setSupportActionBar(mToolbar);
+
+        if (getSupportActionBar()!= null) {
+            getSupportActionBar().setHomeAsUpIndicator(R.drawable.construction);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setElevation(8f);
+        }
+
 
         widgetWrap = (RelativeLayout) findViewById(R.id.widgetWrap);
 
@@ -137,14 +170,14 @@ public class SectionActivity extends AppCompatActivity implements SectionFragmen
 
                                 if (emptyTypeGroup.getCheckedRadioButtonId() != -1) {
                                     RadioButton selectedButton = (RadioButton) findViewById(emptyTypeGroup.getCheckedRadioButtonId());
-                                    if (selectedButton.getText().toString().equals(Section.CHIMNEY)) {
-                                        section.setEmptyType(Section.CHIMNEY);
+                                    if (selectedButton.getText().toString().equals(Section.EmptyType.CHIMNEY)) {
+                                        section.setEmptyType(Section.EmptyType.CHIMNEY);
                                     }
-                                    if (selectedButton.getText().toString().equals(Section.SKY_LIGHT)) {
-                                        section.setEmptyType(Section.SKY_LIGHT);
+                                    if (selectedButton.getText().toString().equals(Section.EmptyType.SKY_LIGHT)) {
+                                        section.setEmptyType(Section.EmptyType.SKY_LIGHT);
                                     }
-                                    if (selectedButton.getText().toString().equals(Section.OTHER)) {
-                                        section.setEmptyType(Section.OTHER);
+                                    if (selectedButton.getText().toString().equals(Section.EmptyType.OTHER)) {
+                                        section.setEmptyType(Section.EmptyType.OTHER);
                                     }
                                 }
 
@@ -225,6 +258,7 @@ public class SectionActivity extends AppCompatActivity implements SectionFragmen
             }
         });
         sLengthPickIn = (ActualNumberPicker) findViewById(R.id.lengthPickerIn);
+
         sLengthPickIn.setListener(new OnValueChangeListener() {
             @Override
             public void onValueChanged(int oldValue, int newValue) {
@@ -522,4 +556,99 @@ public class SectionActivity extends AppCompatActivity implements SectionFragmen
             this.sectionList = intent.getParcelableArrayListExtra("sectionList");
     }
 
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.ruviuz_menu, menu);
+        updateMenuWithIcon(menu.findItem(R.id.loginAction), Color.WHITE);
+        updateMenuWithIcon(menu.findItem(R.id.geoLocate), Color.WHITE);
+        updateMenuWithIcon(menu.findItem(R.id.goHome), Color.WHITE);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        Log.d(TAG, item.toString());
+        switch (item.getItemId()) {
+            case android.R.id.home:
+//                if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
+//                    mDrawerLayout.closeDrawer(GravityCompat.START);
+//                } else {
+//                    mDrawerLayout.openDrawer(GravityCompat.START);
+//                }
+                break;
+            case R.id.roofView:
+                Intent rviewIntent = new Intent(this, RviewActivity.class);
+                putIntentData(rviewIntent);
+                rviewIntent.putExtra("baseUrl", MainActivity.baseUrl);
+                this.startActivity(rviewIntent);
+                break;
+            case R.id.loginAction:
+                Log.d(TAG, "Login action!!");
+                break;
+            case R.id.geoLocate:
+                Log.d(TAG, "GEOLOCATION REQUEST");
+                getGeoLocation();
+                break;
+            case R.id.goHome:
+                Log.d(TAG, "Going HOME");
+//                MainActivity.putPrefsData();
+//                MainActivity.dismissAllDialogs();
+//                MainActivity.hideActivity();
+//                MainActivity.welcomeDialog();
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+        return true;
+    }
+
+
+
+    public boolean getGeoLocation() {
+        LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+        final Geocoder geocoder = new Geocoder(SectionActivity.this, Locale.getDefault());
+        RuvLocation rLocation = new RuvLocation(SectionActivity.this, new RuvLocation.GeoListener() {
+            @Override
+            public void sendLocation(Location location) {
+                Log.d(TAG, "Getting Location\n" + location.toString());
+                Toast.makeText(SectionActivity.this, location.toString(), Toast.LENGTH_SHORT).show();
+
+                try {
+                    List<Address> addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+
+                    for (Address address : addresses) {
+                        Log.d(TAG, "Address => " + address.toString());
+                        String locality = address.getLocality();
+                        Log.d(TAG, "Locality = " + locality);
+                        String addressLine1 = null;
+                        if (address.getAddressLine(1) != null) {
+                            addressLine1 = address.getAddressLine(1).contains(",") ? address.getAddressLine(1).substring(0, address.getAddressLine(1).indexOf(",")) : address.getAddressLine(1);
+                            Log.d(TAG, "AddressLn1 = " + addressLine1);
+                        } else if (address.getAddressLine(0) != null && address.getAdminArea() == null) {
+                            String country = "COUNTRY::" + address.getAddressLine(0);
+                            SectionActivity.this.city = "NoLocality";
+                            SectionActivity.this.region = country;
+                        } else {
+                            Snackbar.make(findViewById(R.id.MainParentView), "Unable to get GeoLocation", Snackbar.LENGTH_SHORT).show();
+                        }
+//                        if (SectionActivity.this.city == null || SectionActivity.this.city.trim().equals(""))
+                        SectionActivity.this.city = locality == null ? addressLine1 : locality;
+//                        if (SectionActivity.this.region == null || SectionActivity.this.region.trim().equals(""))
+                        SectionActivity.this.region = address.getAdminArea() == null ? "NoRegion" : RuvLocation.provinceMap.get(address.getAdminArea());
+                    }
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }, locationManager);
+
+        if (rLocation.init()) {
+            rLocation.getLocation();
+            return true;
+        }
+
+        return false;
+    }
 }
