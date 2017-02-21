@@ -290,9 +290,9 @@ public class IndexViewActivity extends AppCompatActivity
                 Roof roof = new Roof();
                 roof.setId(Integer.valueOf(roofJson.getString("id")));
                 roof.setAddress(roofJson.getString("address"));
-                roof.setLength(Float.valueOf(roofJson.getString("length")));
-                roof.setWidth(Float.valueOf(roofJson.getString("width")));
-                roof.setSlope(Float.valueOf(roofJson.getString("slope")));
+//                roof.setLength(Float.valueOf(roofJson.getString("length")));
+//                roof.setWidth(Float.valueOf(roofJson.getString("width")));
+//                roof.setSlope(Float.valueOf(roofJson.getString("slope")));
                 roof.setPrice(new BigDecimal(roofJson.getString("price")));
                 roof.setCustomerName("Jigga da Third");
                 if (roofJson.has("files")) {
@@ -455,11 +455,11 @@ public class IndexViewActivity extends AppCompatActivity
                     JSONObject ruvJson = new JSONObject(respJson.getString("Roof"));
                     Roof mRuv = roofArrayList.get(ruvPosition);
                     mRuv.setAddress(ruvJson.getString("address"));
-                    mRuv.setLength(Float.valueOf(ruvJson.getString("length")));
-                    mRuv.setWidth(Float.valueOf(ruvJson.getString("width")));
-                    mRuv.setPrice(new BigDecimal((ruvJson.getString("price"))));
-                    mRuv.setSlope(Float.valueOf(ruvJson.getString("slope")));
-                    mRuv.toggleJustUpdated();
+//                    mRuv.setLength(Float.valueOf(ruvJson.getString("length")));
+//                    mRuv.setWidth(Float.valueOf(ruvJson.getString("width")));
+//                    mRuv.setPrice(new BigDecimal((ruvJson.getString("price"))));
+//                    mRuv.setSlope(Float.valueOf(ruvJson.getString("slope")));
+//                    mRuv.toggleJustUpdated();
                     roofArrayList.set(ruvPosition, mRuv);
                     rv.getAdapter().notifyItemChanged(ruvPosition);
                     Toast.makeText(this, "RuuvUpdate successful.", Toast.LENGTH_SHORT).show();

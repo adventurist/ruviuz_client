@@ -5,25 +5,40 @@
     android:id="@+id/section_content"
     tools:context="stronglogic.ruviuz.fragments.SectionFragment">
 
-    <!-- TODO: Update blank fragment layout -->
+    <TextView
+        android:layout_width="40dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"
+        android:id="@+id/typeLabel"
+        android:text="@string/type"/>
+    <TextView
+        android:layout_width="102dp"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/typeLabel"
+        android:id="@+id/sectionType"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="8dp"/>
 
     <TextView
         android:layout_width="40dp"
         android:layout_height="wrap_content"
         android:id="@+id/secLenLabel"
+        android:layout_below="@id/sectionType"
         android:text="@string/lng"/>
     <TextView
         android:layout_width="40dp"
         android:layout_height="wrap_content"
         android:layout_toEndOf="@id/secLenLabel"
         android:id="@+id/sectionLength"
-        android:layout_alignParentTop="true"
+        android:layout_below="@id/sectionType"
         android:layout_marginStart="8dp"/>
 
         <TextView
             android:layout_width="14dp"
             android:layout_height="wrap_content"
             android:layout_toEndOf="@id/sectionLength"
+            android:layout_below="@id/sectionType"
             android:id="@+id/lenft"
             android:text="@string/ft"/>
 
@@ -31,14 +46,15 @@
         android:layout_width="40dp"
         android:layout_height="wrap_content"
         android:id="@+id/sectionLengthIn"
+        android:layout_below="@id/sectionType"
         android:layout_toEndOf="@id/lenft"
-        android:layout_alignParentTop="true"
         />
 
     <TextView
         android:layout_width="14dp"
         android:layout_height="wrap_content"
         android:layout_toEndOf="@id/sectionLengthIn"
+        android:layout_below="@id/sectionType"
         android:layout_marginStart="8dp"
         android:id="@+id/lenin"
         android:text="@string/inches"/>

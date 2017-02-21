@@ -95,17 +95,24 @@
     </string-array>
 
     <string-array name="roofMaterials">
-        <item>Standard Shingles</item>
-        <item>Premium Shingles</item>
-        <item>Aluminum Shingles</item>
+        <item>Standard</item>
+        <item>Premium</item>
+        <item>Aluminum</item>
         <item>Standing Seam</item>
-        <item>PVC Roof 50mm</item>
-        <item>TPO Roof 45mm</item>
-        <item>EPDM (Rubber)</item>
-        <item>Tar &amp; Gravel/BUR</item>
+        <item>PVC 50</item>
+        <item>TPO 45</item>
+        <item>EPDM</item>
+        <item>Tar Gravel BUR</item>
     </string-array>
 
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string-array name="sectionTypes">
+        <item>Hip:Square</item>
+        <item>Hip:Rectangular</item>
+        <item>Gable</item>
+        <item>Mansard</item>
+        <item>Lean-to-Roof</item>
+    </string-array>
+
     <string name="create_new_quote">Create New Quote</string>
     <string name="see_quotes">See Existing Quotes</string>
     <string name="ruviuz_welcome">Welcome To Ruviuz</string>
@@ -169,6 +176,13 @@
     <string name="e_lng">E.Lng</string>
     <string name="lgt">Lgt</string>
     <string name="wdt">Wdt</string>
+    <string name="theta">θ</string>
+    <string name="ft_squared">ft2</string>
+    <string name="sections">Sections</string>
+    <string name="mansard">Mansard</string>
+    <string name="gable">Gable</string>
+    <string name="rectangular_hip">Rect. Hip</string>
+    <string name="square_hip">Square Hip</string>
 
 
 </resources>

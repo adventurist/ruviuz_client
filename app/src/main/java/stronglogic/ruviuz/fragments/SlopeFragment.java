@@ -208,12 +208,7 @@ public class SlopeFragment extends DialogFragment {
             @Override
             public void onClick(View v) {
                 if (roofSlope != null) {
-//                    float returnFloat1 = Float.valueOf(SlopeFragment.this.roofSlope.getText().toString());
-//                    float returnFloat2 = Float.valueOf(SlopeFragment.this.roofSlope.getText().toString());
-//                    float returnFloat3 = Float.valueOf(SlopeFragment.this.roofSlope.getText().toString());
-//                    float returnFloat4 = Float.valueOf(SlopeFragment.this.roofSlope.getText().toString());
-//                    float returnFloat5 = Float.valueOf(SlopeFragment.this.roofSlope.getText().toString());
-//                    float returnFloat = (returnFloat1 + returnFloat2 + returnFloat3 + returnFloat4 + returnFloat5)/5;
+
                     float returnFloat = Float.valueOf(SlopeFragment.this.roofSlope.getText().toString());
                     SlopeFragment.this.slope = returnFloat;
                     mListener.slopeFragInteraction(returnFloat, SLOPE_FRAG_SUCCESS);

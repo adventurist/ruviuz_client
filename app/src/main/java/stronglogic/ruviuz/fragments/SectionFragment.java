@@ -24,7 +24,7 @@ public class SectionFragment extends Fragment {
     private Activity mActivity;
     private SectionListener mListener;
     
-    private TextView sectionLength, sectionWidth, emptyLength, emptyWidth, sectionLengthIn, sectionWidthIn, emptyLengthIn, emptyWidthIn, eType;
+    private TextView sectionType, sectionLength, sectionWidth, emptyLength, emptyWidth, sectionLengthIn, sectionWidthIn, emptyLengthIn, emptyWidthIn, eType;
 
     public SectionFragment() {
         // Required empty public constructor
@@ -58,6 +58,7 @@ public class SectionFragment extends Fragment {
                              Bundle savedInstanceState) {
         View mView = inflater.inflate(R.layout.fragment_section, container, false);
 
+        sectionType = (TextView) mView.findViewById(R.id.sectionType);
         sectionLength = (TextView) mView.findViewById(R.id.sectionLength);
         sectionWidth = (TextView) mView.findViewById(R.id.sectionWidth);
         emptyLength = (TextView) mView.findViewById(R.id.emptyLength);

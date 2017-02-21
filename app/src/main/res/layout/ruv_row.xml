@@ -83,86 +83,86 @@
             android:textColor="#f9cb1e">
         </TextView>
     </LinearLayout>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="4dp"
-        android:layout_below="@id/row3"
-        android:id="@+id/row4">
-    <TextView
-        android:text="Width"
-        android:layout_width="64dp"
-        android:layout_height="wrap_content"
-        android:id="@+id/widthLabel"
-        android:textColor="#FFFFFF"
-        android:textStyle="bold"
-        android:layout_marginStart="8dp"/>
+    <!--<LinearLayout-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:padding="4dp"-->
+        <!--android:layout_below="@id/row3"-->
+        <!--android:id="@+id/row4">-->
+    <!--<TextView-->
+        <!--android:text="Width"-->
+        <!--android:layout_width="64dp"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:id="@+id/widthLabel"-->
+        <!--android:textColor="#FFFFFF"-->
+        <!--android:textStyle="bold"-->
+        <!--android:layout_marginStart="8dp"/>-->
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:id="@+id/widthTv"
-        android:layout_alignBottom="@+id/idTv"
-        android:layout_alignEnd="@+id/widthLabel"
-        android:textColor="#f9cb1e">
+    <!--<TextView-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_marginStart="8dp"-->
+        <!--android:id="@+id/widthTv"-->
+        <!--android:layout_alignBottom="@+id/idTv"-->
+        <!--android:layout_alignEnd="@+id/widthLabel"-->
+        <!--android:textColor="#f9cb1e">-->
 
-    </TextView>
-    </LinearLayout>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="4dp"
-        android:layout_below="@id/row4"
-        android:id="@+id/row5">
-    <TextView
-        android:text="Length"
-        android:layout_width="64dp"
-        android:layout_height="wrap_content"
-        android:id="@+id/lengthLabel"
-        android:textColor="#FFFFFF"
-        android:textStyle="bold"
-        android:layout_marginStart="8dp"/>
+    <!--</TextView>-->
+    <!--</LinearLayout>-->
+    <!--<LinearLayout-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:padding="4dp"-->
+        <!--android:layout_below="@id/row4"-->
+        <!--android:id="@+id/row5">-->
+    <!--<TextView-->
+        <!--android:text="Length"-->
+        <!--android:layout_width="64dp"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:id="@+id/lengthLabel"-->
+        <!--android:textColor="#FFFFFF"-->
+        <!--android:textStyle="bold"-->
+        <!--android:layout_marginStart="8dp"/>-->
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:id="@+id/lengthTv"
-        android:textColor="#f9cb1e">
+    <!--<TextView-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_marginStart="8dp"-->
+        <!--android:id="@+id/lengthTv"-->
+        <!--android:textColor="#f9cb1e">-->
 
-    </TextView>
-    </LinearLayout>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="4dp"
-        android:layout_below="@id/row5"
-        android:id="@+id/row6">
-    <TextView
-        android:text="Slope"
-        android:layout_width="64dp"
-        android:layout_height="wrap_content"
-        android:id="@+id/slopeLabel"
-        android:textColor="#FFFFFF"
-        android:textStyle="bold"
-        android:layout_marginStart="8dp"/>
+    <!--</TextView>-->
+    <!--</LinearLayout>-->
+    <!--<LinearLayout-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:padding="4dp"-->
+        <!--android:layout_below="@id/row5"-->
+        <!--android:id="@+id/row6">-->
+    <!--<TextView-->
+        <!--android:text="Slope"-->
+        <!--android:layout_width="64dp"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:id="@+id/slopeLabel"-->
+        <!--android:textColor="#FFFFFF"-->
+        <!--android:textStyle="bold"-->
+        <!--android:layout_marginStart="8dp"/>-->
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:id="@+id/slopeTv"
-        android:textColor="#f9cb1e">
+    <!--<TextView-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_marginStart="8dp"-->
+        <!--android:id="@+id/slopeTv"-->
+        <!--android:textColor="#f9cb1e">-->
 
-    </TextView>
-    </LinearLayout>
+    <!--</TextView>-->
+    <!--</LinearLayout>-->
     <RelativeLayout
         android:layout_width="match_parent"
         android:padding="4dp"
         android:layout_height="wrap_content"
-        android:layout_below="@id/row6"
-        android:id="@+id/row7">
+        android:layout_below="@id/row3"
+        android:id="@+id/row4">
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -196,12 +196,31 @@
             android:text="@string/edit"
             android:background="?android:attr/colorActivatedHighlight" />
     </RelativeLayout>
+    <TextView
+        android:layout_width="64dp"
+        android:layout_height="wrap_content"
+        android:textColor="#FFFFFF"
+        android:textStyle="bold"
+        android:layout_marginStart="8dp"
+        android:layout_marginBottom="8dp"
+        android:layout_below="@id/row4"
+        android:text="@string/sections"
+        android:id="@+id/sectionLabel"
+        >
+    </TextView>
+    <android.support.v7.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/sectionRecycler"
+        android:layout_below="@id/sectionLabel"
+        android:background="@color/ruvGreen"/>
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="4dp"
-        android:layout_below="@id/row7"
-        android:id="@+id/row8">
+        android:layout_below="@id/sectionRecycler"
+        android:id="@+id/imgLayout">
 
     <ImageView
         android:layout_height="wrap_content"

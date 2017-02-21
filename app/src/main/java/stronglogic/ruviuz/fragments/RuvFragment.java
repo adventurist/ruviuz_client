@@ -50,6 +50,7 @@ import java.net.URL;
 import java.util.ArrayList;
 
 import stronglogic.ruviuz.CameraActivity;
+import stronglogic.ruviuz.MainActivity;
 import stronglogic.ruviuz.R;
 import stronglogic.ruviuz.content.RuvFileInfo;
 import stronglogic.ruviuz.util.RuuvFile;
@@ -340,10 +341,10 @@ public class RuvFragment extends DialogFragment {
         mBundle = new Bundle();
         mBundle.putString("address", addressEt.getText().toString());
         mBundle.putString("price", priceEt.getText().toString().substring(1));
-        mBundle.putFloat("width", Float.valueOf((widthEt.getText().toString())));
-        mBundle.putFloat("length", Float.valueOf(lengthEt.getText().toString()));
-        mBundle.putFloat("slope", Float.valueOf(slopeEt.getText().toString()));
-        mBundle.putInt("ruvId", ruvId);
+//        mBundle.putFloat("width", Float.valueOf((widthEt.getText().toString())));
+//        mBundle.putFloat("length", Float.valueOf(lengthEt.getText().toString()));
+//        mBundle.putFloat("slope", Float.valueOf(slopeEt.getText().toString()));
+//        mBundle.putInt("ruvId", ruvId);
         mBundle.putInt("position", position);
 
         if (ruvFiles != null && ruvFiles.size() > 0) {
@@ -570,7 +571,7 @@ public class RuvFragment extends DialogFragment {
 
         private boolean getRuv() {
             final int ruvId = this.ruvId;
-            String endpoint = baseUrl + "/roofs/" + String.valueOf(ruvId);
+            String endpoint = MainActivity.baseUrl + "/roofs/" + String.valueOf(ruvId);
 
             HttpURLConnection connection = null;
             BufferedReader reader = null;

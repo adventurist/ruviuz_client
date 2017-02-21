@@ -97,18 +97,9 @@
                     android:layout_height="52dp"
                     android:layout_marginStart="12dp"
                     android:id="@+id/fullToggle"
+                    android:layout_alignParentTop="true"
                     android:checked="true"
                     android:text="@string/full"/>
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="18sp"
-                    android:id="@+id/lengthPickTv"
-                    android:layout_centerHorizontal="true"
-                    android:layout_alignParentTop="true"
-                    android:layout_marginTop="8dp"
-                    android:text="@string/length"
-                    android:textColor="#000" />
 
                 <android.support.design.widget.FloatingActionButton
                     android:layout_width="wrap_content"
@@ -123,6 +114,43 @@
                     android:layout_marginEnd="32dp"
                     android:layout_height="32dp" />
 
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/fullToggle"
+                    android:layout_alignParentStart="true"
+                    android:text="Section Type"
+                    android:layout_marginStart="12dp"
+                    android:layout_marginTop="8dp"
+                    android:textSize="18sp"
+                    android:id="@+id/sectionTypeTv"
+                    android:textColor="#000"/>
+
+                <Spinner
+                    android:layout_width="224dp"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="12dp"
+                    android:layout_toEndOf="@id/sectionTypeTv"
+                    android:layout_below="@id/fullToggle"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:id="@+id/sectionTypeSpin"
+                    android:dropDownSelector="@drawable/geolocate"
+                    android:textSize="16sp"/>
+
+
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="18sp"
+                    android:id="@+id/lengthPickTv"
+                    android:layout_centerHorizontal="true"
+                    android:layout_below="@id/sectionTypeSpin"
+                    android:layout_marginTop="8dp"
+                    android:text="@string/length"
+                    android:textColor="#000" />
                 <me.angrybyte.numberpicker.view.ActualNumberPicker
                     android:id="@+id/lengthPickerFt"
                     android:layout_width="wrap_content"
@@ -138,7 +166,7 @@
                     app:draw_over_text="false"
                     app:fast_controls_color="@android:color/darker_gray"
                     app:highlight_color="#263238"
-                    app:max_value="500"
+                    app:max_value="200"
                     app:min_value="0"
                     app:selection_color="#fff"
                     app:show_bars="true"
@@ -151,7 +179,7 @@
                     app:value="0"
                     android:layout_below="@id/lengthPickTv"
                     android:layout_marginTop="12dp"
-                    android:layout_height="42dp" />
+                    android:layout_height="48dp" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -190,7 +218,7 @@
                     android:layout_below="@id/lengthPickTv"
                     android:layout_marginTop="12dp"
                     android:layout_marginEnd="12dp"
-                    android:layout_height="42dp"
+                    android:layout_height="48dp"
                     app:draw_over_text="false" />
 
                 <TextView
@@ -231,7 +259,7 @@
                     app:draw_over_text="false"
                     app:fast_controls_color="@android:color/darker_gray"
                     app:highlight_color="#263238"
-                    app:max_value="500"
+                    app:max_value="200"
                     app:min_value="0"
                     app:selection_color="#fff"
                     app:show_bars="true"
@@ -244,7 +272,7 @@
                     app:value="0"
                     android:layout_below="@+id/widthPickerTv"
                     android:layout_marginTop="12dp"
-                    android:layout_height="42dp" />
+                    android:layout_height="48dp" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -285,7 +313,7 @@
                     android:layout_alignParentEnd="true"
                     android:layout_marginTop="12dp"
                     android:layout_marginEnd="12dp"
-                    android:layout_height="42dp" />
+                    android:layout_height="48dp" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -325,7 +353,7 @@
                     app:draw_over_text="false"
                     app:fast_controls_color="@android:color/darker_gray"
                     app:highlight_color="#263238"
-                    app:max_value="500"
+                    app:max_value="200"
                     app:min_value="0"
                     app:selection_color="#fff"
                     app:show_bars="true"
@@ -338,7 +366,7 @@
                     app:value="0"
                     android:layout_below="@+id/emptyLengthTv"
                     android:layout_marginTop="12dp"
-                    android:layout_height="42dp" />
+                    android:layout_height="48dp" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -382,7 +410,7 @@
                     android:layout_alignParentEnd="true"
                     android:layout_marginTop="12dp"
                     android:layout_marginEnd="12dp"
-                    android:layout_height="42dp" />
+                    android:layout_height="48dp" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -424,7 +452,7 @@
                     app:draw_over_text="false"
                     app:fast_controls_color="@android:color/darker_gray"
                     app:highlight_color="#263238"
-                    app:max_value="500"
+                    app:max_value="200"
                     app:min_value="0"
                     app:selection_color="#fff"
                     app:show_bars="true"
@@ -437,7 +465,7 @@
                     app:value="0"
                     android:layout_below="@+id/emptyWidthTv"
                     android:layout_marginTop="12dp"
-                    android:layout_height="42dp" />
+                    android:layout_height="48dp" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -481,7 +509,7 @@
                     android:layout_alignParentEnd="true"
                     android:layout_marginTop="12dp"
                     android:layout_marginEnd="12dp"
-                    android:layout_height="42dp" />
+                    android:layout_height="48dp" />
 
                 <TextView
                     android:layout_width="wrap_content"

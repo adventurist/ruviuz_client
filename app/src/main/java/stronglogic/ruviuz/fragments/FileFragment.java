@@ -659,50 +659,55 @@ public class FileFragment extends DialogFragment {
         Log.d(TAG, "processImage");
         if (fileCount < 3) {
             Uri rawUri = data.getData();
-            String imageUri = null;
-            String wholeID = DocumentsContract.getDocumentId(rawUri);
 
-            String id = wholeID.split(":")[1];
+            if (rawUri != null) {
 
-            String[] column = {MediaStore.Images.Media.DATA};
+                String imageUri = null;
+                String wholeID = DocumentsContract.getDocumentId(rawUri);
 
-            String sel = MediaStore.Images.Media._ID + "=?";
+                String id = wholeID.split(":")[1];
 
-            Cursor cursor = mActivity.getContentResolver().
-                    query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                            column, sel, new String[]{id}, null);
+                String[] column = {MediaStore.Images.Media.DATA};
 
-            String filePath = "";
-            if (cursor != null) {
-                int columnIndex = cursor.getColumnIndex(column[0]);
+                String sel = MediaStore.Images.Media._ID + "=?";
 
-                if (cursor.moveToFirst()) {
-                    filePath = cursor.getString(columnIndex);
+                Cursor cursor = mActivity.getContentResolver().
+                        query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                                column, sel, new String[]{id}, null);
+
+                String filePath = "";
+                if (cursor != null) {
+                    int columnIndex = cursor.getColumnIndex(column[0]);
+
+                    if (cursor.moveToFirst()) {
+                        filePath = cursor.getString(columnIndex);
+                    }
+                    imageUri = filePath;
+                    cursor.close();
                 }
-                imageUri = filePath;
-                cursor.close();
-            }
-            if (imageUri != null) {
-                boolean added = false;
+                if (imageUri != null) {
+                    boolean added = false;
 
-                if (FileFragment.this.fileUrls != null) {
+                    if (FileFragment.this.fileUrls != null) {
 
-                    int i = 0;
-                    while (!added && i < 3) {
-                        if (FileFragment.this.fileUrls[i] == null || FileFragment.this.fileUrls[i].equals("")) {
-                            FileFragment.this.fileUrls[i] = imageUri;
-                            added = true;
-                        } else {
-                            i++;
+                        int i = 0;
+                        while (!added && i < 3) {
+                            if (FileFragment.this.fileUrls[i] == null || FileFragment.this.fileUrls[i].equals("")) {
+                                FileFragment.this.fileUrls[i] = imageUri;
+                                added = true;
+                            } else {
+                                i++;
+                            }
                         }
                     }
+                    FileFragment.this.fileCount++;
+                    Bundle persistData = new Bundle();
+                    putBundleData(persistData);
+                    mActivity.saveEditFragState(persistData);
+
+                } else {
+                    Toast.makeText(mActivity, "Unable to get content URI", Toast.LENGTH_SHORT).show();
                 }
-                FileFragment.this.fileCount++;
-                Bundle persistData = new Bundle();
-                putBundleData(persistData);
-                mActivity.saveEditFragState(persistData);
-            } else {
-                Toast.makeText(mActivity, "Unable to get content URI", Toast.LENGTH_SHORT).show();
             }
         } else {
             Toast.makeText(mActivity, "You have already chosen 3 images", Toast.LENGTH_SHORT).show();

@@ -23,6 +23,15 @@ public class Section extends LauncherActivity.ListItem implements Parcelable {
         String OTHER = "Other";
     }
 
+    @StringDef({SectionType.HIP_SQUARE, SectionType.HIP_RECTANGLE, SectionType.GABLE, SectionType.MANSARD})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface SectionType {
+        String HIP_SQUARE = "Hip:Square";
+        String HIP_RECTANGLE = "Hip:Rectangular";
+        String GABLE = "Gable";
+        String MANSARD = "Mansard";
+    }
+
 
     public Section() {
         this.slope = 0;
@@ -40,6 +49,9 @@ public class Section extends LauncherActivity.ListItem implements Parcelable {
     @EmptyType
     private String emptyType;
 
+    @SectionType
+    private String sectionType;
+
 
     public void setEmptyType(@EmptyType String emptyType) {
         this.emptyType = emptyType;
@@ -50,11 +62,19 @@ public class Section extends LauncherActivity.ListItem implements Parcelable {
         return this.emptyType;
     }
 
+
+    public void setSectionType(@SectionType String sectionType) { this.sectionType = sectionType; }
+
+    @SectionType
+    public String getSectionType() { return this.sectionType; }
+
+
     public void toggleFull() {
         this.full = !this.full;
     }
 
     public boolean isFull() { return this.full; }
+
 
     public void setSlope(float slope)  {
         this.slope = slope;
@@ -83,12 +103,13 @@ public class Section extends LauncherActivity.ListItem implements Parcelable {
     }
 
 
-    public void setMissing(float area) { this.missing = area;
-    }
+    public void setMissing(float area) { this.missing = area; }
 
     public float getMissing() { return this.missing; }
 
+
     public void setId(int id) { this.id = id;}
+
     public int getId()  { return this.id;}
 
 
@@ -99,21 +120,15 @@ public class Section extends LauncherActivity.ListItem implements Parcelable {
 
 
     public Section(Parcel in)   {
-        this.slope = in.readFloat();
-        this.width = in.readFloat();
-        this.length = in.readFloat();
-        this.missing = in.readFloat();
         this.id = in.readInt();
+        this.slope = in.readFloat();
+        this.length = in.readFloat();
+        this.width = in.readFloat();
+        this.missing = in.readFloat();
         //noinspection WrongConstant
         this.emptyType = in.readString();
-//        if (in.readString().equals(EmptyType.CHIMNEY)) {
-//            this.emptyType = (EmptyType.CHIMNEY);
-//        } else if (in.readString().equals(EmptyType.SKY_LIGHT)) {
-//            this.emptyType = EmptyType.SKY_LIGHT;
-//        } else if (in.readString().equals(EmptyType.OTHER)){
-//            this.emptyType= EmptyType.OTHER;
-//        }
-
+        //noinspection WrongConstant
+        this.sectionType = in.readString();
     }
 
     public static final Parcelable.Creator<Section> CREATOR =
@@ -135,5 +150,6 @@ public class Section extends LauncherActivity.ListItem implements Parcelable {
         out.writeFloat(width);
         out.writeFloat(missing);
         out.writeString(emptyType);
+        out.writeString(sectionType);
     }
 }

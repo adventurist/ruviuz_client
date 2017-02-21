@@ -855,6 +855,5 @@ public class EditFragment extends DialogFragment {
         Glide.clear(ruvPhoto1);
         Glide.clear(ruvPhoto2);
         Glide.clear(ruvPhoto3);
-
     }
 }

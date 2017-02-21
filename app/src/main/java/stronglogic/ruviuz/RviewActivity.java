@@ -306,6 +306,40 @@ public class RviewActivity extends AppCompatActivity implements RuvFragment.RuvF
                     }
                     roof.setFiles(filesArray);
                 }
+                if (roofJson.has("sections")) {
+                    JSONArray sections = new JSONArray(roofJson.getString("sections"));
+                    int secNum = sections.length();
+                    ArrayList<Section> sectionsArray = new ArrayList<>();
+                    for (int sNum = 0; sNum < secNum; sNum++) {
+                        JSONObject sectionObject= sections.getJSONObject(sNum);
+//                        JSONObject sectionObject = sectionContainer.getJSONObject("0");
+//                        Iterator<?> objKeys = sectionObject.keys();
+//                        while (objKeys.hasNext()) {
+//                            String key = (String) objKeys.next();
+//                            Log.d(TAG, key);
+//                        }
+                        Section section = new Section();
+                        section.setSlope(Float.valueOf(sectionObject.getString("slope")));
+                        section.setLength(Float.valueOf(sectionObject.getString("length")));
+                        section.setWidth(Float.valueOf(sectionObject.getString("width")));
+                        if (!Boolean.valueOf(sectionObject.getString("full"))) {
+                            section.toggleFull();
+                            if (sectionObject.has("empty"))
+                            section.setMissing(Float.valueOf(sectionObject.getString("empty")));
+                            if (sectionObject.has("etype")) {
+                                if (sectionObject.getString("etype").equals(Section.EmptyType.CHIMNEY)) {
+                                    section.setEmptyType(Section.EmptyType.CHIMNEY);
+                                } else if (sectionObject.getString("etype").equals(Section.EmptyType.SKY_LIGHT)) {
+                                    section.setEmptyType(Section.EmptyType.SKY_LIGHT);
+                                } else if (sectionObject.getString("etype").equals(Section.EmptyType.OTHER)) {
+                                    section.setEmptyType(Section.EmptyType.OTHER);
+                                }
+                            }
+                        }
+                        sectionsArray.add(section);
+                    }
+                    roof.setSections(sectionsArray);
+                }
                 roofArrayList.add(roof);
             }
             Collections.sort(roofArrayList, new Comparator<Roof>() {
@@ -472,10 +506,8 @@ public class RviewActivity extends AppCompatActivity implements RuvFragment.RuvF
                     JSONObject ruvJson = new JSONObject(respJson.getString("Roof"));
                     Roof mRuv = roofArrayList.get(ruvPosition);
                     mRuv.setAddress(ruvJson.getString("address"));
-                    mRuv.setLength(Float.valueOf(ruvJson.getString("length")));
-                    mRuv.setWidth(Float.valueOf(ruvJson.getString("width")));
+
                     mRuv.setPrice(new BigDecimal((ruvJson.getString("price"))));
-                    mRuv.setSlope(Float.valueOf(ruvJson.getString("slope")));
                     mRuv.toggleJustUpdated();
                     roofArrayList.set(ruvPosition, mRuv);
                     rv.getAdapter().notifyItemChanged(ruvPosition);
@@ -544,6 +576,7 @@ public class RviewActivity extends AppCompatActivity implements RuvFragment.RuvF
         intent.putExtra("currentRid", this.currentRid);
         intent.putExtra("fileCount", this.fileCount);
         intent.putExtra("fileUrls", this.fileUrls);
+        intent.putExtra("fileComments", this.fileComments);
         intent.putExtra("baseUrl", MainActivity.baseUrl);
         this.ready = intent.getBooleanExtra("ready", false);
         if (mCustomer != null) {

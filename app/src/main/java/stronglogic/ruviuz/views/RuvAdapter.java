@@ -6,6 +6,7 @@ import android.app.FragmentManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,12 +17,14 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.yqritc.recyclerviewflexibledivider.VerticalDividerItemDecoration;
 
 import java.util.ArrayList;
 
 import stronglogic.ruviuz.R;
 import stronglogic.ruviuz.content.Roof;
 import stronglogic.ruviuz.content.RuvFileInfo;
+import stronglogic.ruviuz.content.Section;
 import stronglogic.ruviuz.fragments.RuvFragment;
 import stronglogic.ruviuz.fragments.UpdateFragment;
 import stronglogic.ruviuz.util.RuvFilter;
@@ -42,6 +45,7 @@ public class RuvAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final String TAG = "RuviuzRUVADAPTER";
     private final static int RUV_VIEW = 0;
 
+
     private String baseUrl, authToken;
 
     private String[] fileUrls;
@@ -52,6 +56,9 @@ public class RuvAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private RuvFilter ruvFilter;
 
+    public RecyclerView rv;
+
+    private SectionAdapter secAdapter;
 
 
     public RuvAdapter(Activity activity, ArrayList ruvList, String baseUrl, String authToken, int reopenDialog, String[] fileUrls)   {
@@ -70,6 +77,7 @@ public class RuvAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         TextView addressTv, custTv, priceTv, idTv, widthTv, lengthTv, slopeTv, cTv1, cTv2, cTv3;
         ImageView ruvPhoto1, ruvPhoto2, ruvPhoto3;
         Button roofOptions;
+        private RecyclerView rv;
         
         
         RuvHolder(View mView) {
@@ -78,9 +86,21 @@ public class RuvAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             addressTv = (TextView) mView.findViewById(R.id.addressTv);
             custTv = (TextView) mView.findViewById(R.id.custTv);
             idTv = (TextView) mView.findViewById(R.id.idTv );
-            widthTv = (TextView) mView.findViewById(R.id.widthTv);
-            lengthTv = (TextView) mView.findViewById((R.id.lengthTv));
-            slopeTv = (TextView) mView.findViewById(R.id.slopeTv);
+//            widthTv = (TextView) mView.findViewById(R.id.widthTv);
+//            lengthTv = (TextView) mView.findViewById((R.id.lengthTv));
+//            slopeTv = (TextView) mView.findViewById(R.id.slopeTv);
+            this.rv = (RecyclerView) mView.findViewById(R.id.sectionRecycler);
+
+            LinearLayoutManager layoutMgr = new LinearLayoutManager(this.rv.getContext(),
+                    LinearLayoutManager.HORIZONTAL, false);
+            layoutMgr.setAutoMeasureEnabled(true);
+            layoutMgr.setRecycleChildrenOnDetach(true);
+            this.rv.setLayoutManager(layoutMgr);
+            this.rv.setNestedScrollingEnabled(false);
+            this.rv.addItemDecoration(new VerticalDividerItemDecoration.Builder(this.rv.getContext()).build());
+            this.rv.setAdapter(null);
+            //TODO change imlementation so that it doesn't try to instantiate the RecyclerView if there is no Section (though, in the final form of this application, ALL roofs will have sections)
+
             ruvPhoto1 = (ImageView) mView.findViewById(R.id.ruvPhoto1);
             ruvPhoto2  = (ImageView) mView.findViewById(R.id.ruvPhoto2);
             ruvPhoto3  = (ImageView) mView.findViewById(R.id.ruvPhoto3);
@@ -121,11 +141,21 @@ public class RuvAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             ruvHolder.addressTv.setText(Roof.getAddress());
             if (!Roof.getCustomerName().equals(""))
                 ruvHolder.custTv.setText(Roof.getCustomerName());
-            ruvHolder.widthTv.setText(String.valueOf(Roof.getWidth()));
-            ruvHolder.lengthTv.setText(String.valueOf(Roof.getLength()));
-            ruvHolder.slopeTv.setText(String.valueOf(Roof.getSlope()));
+//            ruvHolder.widthTv.setText(String.valueOf(Roof.getWidth()));
+//            ruvHolder.lengthTv.setText(String.valueOf(Roof.getLength()));
+//            ruvHolder.slopeTv.setText(String.valueOf(Roof.getSlope()));
             ruvHolder.priceTv.setText(ruvPrice);
+
+            ArrayList<Section> feedList = Roof.getSections();
+
+            if (feedList.size() > 0) {
+                this.secAdapter = new SectionAdapter(mActivity, feedList);
+                ruvHolder.rv.setAdapter(secAdapter);
+//                secAdapter.notifyDataSetChanged();
+            }
+
             ArrayList<RuvFileInfo> rFiles = Roof.getFiles();
+
             if (rFiles.size() > 0) {
                     Glide.with(mActivity)
                         .load(Roof.getFiles().get(0).getUrl())
@@ -178,7 +208,6 @@ public class RuvAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
             ruvHolder.roofOptions.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
-
                     ruvDialog(ruvId, ruvHolder.getAdapterPosition());
                 }
             });
@@ -246,14 +275,21 @@ public class RuvAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         rFrag.setTargetFragment(rFrag, 2);
     }
 
-//    public String getImg(Roof mRuv) {
-//        ArrayList<URL> photolist = mRuv.getPhotos();
-////            for (int i = 0; i < photolist.size(); i++) {
-////                String urlStr = photolist.get(i).toString().replace("\\//", "//");
-//////                photolist.get(i) = new URL(urlStr);
-////            }
-//        
-//        
+//    public void setupRecycler(ArrayList<Section> feedList)  {
+//        if (feedList.size() > -1) {
+//            this.secAdapter = new SectionAdapter(mActivity, feedList);
+//            LinearLayoutManager layoutManager = new LinearLayoutManager(mActivity);
+//            rv = (RecyclerView) findViewById(R.id.sectionView);
+//            rv.setAdapter(secAdapter);
+//            rv.setLayoutManager(layoutManager);
+//            LinearLayoutManager layoutMgr = new LinearLayoutManager(mActivity.getBaseContext(),
+//                    LinearLayoutManager.HORIZONTAL, false);
+//            layoutMgr.setAutoMeasureEnabled(true);
+//            layoutMgr.setRecycleChildrenOnDetach(true);
+//            rv.setLayoutManager(layoutMgr);
+//            rv.addItemDecoration(new VerticalDividerItemDecoration.Builder(mActivity).build());
+//
+//        }
 //    }
 
 }

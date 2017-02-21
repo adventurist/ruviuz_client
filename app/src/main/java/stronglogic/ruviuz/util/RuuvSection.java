@@ -61,13 +61,17 @@ public class RuuvSection implements Runnable {
         if (mBundle != null) {
 
             try {
-
                 sectionJson.put("rid", mBundle.getInt("ruvId"));
+                sectionJson.put("type", mBundle.getString("type"));
                 sectionJson.put("length", mBundle.getFloat("length") > 0.0f ? mBundle.getFloat("length") : 0);
                 sectionJson.put("width", mBundle.getFloat("width") > 0.0f ? mBundle.getFloat("width") : 0);
                 sectionJson.put("slope", mBundle.getFloat("slope") > 0.0f ? mBundle.getFloat("slope") : 0);
                 sectionJson.put("empty", mBundle.getFloat("empty") > 0.0f ? mBundle.getFloat("empty") : 0);
-                sectionJson.put("full", mBundle.getBoolean("full"));
+                sectionJson.put("missing", mBundle.getFloat("missing") > 0.0f ? mBundle.getFloat("missing") : 0);
+                sectionJson.put("full", mBundle.getBoolean("full") ? 1 : 0);
+                if (!mBundle.getBoolean("full")) {
+                    sectionJson.put("etype", mBundle.getString("etype"));
+                }
 
             } catch (JSONException e) {
                 e.printStackTrace();

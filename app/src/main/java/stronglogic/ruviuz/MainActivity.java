@@ -365,7 +365,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
                 Intent mIntent = new Intent();
                 switch (item.getTitle().toString()) {
                     case ("Roof List"):
-                        mIntent.setClass(MainActivity.this, IndexViewActivity.class);
+                        mIntent.setClass(MainActivity.this, RviewActivity.class);
                         putIntentData(mIntent);
                         mIntent.putExtra("authToken", authToken);
                         mIntent.putExtra("baseUrl", baseUrl);
@@ -1330,11 +1330,15 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
                             for (Section section : sectionList) {
                                 Bundle sBundle = new Bundle();
                                 sBundle.putInt("ruvId", this.currentRid);
+                                sBundle.putString("type", section.getSectionType());
                                 sBundle.putFloat("length", section.getLength());
                                 sBundle.putFloat("width", section.getWidth());
                                 sBundle.putFloat("slope", section.getSlope());
                                 sBundle.putBoolean("full", section.isFull());
-                                if (!section.isFull()) sBundle.putFloat("missing", section.getMissing());
+                                if (!section.isFull()) {
+                                    sBundle.putFloat("missing", section.getMissing());
+                                    sBundle.putString("etype", section.getEmptyType());
+                                }
                                 RuuvSection ruvSection = new RuuvSection(MainActivity.this, mHandler, MainActivity.baseUrl, authToken, sBundle);
                                 Thread sectionThread = new Thread(ruvSection);
                                 sectionThread.start();
@@ -1852,8 +1856,10 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         intent.putExtra("region", this.region);
         intent.putExtra("premium", this.premium);
         intent.putExtra("currentRid", this.currentRid);
+        intent.putExtra("material",this.material);
         intent.putExtra("fileCount", this.fileCount);
         intent.putExtra("fileUrls", this.fileUrls);
+        intent.putExtra("fileComments", this.fileComments);
         intent.putExtra("baseUrl", MainActivity.baseUrl);
         intent.putExtra("editing", MainActivity.this.isEditing());
         this.ready = intent.getBooleanExtra("ready", false);
@@ -1887,6 +1893,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         this.region= intent.getStringExtra("region");
         this.premium = intent.getBooleanExtra("premium", false);
         this.currentRid = intent.getIntExtra("currentRid", -1);
+        this.material = intent.getStringExtra("material");
         this.fileCount = intent.getIntExtra("fileCount", 0);
         this.fileUrls = intent.getStringArrayExtra("fileUrls");
         this.fileComments = intent.getStringArrayExtra("fileComments");

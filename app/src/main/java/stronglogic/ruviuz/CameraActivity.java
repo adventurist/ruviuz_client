@@ -60,6 +60,7 @@ import java.util.Date;
 import java.util.List;
 
 import stronglogic.ruviuz.content.Customer;
+import stronglogic.ruviuz.content.Section;
 
 public class CameraActivity extends AppCompatActivity {
     private static final String TAG = "RuviuzCAMERAACTIVITY";
@@ -81,6 +82,9 @@ public class CameraActivity extends AppCompatActivity {
     private boolean premium, ready;
     private String address, region, city, postal;
     private String[] fileUrls = new String[3];
+    private String[] fileComments = new String[3];
+
+    private ArrayList<Section> sectionList = new ArrayList<>();
 
     private Customer mCustomer;
     private File file;
@@ -96,7 +100,6 @@ public class CameraActivity extends AppCompatActivity {
     private ImageReader imageReader;
 
     private String callingClass;
-
 
     private TextureView textureView;
     private ImageButton cameraBtn;
@@ -527,6 +530,7 @@ public class CameraActivity extends AppCompatActivity {
         intent.putExtra("premium", this.premium);
         intent.putExtra("currentRid", this.currentRid);
         intent.putExtra("fileCount", this.fileCount);
+        intent.putExtra("fileComments", this.fileComments);
         intent.putExtra("fileUrls", this.fileUrls);
         intent.putExtra("callingClass", this.callingClass);
         intent.putExtra("ready", this.ready);
@@ -543,6 +547,8 @@ public class CameraActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
         }
+        intent.putParcelableArrayListExtra("sectionList", sectionList);
+
     }
 
     public void getIntentData(Intent intent) {
@@ -559,6 +565,7 @@ public class CameraActivity extends AppCompatActivity {
         this.currentRid = intent.getIntExtra("currentRid", -1);
         this.fileCount = intent.getIntExtra("fileCount", 0);
         this.fileUrls = intent.getStringArrayExtra("fileUrls");
+        this.fileComments = intent.getStringArrayExtra("fileComments");
         this.callingClass = intent.getStringExtra("callingClass");
         this.ready = intent.getBooleanExtra("ready", false);
         if (intent.hasExtra("customer")) {
@@ -574,6 +581,8 @@ public class CameraActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
         }
+        if (intent.getParcelableArrayListExtra("sectionList") != null)
+            this.sectionList = intent.getParcelableArrayListExtra("sectionList");
     }
 
     @Override

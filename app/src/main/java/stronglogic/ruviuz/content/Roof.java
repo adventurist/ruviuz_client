@@ -14,13 +14,14 @@ import java.util.ArrayList;
 public class Roof extends LauncherActivity.ListItem implements Serializable  {
 
     private String address;
-    private float slope;
     private BigDecimal price;
-    private float width;
-    private float length;
+    private int floors;
+    private int cleanUpFactor;
     private int id;
     private String customerName;
     private boolean justUpdated;
+
+    private ArrayList<Section> sections;
 
     private ArrayList<String> photos;
 
@@ -36,12 +37,12 @@ public class Roof extends LauncherActivity.ListItem implements Serializable  {
     }
 
 
-    public void setSlope(float slope)  {
-        this.slope = slope;
+    public void setFloors(int floors)  {
+        this.floors = floors;
     }
 
-    public float getSlope()  {
-        return this.slope;
+    public int getFloors()  {
+        return this.floors;
     }
 
 
@@ -54,22 +55,22 @@ public class Roof extends LauncherActivity.ListItem implements Serializable  {
     }
 
 
-    public void setWidth (float width)  {
-        this.width = width;
+    public void setCleanUpFactor (int cleanUpFactor)  {
+        this.cleanUpFactor = cleanUpFactor;
     }
 
-    public float getWidth()  {
-        return width;
+    public int getCleanUpFactor()  {
+        return cleanUpFactor;
     }
 
 
-    public void setLength(float length)  {
-        this.length = length;
-    }
-
-    public float getLength()  {
-        return this.length;
-    }
+//    public void setLength(float length)  {
+//        this.length = length;
+//    }
+//
+//    public float getLength()  {
+//        return this.length;
+//    }
 
 
     public void setId(int id)  {
@@ -101,6 +102,16 @@ public class Roof extends LauncherActivity.ListItem implements Serializable  {
             return this.ruvFiles;
         } else {
             return new ArrayList<RuvFileInfo>();
+        }
+    }
+
+    public void setSections (ArrayList<Section> sectionList) { this.sections = sectionList; }
+
+    public ArrayList<Section> getSections() {
+        if (this.sections != null) {
+            return this.sections;
+        } else {
+            return new ArrayList<Section>();
         }
     }
 

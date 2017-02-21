@@ -11,6 +11,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 import stronglogic.ruviuz.R;
+import stronglogic.ruviuz.RviewActivity;
 import stronglogic.ruviuz.content.Section;
 
 
@@ -27,6 +28,7 @@ public class SectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     private static final String TAG = "RuviuzSECTIONADAPTER";
     private final static int SEC_VIEW = 0;
+    private final static int SEC_HVIEW = 1;
 
 
 
@@ -37,17 +39,20 @@ public class SectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     }
 
 
-    private static class SectionHolder extends RecyclerView.ViewHolder  {
-        TextView sectionId, sectionLength, sectionWidth, sectionArea, emptyArea, emptyLabel, emptyTypeLabel, emptyType;
+    public static class SectionHolder extends RecyclerView.ViewHolder  {
+        TextView sectionId, sectionType, sectionLength, sectionWidth, sectionArea, sectionSlope, emptyArea, emptyLabel, emptyFt2, emptyTypeLabel, emptyType;
 
         SectionHolder(View mView) {
             super(mView);
             sectionId = (TextView) mView.findViewById(R.id.sectionId);
+            sectionType = (TextView) mView.findViewById(R.id.sectionType);
             sectionLength = (TextView) mView.findViewById(R.id.sectionLength);
             sectionWidth = (TextView) mView.findViewById(R.id.sectionWidth);
+            sectionSlope = (TextView) mView.findViewById(R.id.sectionSlope);
             sectionArea = (TextView) mView.findViewById(R.id.sectionArea);
             emptyLabel = (TextView) mView.findViewById(R.id.emptyLabel);
             emptyArea = (TextView) mView.findViewById(R.id.emptyArea);
+            emptyFt2 = (TextView) mView.findViewById(R.id.emptFt2);
             emptyTypeLabel = (TextView) mView.findViewById(R.id.emptyTypeLabel);
             emptyType = (TextView) mView.findViewById(R.id.emptyType);
         }
@@ -56,16 +61,22 @@ public class SectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     
     @Override
     public int getItemViewType(int position)    {
-        return SEC_VIEW;
+
+        if (mActivity instanceof RviewActivity) {
+            return SEC_HVIEW;
+        } else {
+            return SEC_VIEW;
+        }
     }
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType)  {
-        if (viewType == SEC_VIEW) {
-            return new SectionHolder(LayoutInflater.from(mActivity).inflate(R.layout.section_row,
+        if (viewType == SEC_HVIEW) {
+            return new SectionHolder(LayoutInflater.from(mActivity).inflate(R.layout.section_hrow,
                     parent, false));
+        } else {
+            return new SectionHolder(LayoutInflater.from(mActivity).inflate(R.layout.section_row, parent, false));
         }
-        return null;
     }
 
 
@@ -76,21 +87,24 @@ public class SectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
 
         Section section = sectionList.get(holder.getAdapterPosition());
-        if (holder.getItemViewType() == SEC_VIEW) {
+//        if (holder.getItemViewType() == SEC_VIEW) {
             final SectionHolder sectionHolder = (SectionHolder) holder;
             sectionHolder.sectionId.setText(String.valueOf(position + 1));
+            sectionHolder.sectionType.setText(section.getSectionType());
             sectionHolder.sectionLength.setText(String.valueOf(section.getLength()));
             sectionHolder.sectionWidth.setText(String.valueOf(section.getWidth()));
+            sectionHolder.sectionSlope.setText(String.valueOf(section.getSlope()));
             sectionHolder.sectionArea.setText(String.valueOf(section.getLength() * section.getWidth()));
             if (section.getMissing() > 0) {
                 sectionHolder.emptyArea.setVisibility(View.VISIBLE);
                 sectionHolder.emptyLabel.setVisibility(View.VISIBLE);
+                sectionHolder.emptyFt2.setVisibility(View.VISIBLE);
                 sectionHolder.emptyArea.setText(String.valueOf(section.getMissing()));
                 sectionHolder.emptyTypeLabel.setVisibility(View.VISIBLE);
                 sectionHolder.emptyType.setVisibility(View.VISIBLE);
                 sectionHolder.emptyType.setText((section.getEmptyType()));
             }
-        }
+//        }
     }
 
     public void swapData(ArrayList<Section> list) {

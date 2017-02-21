@@ -21,11 +21,14 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
+import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -70,17 +73,9 @@ public class SectionActivity extends AppCompatActivity implements SectionFragmen
     public RecyclerView rv;
     private SectionAdapter secAdapter;
 
-    private String authToken, emptyType;
+    private Spinner sectionSpinner;
 
-//    private MainActivity.IncomingHandler mHandler;
-//
-//    private Map<String, RuvFileInfo> ruvFiles;
-//
-//    private SharedPreferences prefs;
-//
-//    private RuvLocation rLocation;
-//
-//    private Geocoder geocoder;
+    private String authToken, emptyType, sectionType;
 
     private int fileCount, currentRid;
     private float width, length, slope;
@@ -121,6 +116,32 @@ public class SectionActivity extends AppCompatActivity implements SectionFragmen
             getIntentData(getIntent());
         }
 
+        sectionSpinner = (Spinner) findViewById(R.id.sectionTypeSpin);
+        String[] sectionTypes = getResources().getStringArray(R.array.sectionTypes);
+        ArrayAdapter sectionAdapter = new ArrayAdapter<>(SectionActivity.this, android.R.layout.simple_spinner_dropdown_item, sectionTypes);
+        sectionSpinner.setAdapter(sectionAdapter);
+        sectionSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                SectionActivity.this.sectionType = sectionSpinner.getItemAtPosition(position).toString();
+                Log.d(TAG, "Type chosen: " + SectionActivity.this.sectionType);
+                if (sectionFrag.getView() != null) {
+                    TextView sectionTypeTv = (TextView) sectionFrag.getView().findViewById(R.id.sectionType);
+                    sectionTypeTv.setText(SectionActivity.this.sectionType);
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                sectionSpinner.setSelection(0);
+                SectionActivity.this.sectionType = sectionSpinner.getItemAtPosition(0).toString();
+                if (sectionFrag.getView() != null) {
+                    TextView sectionTypeTv = (TextView) sectionFrag.getView().findViewById(R.id.sectionType);
+                    sectionTypeTv.setText(SectionActivity.this.sectionType);
+                }
+            }
+        });
+
         sectionBtn = (Button) findViewById(R.id.dummy_button);
         sectionBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -130,6 +151,7 @@ public class SectionActivity extends AppCompatActivity implements SectionFragmen
                 } else {
                     Section section = new Section();
                     if (sectionFrag.getView() != null) {
+                        TextView sectionTypeTv = (TextView) sectionFrag.getView().findViewById(R.id.sectionType);
                         TextView sectionLengthTv = (TextView) sectionFrag.getView().findViewById(R.id.sectionLength);
                         TextView sectionWidthTv = (TextView) sectionFrag.getView().findViewById(R.id.sectionWidth);
                         TextView sectionLengthInTv = (TextView) sectionFrag.getView().findViewById(R.id.sectionLengthIn);
@@ -172,10 +194,10 @@ public class SectionActivity extends AppCompatActivity implements SectionFragmen
                                     RadioButton selectedButton = (RadioButton) findViewById(emptyTypeGroup.getCheckedRadioButtonId());
                                     if (selectedButton.getText().toString().equals(Section.EmptyType.CHIMNEY)) {
                                         section.setEmptyType(Section.EmptyType.CHIMNEY);
-                                    }
+                                    } else
                                     if (selectedButton.getText().toString().equals(Section.EmptyType.SKY_LIGHT)) {
                                         section.setEmptyType(Section.EmptyType.SKY_LIGHT);
-                                    }
+                                    } else
                                     if (selectedButton.getText().toString().equals(Section.EmptyType.OTHER)) {
                                         section.setEmptyType(Section.EmptyType.OTHER);
                                     }
@@ -183,6 +205,7 @@ public class SectionActivity extends AppCompatActivity implements SectionFragmen
 
                                 section.toggleFull();
                                 section.setMissing(emptyArea);
+                                sectionTypeTv.setText("");
                                 sEmptyLengthTv.setText("");
                                 sEmptyWidthTv.setText("");
                                 sEmptyLengthInTv.setText("");
@@ -195,6 +218,7 @@ public class SectionActivity extends AppCompatActivity implements SectionFragmen
                                 sEmptyLengthPickIn.setValue(0);
                                 sEmptyWidthPickFt.setValue(0);
                                 sEmptyWidthPickIn.setValue(0);
+                                emptyTypeGroup.setSelected(false);
 
                             }
                         }
@@ -202,6 +226,8 @@ public class SectionActivity extends AppCompatActivity implements SectionFragmen
                         if (SectionActivity.this.slope > -1) {
                             section.setSlope(SectionActivity.this.slope);
                         }
+
+                        section.setSectionType(SectionActivity.this.sectionType);
 
                         sectionList.add(section);
 
@@ -408,10 +434,11 @@ public class SectionActivity extends AppCompatActivity implements SectionFragmen
         ArrayList<Section> feedList = SectionActivity.this.sectionList;
         if (feedList.size() > -1) {
             this.secAdapter = new SectionAdapter(SectionActivity.this, feedList);
-            LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+            LinearLayoutManager layoutMgr = new LinearLayoutManager(getBaseContext(),
+                    LinearLayoutManager.VERTICAL, false);
             rv = (RecyclerView) findViewById(R.id.sectionView);
             rv.setAdapter(secAdapter);
-            rv.setLayoutManager(layoutManager);
+            rv.setLayoutManager(layoutMgr);
             rv.addOnScrollListener(new RecyclerView.OnScrollListener() {
                 @Override
                 public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
@@ -424,11 +451,8 @@ public class SectionActivity extends AppCompatActivity implements SectionFragmen
                 }
 
             });
-            LinearLayoutManager layoutMgr = new LinearLayoutManager(getBaseContext(),
-                    LinearLayoutManager.VERTICAL, false);
             layoutMgr.setAutoMeasureEnabled(true);
             layoutMgr.setRecycleChildrenOnDetach(true);
-            rv.setLayoutManager(layoutMgr);
             rv.addItemDecoration(new HorizontalDividerItemDecoration.Builder(this).build());
 
         }
@@ -503,9 +527,10 @@ public class SectionActivity extends AppCompatActivity implements SectionFragmen
         intent.putExtra("currentRid", this.currentRid);
         intent.putExtra("fileCount", this.fileCount);
         intent.putExtra("fileUrls", this.fileUrls);
+        intent.putExtra("fileComments", this.fileComments);
         intent.putExtra("baseUrl", MainActivity.baseUrl);
         intent.putExtra("editing", SectionActivity.this.editing);
-        this.ready = intent.getBooleanExtra("ready", false);
+        intent.putExtra("ready", this.ready);
         if (mCustomer != null) {
             try {
                 JSONObject customerJson = new JSONObject();
