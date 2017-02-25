@@ -97,15 +97,40 @@
         android:layout_width="48dp"
         android:layout_height="20dp"
         android:layout_margin="4dp"
+        android:text="@string/width"
+        android:layout_below="@id/sectionWidth"
+        android:id="@+id/topWidthLabel"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="20dp"
+        android:layout_margin="4dp"
+        android:layout_toEndOf="@id/topWidthLabel"
+        android:layout_below="@id/sectionWidth"
+        android:id="@+id/sectionTopWidth"/>
+
+    <TextView
+        android:layout_width="24dp"
+        android:layout_height="20dp"
+        android:layout_margin="4dp"
+        android:layout_below="@id/sectionWidth"
+        android:layout_toEndOf="@id/sectionTopWidth"
+        android:text="@string/ft"
+        />
+
+    <TextView
+        android:layout_width="48dp"
+        android:layout_height="20dp"
+        android:layout_margin="4dp"
         android:text="@string/slope"
-        android:layout_below="@id/widthLabel"
+        android:layout_below="@id/topWidthLabel"
         android:id="@+id/slopeLabel"/>
 
     <TextView
-        android:layout_width="8dp"
+        android:layout_width="24dp"
         android:layout_height="20dp"
         android:layout_margin="4dp"
-        android:layout_below="@id/widthLabel"
+        android:layout_below="@id/topWidthLabel"
         android:layout_toEndOf="@id/slopeLabel"
         android:id="@+id/theta"
         android:text="@string/theta"
@@ -116,17 +141,18 @@
         android:layout_height="20dp"
         android:layout_margin="4dp"
         android:layout_toEndOf="@id/theta"
-        android:layout_below="@id/widthLabel"
+        android:layout_below="@id/topWidthLabel"
         android:id="@+id/sectionSlope"/>
 
     <TextView
         android:layout_width="24dp"
         android:layout_height="20dp"
         android:layout_margin="4dp"
-        android:layout_below="@id/widthLabel"
+        android:layout_below="@id/topWidthLabel"
         android:layout_toEndOf="@id/sectionSlope"
         android:text="@string/degree_symbol"
         />
+
 
 
 

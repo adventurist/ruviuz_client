@@ -89,24 +89,23 @@ import stronglogic.ruviuz.fragments.FileFragment;
 import stronglogic.ruviuz.fragments.ImageEditFragment;
 import stronglogic.ruviuz.fragments.LoginFragment;
 import stronglogic.ruviuz.fragments.MainFragment;
-import stronglogic.ruviuz.fragments.MetricFragment;
 import stronglogic.ruviuz.fragments.SectionFragment;
 import stronglogic.ruviuz.fragments.SlopeFragment;
 import stronglogic.ruviuz.fragments.WelcomeFragment;
 import stronglogic.ruviuz.util.RuuvComment;
 import stronglogic.ruviuz.util.RuuvFile;
+import stronglogic.ruviuz.util.RuuvPrice;
 import stronglogic.ruviuz.util.RuuvSection;
 import stronglogic.ruviuz.util.RuvLocation;
 import stronglogic.ruviuz.util.RuvSessionManager;
 import stronglogic.ruviuz.views.SectionAdapter;
 
-public class MainActivity extends AppCompatActivity implements LoginFragment.LoginFragListener, MainFragment.MainfragListener, WelcomeFragment.WelcomeFragListener, AddressFragment.AddressFragListener, SectionFragment.SectionListener, MetricFragment.OnFragmentInteractionListener, SlopeFragment.SlopeFragListener, FileFragment.FileFragListener, CustomerFragment.CustomerFragListener, EditFragment.EditFragListener, ImageEditFragment.ImageFragListener, Handler.Callback {
+public class MainActivity extends AppCompatActivity implements LoginFragment.LoginFragListener, MainFragment.MainfragListener, WelcomeFragment.WelcomeFragListener, AddressFragment.AddressFragListener, SectionFragment.SectionListener, SlopeFragment.SlopeFragListener, FileFragment.FileFragListener, CustomerFragment.CustomerFragListener, EditFragment.EditFragListener, ImageEditFragment.ImageFragListener, RuuvSection.sectionListener, Handler.Callback {
 
     private static final String TAG = "RuviuzMAINACTIVITY";
     
     private static final int CAMERA_PERMISSION = 6;
     private static final int RUVIUZ_DATA_PERSIST = 14;
-    private static final int METRICFRAG_COMPLETE = 21;
     public static final int SECTION_ACTIVITY_COMPLETE = 22;
     private static final int CURATION_MODE = 32;
     public final static int CREATE_QUOTE = 33;
@@ -139,7 +138,6 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
     private LoginFragment mLoginFrag;
     private MainFragment mainFragment;
     private AddressFragment mAddressFrag;
-    private MetricFragment metricFrag;
     private SlopeFragment slopeFrag;
     private FileFragment fileFrag;
     private CustomerFragment mCustomerFrag;
@@ -147,7 +145,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
     private EditFragment editFrag;
     private ImageEditFragment imgEditFrag;
 
-    private TextView addressTv, nameTv, phoneTv, emailTv, roofLength, roofWidth, roofSlope, currentPrice, materialTv;
+    private TextView addressTv, nameTv, phoneTv, emailTv, roofSlope, currentPrice, materialTv;
     private ImageView photo1, photo2, photo3;
     private ImageButton ruuvBtn, calculateBtn;
     private Button editBtn;
@@ -170,7 +168,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
     private Geocoder geocoder;
 
     private int fileCount, commentCount, currentRid, lastAction;
-    private float width, length, slope;
+    private float topwidth, width, length, slope;
     private BigDecimal price;
     private String material, address, postal, city, region;
     private String[] fileUrls = new String[3];
@@ -308,9 +306,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
                         mBundle.putString("city", city);
                         mBundle.putString("region", region);
                         mBundle.putString("price", calculatePrice().toString());
-//                        mBundle.putFloat("width", Float.parseFloat(String.valueOf(roofWidth.getText())));
-//                        mBundle.putFloat("length", Float.parseFloat(String.valueOf(roofLength.getText())));
-                        mBundle.putFloat("slope", Float.parseFloat(String.valueOf(roofSlope.getText())));
+                        mBundle.putString("material", material);
                         mBundle.putString("firstName", mCustomer.getFirstname());
                         mBundle.putString("lastName", mCustomer.getLastname());
                         mBundle.putString("email", mCustomer.getEmail());
@@ -628,7 +624,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
             dismissAllDialogs();
         }
 
-        if ((mainFragment == null || !mainFragment.isAdded()) && (mLoginFrag == null || !mLoginFrag.isAdded()) && (mCustomerFrag == null || !mCustomerFrag.isAdded()) && (metricFrag == null || !metricFrag.isAdded()) && (slopeFrag == null || !slopeFrag.isAdded()) && (mWelcomeFrag == null || !mWelcomeFrag.isAdded())) {
+        if ((mainFragment == null || !mainFragment.isAdded()) && (mLoginFrag == null || !mLoginFrag.isAdded()) && (mCustomerFrag == null || !mCustomerFrag.isAdded()) && (slopeFrag == null || !slopeFrag.isAdded()) && (mWelcomeFrag == null || !mWelcomeFrag.isAdded())) {
             revealActivity();
         }
 
@@ -842,23 +838,6 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         Intent intent = new Intent(MainActivity.this, SectionActivity.class);
         putIntentData(intent);
         startActivityForResult(intent,SECTION_ACTIVITY_COMPLETE);
-//        FragmentManager fm = getFragmentManager();
-//        if (metricFrag == null) {
-//            metricFrag = new MetricFragment();
-//            metricFrag.setArguments(mBundle);
-//            if (!metricFrag.isAdded()) {
-//                metricFrag.show(fm, "Please Enter Metrics");
-//            }
-//        } else {
-//            fm.beginTransaction().remove(metricFrag).commit();
-//            metricFrag = null;
-//            metricFrag = new MetricFragment();
-//            metricFrag.setArguments(mBundle);
-//            metricFrag.show(fm, "Please Enter Metrics");
-//    }
-//        SectionFragment sectionFrag = new SectionFragment();
-//        fm.beginTransaction().add(R.id.section_fragment, sectionFrag).commit();
-
     }
 
 
@@ -878,10 +857,6 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         mBundle.putString("price", String.valueOf(price));
         mBundle.putInt("fileCount", fileCount);
         if (fileUrls != null && fileUrls.length > 0) {
-//            ArrayList<String> editFiles = new ArrayList<String>();
-//            for (String fileUrl : fileUrls) {
-//                editFiles.add(fileUrl);
-//            }
         mBundle.putStringArray("fileUrls", fileUrls);
             mBundle.putStringArray("fileComments", fileComments);
         }
@@ -892,7 +867,6 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
             mBundle.putString("phone", mCustomer.getPhone());
             mBundle.putString("prefix", mCustomer.getPrefix());
         }
-//        saveEditFragState(mBundle);
         FragmentManager fm = getFragmentManager();
 
         if (editFrag == null) {
@@ -997,7 +971,6 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         this.addressTv.setText(addressString);
 
         Toast.makeText(this, this.address, Toast.LENGTH_SHORT).show();
-//        addressBtn.setAlpha(1f);
 
         if (mAddressFrag != null) {
             mAddressFrag.dismiss();
@@ -1013,50 +986,6 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
 
     }
 
-
-    @Override
-    public void metricfragInteraction(Float[] values, String data) {
-        Log.d(TAG, data);
-        if (data.equals("METRIC_SUCCESS")) {
-            Log.d(TAG, "METRICFRAG_COMPLETE");
-            MainActivity.this.length = values[0];
-//            roofLength.setText(String.valueOf(values[0]));
-//            roofLength.jumpDrawablesToCurrentState();
-            MainActivity.this.width = values[1];
-//            roofWidth.setText(String.valueOf(values[1]));
-//            roofWidth.jumpDrawablesToCurrentState();
-            MainActivity.this.slope = values[2];
-            roofSlope.setText(String.valueOf(MainActivity.this.slope));
-//            roofSlope.jumpDrawablesToCurrentState();
-
-            if (metricFrag != null && metricFrag.isAdded()) {
-                metricFrag.dismiss();
-            }
-
-            if (mainFragment != null && mainFragment.isAdded()) {
-                mainFragment.dismiss();
-            }
-
-            putPrefsData();
-
-            slopeDialog();
-
-        }
-
-        if (data.equals("BACK_TO_ADDRESS")) {
-
-            addressDialog();
-
-            if (metricFrag != null && metricFrag.isAdded()) {
-                metricFrag.dismiss();
-            }
-
-            if (mainFragment != null && mainFragment.isAdded()) {
-                mainFragment.dismiss();
-            }
-
-        }
-    }
 
     @Override
     public void customerfragInteraction(String[] name, String email, String phone,boolean married, String prefix) {
@@ -1326,22 +1255,39 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
                         JSONObject ruuvJson = new JSONObject(returnedJson.getString("Roof"));
                         if (ruuvJson.getString("id") != null) {
                             this.currentRid = Integer.valueOf(ruuvJson.getString("id"));
-
+                            int i = 1;
                             for (Section section : sectionList) {
                                 Bundle sBundle = new Bundle();
+                                sBundle.putInt("id", i);
+                                boolean full = section.getMissing() == 0;
+                                section.setFull(full);
                                 sBundle.putInt("ruvId", this.currentRid);
                                 sBundle.putString("type", section.getSectionType());
                                 sBundle.putFloat("length", section.getLength());
                                 sBundle.putFloat("width", section.getWidth());
+                                sBundle.putFloat("topwidth", section.getTopWidth());
                                 sBundle.putFloat("slope", section.getSlope());
                                 sBundle.putBoolean("full", section.isFull());
                                 if (!section.isFull()) {
                                     sBundle.putFloat("missing", section.getMissing());
                                     sBundle.putString("etype", section.getEmptyType());
                                 }
-                                RuuvSection ruvSection = new RuuvSection(MainActivity.this, mHandler, MainActivity.baseUrl, authToken, sBundle);
+                                RuuvSection ruvSection = new RuuvSection(MainActivity.this, mHandler, MainActivity.baseUrl, authToken, sBundle, new RuuvSection.sectionListener() {
+                                    @Override
+                                    public void sectionThreadComplete(int result) {
+                                        if (result == sectionList.size()) {
+                                            Bundle pBundle = new Bundle();
+                                            pBundle.putInt("rid", MainActivity.this.currentRid);
+                                            RuuvPrice ruuvPrice = new RuuvPrice(MainActivity.this, mHandler, authToken, pBundle);
+                                            Thread priceThread = new Thread(ruuvPrice);
+                                            priceThread.start();
+                                        }
+                                    }
+                                });
                                 Thread sectionThread = new Thread(ruvSection);
                                 sectionThread.start();
+                                i++;
+
                             }
 
                         }
@@ -1386,12 +1332,21 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
 //                            fileComments[2] = null;
 //                        }
                     }
-                    clearValues();
 
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
                 return true;
+            }
+        } else if (inputMessage.getData().getString("PriceResponse") != null) {
+            try {
+                JSONObject respJson = new JSONObject(inputMessage.getData().getString("PriceResponse"));
+                Log.d(TAG, respJson.getString("RoofPrice"));
+                String mPrice = "$" + respJson.getString("RoofPrice");
+                Toast.makeText(this, "Price: " + mPrice + ".. Too rich for you, vato..", Toast.LENGTH_SHORT).show();
+                MainActivity.this.currentPrice.setText(mPrice);
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
         }
         return false;
@@ -1587,7 +1542,8 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
 //        roofLength.setText("0");
 //        roofWidth.setText("0");
         roofSlope.setText("0");
-        currentPrice.setText(R.string.zero);
+        String zeroPrice = "$" + R.string.zero;
+        currentPrice.setText(zeroPrice);
         Glide.clear(photo1); Glide.clear(photo2); Glide.clear(photo3);
 //          addressBtn.setAlpha(0.2f);
 //        draftBtn.setAlpha(0.2f);
@@ -1725,6 +1681,11 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         return this.ready;
     }
 
+    @Override
+    public void sectionThreadComplete(int result) {
+
+    }
+
 
     static class IncomingHandler extends Handler {
         private final WeakReference<MainActivity> mActivity;
@@ -1834,10 +1795,6 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
             editBtn.setVisibility(View.VISIBLE);
         if (calculateBtn != null)
             calculateBtn.setVisibility(View.VISIBLE);
-        if (roofLength != null)
-            roofLength.setVisibility(View.VISIBLE);
-        if (roofWidth != null)
-            roofWidth.setVisibility(View.VISIBLE);
         if (roofSlope != null)
             roofSlope.setVisibility(View.VISIBLE);
         if (materialTv != null)
@@ -1881,7 +1838,6 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
     }
     
     public void getIntentData(Intent intent) {
-        Bundle extras = intent.getExtras();
         this.ready = intent.getBooleanExtra("ready", false);
         this.authToken = intent.getStringExtra("authToken");
         this.slope = intent.getFloatExtra("slope", 0);
@@ -1912,7 +1868,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
                 e.printStackTrace();
             }
         if (intent.hasExtra("REQUEST")) {
-            handleRequest(extras.getInt("REQUEST", 0));
+            handleRequest(intent.getIntExtra("REQUEST", 0));
         }
 
         this.sectionList = intent.getParcelableArrayListExtra("sectionList");
@@ -1987,14 +1943,6 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
             case RUVIUZ_DATA_PERSIST:
                 if (resultCode == RESULT_OK) {
                     getIntentData(data);
-                }
-                break;
-            case METRICFRAG_COMPLETE:
-                if (resultCode == RESULT_OK) {
-                    Log.d(TAG, "METRICFRAG_COMPLETE");
-                    if (metricFrag != null && metricFrag.isAdded()) {
-                        metricFrag.dismiss();
-                    }
                 }
                 break;
             case SECTION_ACTIVITY_COMPLETE:
@@ -2085,7 +2033,6 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         if (mLoginFrag != null && mLoginFrag.isAdded()) mLoginFrag.dismiss();
         if (mCustomerFrag != null && mCustomerFrag.isAdded()) mCustomerFrag.dismiss();
         if (mAddressFrag != null && mAddressFrag.isAdded()) mAddressFrag.dismiss();
-        if (metricFrag != null && metricFrag.isAdded()) metricFrag.dismiss();
         if (slopeFrag != null && slopeFrag.isAdded()) slopeFrag.dismiss();
         if (editFrag != null && editFrag.isAdded()) editFrag.dismiss();
         if (fileFrag != null && fileFrag.isAdded()) fileFrag.dismiss();
@@ -2097,7 +2044,6 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         if (mLoginFrag != null && mLoginFrag.isAdded() && mLoginFrag.getClass() != mClass) mLoginFrag.dismiss();
         if (mCustomerFrag != null && mCustomerFrag.isAdded() && mCustomerFrag.getClass() != mClass) mCustomerFrag.dismiss();
         if (mAddressFrag != null && mAddressFrag.isAdded() && mAddressFrag.getClass() != mClass) mAddressFrag.dismiss();
-        if (metricFrag != null && metricFrag.isAdded() && metricFrag.getClass() != mClass) metricFrag.dismiss();
         if (slopeFrag != null && slopeFrag.isAdded() && slopeFrag.getClass() != mClass) slopeFrag.dismiss();
         if (editFrag != null && editFrag.isAdded() && editFrag.getClass() != mClass) editFrag.dismiss();
         if (fileFrag != null && fileFrag.isAdded() && fileFrag.getClass() != mClass) fileFrag.dismiss();
@@ -2148,13 +2094,14 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
                     ruuvJson.put("postal", mBundle.getString("postal"));
                     ruuvJson.put("city", mBundle.getString("city"));
                     ruuvJson.put("region", mBundle.getString("region"));
-                    ruuvJson.put("slope", mBundle.getFloat("slope"));
                     ruuvJson.put("price", mBundle.getString("price"));
+                    ruuvJson.put("material", mBundle.getString("material"));
                     ruuvJson.put("firstName", mBundle.getString("firstName"));
                     ruuvJson.put("lastName", mBundle.getString("lastName"));
                     ruuvJson.put("email", mBundle.getString("email"));
                     ruuvJson.put("phone", mBundle.getString("phone"));
                     ruuvJson.put("prefix", mBundle.getString("prefix"));
+                    Log.d(TAG, ruuvJson.toString());
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }

@@ -42,7 +42,7 @@ public class Section extends LauncherActivity.ListItem implements Parcelable {
         this.full = true;
     }
 
-    private float slope, width, length, missing;
+    private float slope, width, tWidth, length, missing;
     private boolean full;
     private int id;
 
@@ -94,6 +94,15 @@ public class Section extends LauncherActivity.ListItem implements Parcelable {
     }
 
 
+    public void setTopWidth (float tWidth)  {
+        this.tWidth = tWidth;
+    }
+
+    public float getTopWidth()  {
+        return tWidth;
+    }
+
+
     public void setLength(float length)  {
         this.length = length;
     }
@@ -106,6 +115,8 @@ public class Section extends LauncherActivity.ListItem implements Parcelable {
     public void setMissing(float area) { this.missing = area; }
 
     public float getMissing() { return this.missing; }
+
+    public void setFull(boolean full) { this.full = full;}
 
 
     public void setId(int id) { this.id = id;}
@@ -124,6 +135,7 @@ public class Section extends LauncherActivity.ListItem implements Parcelable {
         this.slope = in.readFloat();
         this.length = in.readFloat();
         this.width = in.readFloat();
+        this.tWidth = in.readFloat();
         this.missing = in.readFloat();
         //noinspection WrongConstant
         this.emptyType = in.readString();
@@ -148,6 +160,7 @@ public class Section extends LauncherActivity.ListItem implements Parcelable {
         out.writeFloat(slope);
         out.writeFloat(length);
         out.writeFloat(width);
+        out.writeFloat(tWidth);
         out.writeFloat(missing);
         out.writeString(emptyType);
         out.writeString(sectionType);

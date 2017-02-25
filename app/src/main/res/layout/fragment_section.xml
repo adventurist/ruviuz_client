@@ -79,7 +79,7 @@
         android:layout_width="14dp"
         android:layout_height="wrap_content"
         android:layout_below="@id/secLenLabel"
-        android:layout_toEndOf="@id/sectionLength"
+        android:layout_toEndOf="@id/sectionWidth"
         android:id="@+id/widft"
         android:text="@string/ft"/>
 
@@ -100,16 +100,68 @@
         android:id="@+id/widin"
         android:text="@string/inches"/>
 
+
+
+
+
+
+
+
+    <TextView
+        android:layout_width="40dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/sectionWidth"
+        android:id="@+id/secTwidLabel"
+        android:text="T. Wid"/>
+
+    <TextView
+        android:layout_height="wrap_content"
+        android:layout_width="40dp"
+        android:layout_toEndOf="@id/secTwidLabel"
+        android:id="@+id/sectionTwidth"
+        android:layout_below="@id/sectionWidth"
+        android:layout_marginStart="8dp"
+        />
+
+    <TextView
+        android:layout_width="14dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/secWidLabel"
+        android:layout_toEndOf="@id/sectionTwidth"
+        android:id="@+id/twidft"
+        android:text="@string/ft"/>
+
+    <TextView
+        android:layout_width="40dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/sectionTwidthIn"
+        android:layout_toEndOf="@id/twidft"
+        android:layout_below="@id/sectionWidth"
+        />
+
+    <TextView
+        android:layout_width="14dp"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/sectionTwidthIn"
+        android:layout_below="@id/sectionWidth"
+        android:layout_marginStart="8dp"
+        android:id="@+id/twidin"
+        android:text="@string/inches"/>
+
+
+
+
+
     <TextView
         android:layout_width="40dp"
         android:layout_height="wrap_content"
         android:id="@+id/emptyLenLabel"
-        android:layout_below="@id/sectionWidth"
+        android:layout_below="@id/sectionTwidth"
         android:text="@string/e_lng"/>
     <TextView
         android:layout_width="40dp"
         android:layout_height="wrap_content"
-        android:layout_below="@id/sectionWidth"
+        android:layout_below="@id/sectionTwidth"
         android:layout_toEndOf="@id/emptyLenLabel"
         android:id="@+id/emptyLength"
         android:layout_marginStart="8dp"
@@ -117,7 +169,7 @@
     <TextView
         android:layout_width="14dp"
         android:layout_height="wrap_content"
-        android:layout_below="@id/sectionWidth"
+        android:layout_below="@id/sectionTwidth"
         android:layout_toEndOf="@id/emptyLength"
         android:id="@+id/elenft"
         android:text="@string/ft"/>
@@ -125,7 +177,7 @@
     <TextView
         android:layout_width="40dp"
         android:layout_height="wrap_content"
-        android:layout_below="@id/sectionWidth"
+        android:layout_below="@id/sectionTwidth"
         android:id="@+id/emptyLengthIn"
         android:layout_toEndOf="@id/elenft"
         />
@@ -134,7 +186,7 @@
         android:layout_width="14dp"
         android:layout_height="wrap_content"
         android:layout_toEndOf="@id/emptyLengthIn"
-        android:layout_below="@id/sectionWidth"
+        android:layout_below="@id/sectionTwidth"
         android:layout_marginStart="8dp"
         android:id="@+id/elenin"
         android:text="@string/inches"/>

@@ -58,7 +58,7 @@ public class SectionActivity extends AppCompatActivity implements SectionFragmen
 
     private static final String TAG = "RuviuzSECTIONACTIVITY";
 
-    private me.angrybyte.numberpicker.view.ActualNumberPicker sWidthPickFt, sWidthPickIn, sLengthPickFt, sLengthPickIn, sEmptyLengthPickFt, sEmptyLengthPickIn, sEmptyWidthPickFt, sEmptyWidthPickIn;
+    private me.angrybyte.numberpicker.view.ActualNumberPicker sWidthPickFt, sWidthPickIn, sTwidthPickFt, sTwidthPickIn, sLengthPickFt, sLengthPickIn, sEmptyLengthPickFt, sEmptyLengthPickIn, sEmptyWidthPickFt, sEmptyWidthPickIn;
     private TextView sEmptyLength, sEmptyWidth, sEmptyWidthFtTv, sEmptyWidthInTv, sEmptyLengthFtTv, sEmptyLengthInTv;
     
     private Button sectionBtn;
@@ -78,7 +78,7 @@ public class SectionActivity extends AppCompatActivity implements SectionFragmen
     private String authToken, emptyType, sectionType;
 
     private int fileCount, currentRid;
-    private float width, length, slope;
+    private float topwidth, width, length, slope;
     private String material, address, postal, city, region;
     private String[] fileUrls = new String[3];
     private String[] fileComments = new String[3];
@@ -156,6 +156,9 @@ public class SectionActivity extends AppCompatActivity implements SectionFragmen
                         TextView sectionWidthTv = (TextView) sectionFrag.getView().findViewById(R.id.sectionWidth);
                         TextView sectionLengthInTv = (TextView) sectionFrag.getView().findViewById(R.id.sectionLengthIn);
                         TextView sectionWidthInTv = (TextView) sectionFrag.getView().findViewById(R.id.sectionWidthIn);
+                        TextView sectionTwidthTv = (TextView) sectionFrag.getView().findViewById(R.id.sectionTwidth);
+                        TextView sectionTwidthInTv = (TextView) sectionFrag.getView().findViewById(R.id.sectionTwidthIn);
+
                         if (sectionLengthTv != null && sectionLengthInTv != null) {
                             float secLen = (sectionLengthTv.getText().toString().equals("") ?
                                     0.0f : Float.valueOf(sectionLengthTv.getText().toString()))
@@ -165,7 +168,6 @@ public class SectionActivity extends AppCompatActivity implements SectionFragmen
                         }
 
 
-
                         if (sectionWidthTv != null && sectionWidthInTv != null) {
                             float secWid = (sectionWidthTv.getText().toString().equals("") ?
                                     0.0f : Float.valueOf(sectionWidthTv.getText().toString()))
@@ -173,6 +175,15 @@ public class SectionActivity extends AppCompatActivity implements SectionFragmen
                                     0.0f : (Float.valueOf(sectionWidthInTv.getText().toString()) / 12));
                             section.setWidth(secWid);
                         }
+
+                        if (sectionTwidthTv != null && sectionTwidthInTv != null) {
+                            float secTwid = (sectionTwidthTv.getText().toString().equals("") ?
+                                    0.0f : Float.valueOf(sectionTwidthTv.getText().toString()))
+                                    +  (sectionTwidthInTv.getText().toString().equals("") ?
+                                    0.0f : (Float.valueOf(sectionTwidthInTv.getText().toString()) / 12));
+                            section.setTopWidth(secTwid);
+                        }
+
                         if (!fullToggle.isChecked()) {
                             TextView sEmptyLengthTv = (TextView) sectionFrag.getView().findViewById(R.id.emptyLength);
                             TextView sEmptyWidthTv = (TextView) sectionFrag.getView().findViewById(R.id.emptyWidth);
@@ -211,13 +222,25 @@ public class SectionActivity extends AppCompatActivity implements SectionFragmen
                                 sEmptyLengthInTv.setText("");
                                 sEmptyWidthInTv.setText("");
                                 sWidthPickFt.setValue(0);
+                                sWidthPickFt.jumpDrawablesToCurrentState();
                                 sWidthPickIn.setValue(0);
+                                sWidthPickIn.jumpDrawablesToCurrentState();
+                                sTwidthPickFt.setValue(0);
+                                sTwidthPickFt.jumpDrawablesToCurrentState();
+                                sTwidthPickIn.setValue(0);
+                                sTwidthPickIn.jumpDrawablesToCurrentState();
                                 sLengthPickFt.setValue(0);
+                                sLengthPickFt.jumpDrawablesToCurrentState();
                                 sLengthPickIn.setValue(0);
+                                sLengthPickIn.jumpDrawablesToCurrentState();
                                 sEmptyLengthPickFt.setValue(0);
+                                sEmptyLengthPickFt.jumpDrawablesToCurrentState();
                                 sEmptyLengthPickIn.setValue(0);
+                                sEmptyLengthPickIn.jumpDrawablesToCurrentState();
                                 sEmptyWidthPickFt.setValue(0);
+                                sEmptyWidthPickFt.jumpDrawablesToCurrentState();
                                 sEmptyWidthPickIn.setValue(0);
+                                sEmptyWidthPickIn.jumpDrawablesToCurrentState();
                                 emptyTypeGroup.setSelected(false);
 
                             }
@@ -240,6 +263,8 @@ public class SectionActivity extends AppCompatActivity implements SectionFragmen
                         sectionWidthTv.setText("");
                         sectionLengthInTv.setText("");
                         sectionWidthInTv.setText("");
+                        sectionTwidthTv.setText("");
+                        sectionTwidthInTv.setText("");
                         fullToggle.setChecked(true);
                     }
                 }
@@ -316,6 +341,38 @@ public class SectionActivity extends AppCompatActivity implements SectionFragmen
 
             }
         });
+
+        sTwidthPickFt = (ActualNumberPicker) findViewById(R.id.topWidthPickerFt);
+        sTwidthPickFt.setListener(new OnValueChangeListener() {
+            @Override
+            public void onValueChanged(int oldValue, int newValue) {
+                if (sectionFrag == null || !sectionFrag.isAdded()) addSectionFragment();
+                if (sectionFrag.getView() != null) {
+                    TextView sectionTwidthTv = (TextView) sectionFrag.getView().findViewById(R.id.sectionTwidth);
+                    String newMeasurement = String.valueOf(newValue);
+                    sectionTwidthTv.setText(newMeasurement);
+                }
+
+            }
+        });
+
+        sTwidthPickIn = (ActualNumberPicker) findViewById(R.id.topWidthPickerIn);
+        sTwidthPickIn.setListener(new OnValueChangeListener() {
+            @Override
+            public void onValueChanged(int oldValue, int newValue) {
+                if (sectionFrag == null || !sectionFrag.isAdded()) addSectionFragment();
+                if (sectionFrag.getView() != null) {
+                    TextView sectionTwidthInTv = (TextView) sectionFrag.getView().findViewById(R.id.sectionTwidthIn);
+                    if (sectionTwidthInTv != null) {
+                        float newMeasurement = (float) newValue;
+                        String newString = String.valueOf(newMeasurement);
+                        sectionTwidthInTv.setText(newString);
+                    }
+                }
+
+            }
+        });
+
         sEmptyLengthPickFt = (ActualNumberPicker) findViewById(R.id.emptyLengthPickerFt);
         sEmptyLengthPickFt.setListener(new OnValueChangeListener() {
             @Override
@@ -524,6 +581,7 @@ public class SectionActivity extends AppCompatActivity implements SectionFragmen
         intent.putExtra("city", this.city);
         intent.putExtra("region", this.region);
         intent.putExtra("premium", this.premium);
+        intent.putExtra("material", this.material);
         intent.putExtra("currentRid", this.currentRid);
         intent.putExtra("fileCount", this.fileCount);
         intent.putExtra("fileUrls", this.fileUrls);
@@ -559,6 +617,7 @@ public class SectionActivity extends AppCompatActivity implements SectionFragmen
         this.city= intent.getStringExtra("city");
         this.region= intent.getStringExtra("region");
         this.premium = intent.getBooleanExtra("premium", false);
+        this.material = intent.getStringExtra("material");
         this.currentRid = intent.getIntExtra("currentRid", -1);
         this.fileCount = intent.getIntExtra("fileCount", 0);
         this.fileUrls = intent.getStringArrayExtra("fileUrls");

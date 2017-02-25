@@ -28,6 +28,7 @@
 
     <string name="measure">Measure</string>
     <string name="width">Width</string>
+    <string name="top_width">Top Width</string>
     <string name="length">Length</string>
     <string name="slope">Slope</string>
     <string name="metrics">METRICS</string>

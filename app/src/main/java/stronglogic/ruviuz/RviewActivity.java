@@ -8,6 +8,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.MenuItemCompat;
@@ -277,80 +278,80 @@ public class RviewActivity extends AppCompatActivity implements RuvFragment.RuvF
 
     public boolean parseData(String data) {
 
-        try {
-            JSONObject dataJson = new JSONObject(data);
-            JSONArray rvJsonArray = new JSONArray(dataJson.getString("Roofs"));
-            for (int i = 0; i < rvJsonArray.length(); i++) {
-                JSONObject keyPairJson = rvJsonArray.getJSONObject(i);
-                JSONObject roofJson = new JSONObject(keyPairJson.getString("roof"));
-                Roof roof = new Roof();
-                roof.setId(Integer.valueOf(roofJson.getString("id")));
-                roof.setAddress(roofJson.getString("address"));
-//                roof.setLength(Float.valueOf(roofJson.getString("length")));
-//                roof.setWidth(Float.valueOf(roofJson.getString("width")));
-//                roof.setSlope(Float.valueOf(roofJson.getString("slope")));
-                roof.setPrice(new BigDecimal(roofJson.getString("price")));
-                if (roofJson.has("customer"))
-                    roof.setCustomerName(roofJson.getString("customer"));
-                if (roofJson.has("files")) {
-                    JSONArray rFiles = new JSONArray(roofJson.getString("files"));
-                    int fileNum = rFiles.length();
-                    Log.d(TAG, "Number of files for" + roof.getId() + ": " + String.valueOf(fileNum));
-                    ArrayList<RuvFileInfo> filesArray = new ArrayList<>();
-                    for (int fNum = 0; fNum < fileNum; fNum++) {
-                        JSONObject fileObject = rFiles.getJSONObject(fNum);
-                        RuvFileInfo rFile = new RuvFileInfo();
-                        rFile.setUrl(MainActivity.baseUrl + "/files/" + fileObject.getString(String.valueOf(fNum)));
-                        if (fileObject.has("comment")) rFile.setComment(fileObject.getString("comment"));
-                        filesArray.add(rFile);
+        if (!data.equals("Error")) {
+            try {
+                JSONObject dataJson = new JSONObject(data);
+                JSONArray rvJsonArray = new JSONArray(dataJson.getString("Roofs"));
+                for (int i = 0; i < rvJsonArray.length(); i++) {
+                    JSONObject keyPairJson = rvJsonArray.getJSONObject(i);
+                    JSONObject roofJson = new JSONObject(keyPairJson.getString("roof"));
+                    JSONObject addrJson = new JSONObject(roofJson.getString("address"));
+                    Roof roof = new Roof();
+                    roof.setId(Integer.valueOf(roofJson.getString("id")));
+                    roof.setPrice(new BigDecimal(roofJson.getString("price")));
+                    String addrStr = addrJson.getString("address") + "\n" + addrJson.getString("city") + "," + addrJson.getString("region") + "\n" + addrJson.getString("postal");
+                    roof.setAddress(addrStr);
+                    if (roofJson.has("customer"))
+                        roof.setCustomerName(roofJson.getString("customer"));
+                    if (roofJson.has("files")) {
+                        JSONArray rFiles = new JSONArray(roofJson.getString("files"));
+                        int fileNum = rFiles.length();
+                        Log.d(TAG, "Number of files for" + roof.getId() + ": " + String.valueOf(fileNum));
+                        ArrayList<RuvFileInfo> filesArray = new ArrayList<>();
+                        for (int fNum = 0; fNum < fileNum; fNum++) {
+                            JSONObject fileObject = rFiles.getJSONObject(fNum);
+                            RuvFileInfo rFile = new RuvFileInfo();
+                            rFile.setUrl(MainActivity.baseUrl + "/files/" + fileObject.getString(String.valueOf(fNum)));
+                            if (fileObject.has("comment"))
+                                rFile.setComment(fileObject.getString("comment"));
+                            filesArray.add(rFile);
+                        }
+                        roof.setFiles(filesArray);
                     }
-                    roof.setFiles(filesArray);
-                }
-                if (roofJson.has("sections")) {
-                    JSONArray sections = new JSONArray(roofJson.getString("sections"));
-                    int secNum = sections.length();
-                    ArrayList<Section> sectionsArray = new ArrayList<>();
-                    for (int sNum = 0; sNum < secNum; sNum++) {
-                        JSONObject sectionObject= sections.getJSONObject(sNum);
-//                        JSONObject sectionObject = sectionContainer.getJSONObject("0");
-//                        Iterator<?> objKeys = sectionObject.keys();
-//                        while (objKeys.hasNext()) {
-//                            String key = (String) objKeys.next();
-//                            Log.d(TAG, key);
+                    if (roofJson.has("sections")) {
+                        JSONArray sections = new JSONArray(roofJson.getString("sections"));
+                        int secNum = sections.length();
+                        ArrayList<Section> sectionsArray = new ArrayList<>();
+                        for (int sNum = 0; sNum < secNum; sNum++) {
+                            JSONObject sectionObject = sections.getJSONObject(sNum);
 //                        }
-                        Section section = new Section();
-                        section.setSlope(Float.valueOf(sectionObject.getString("slope")));
-                        section.setLength(Float.valueOf(sectionObject.getString("length")));
-                        section.setWidth(Float.valueOf(sectionObject.getString("width")));
-                        if (!Boolean.valueOf(sectionObject.getString("full"))) {
-                            section.toggleFull();
-                            if (sectionObject.has("empty"))
-                            section.setMissing(Float.valueOf(sectionObject.getString("empty")));
-                            if (sectionObject.has("etype")) {
-                                if (sectionObject.getString("etype").equals(Section.EmptyType.CHIMNEY)) {
-                                    section.setEmptyType(Section.EmptyType.CHIMNEY);
-                                } else if (sectionObject.getString("etype").equals(Section.EmptyType.SKY_LIGHT)) {
-                                    section.setEmptyType(Section.EmptyType.SKY_LIGHT);
-                                } else if (sectionObject.getString("etype").equals(Section.EmptyType.OTHER)) {
-                                    section.setEmptyType(Section.EmptyType.OTHER);
+                            Section section = new Section();
+                            section.setSlope(Float.valueOf(sectionObject.getString("slope")));
+                            section.setLength(Float.valueOf(sectionObject.getString("length")));
+                            section.setWidth(Float.valueOf(sectionObject.getString("width")));
+                            if (!Boolean.valueOf(sectionObject.getString("full"))) {
+                                section.toggleFull();
+                                if (sectionObject.has("empty"))
+                                    section.setMissing(Float.valueOf(sectionObject.getString("empty")));
+                                if (sectionObject.has("etype")) {
+                                    if (sectionObject.getString("etype").equals(Section.EmptyType.CHIMNEY)) {
+                                        section.setEmptyType(Section.EmptyType.CHIMNEY);
+                                    } else if (sectionObject.getString("etype").equals(Section.EmptyType.SKY_LIGHT)) {
+                                        section.setEmptyType(Section.EmptyType.SKY_LIGHT);
+                                    } else if (sectionObject.getString("etype").equals(Section.EmptyType.OTHER)) {
+                                        section.setEmptyType(Section.EmptyType.OTHER);
+                                    }
                                 }
                             }
+                            sectionsArray.add(section);
                         }
-                        sectionsArray.add(section);
+                        roof.setSections(sectionsArray);
                     }
-                    roof.setSections(sectionsArray);
+                    roofArrayList.add(roof);
                 }
-                roofArrayList.add(roof);
+                Collections.sort(roofArrayList, new Comparator<Roof>() {
+                    @Override
+                    public int compare(Roof o1, Roof o2) {
+                        return o1.getId() > o2.getId() ? 1 : o1.getId() < o2.getId() ? -1 : 0;
+                    }
+                });
+                return true;
+            } catch (JSONException e) {
+                e.printStackTrace();
+                return false;
             }
-            Collections.sort(roofArrayList, new Comparator<Roof>() {
-                @Override
-                public int compare(Roof o1, Roof o2) {
-                    return o1.getId() > o2.getId() ? 1 : o1.getId() < o2.getId() ? -1 : 0;
-                }
-            });
-            return true;
-        } catch (JSONException e) {
-            e.printStackTrace();
+        } else {
+            Snackbar.make(RviewActivity.this.findViewById(R.id.activity_rview), "Login Successful", Snackbar.LENGTH_SHORT).show();
             return false;
         }
     }

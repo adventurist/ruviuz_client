@@ -155,16 +155,17 @@ public class RuvSessionManager {
 
             HttpURLConnection connection;
             BufferedReader reader;
-            String response;
+            String response = "";
 
-            String mAuth = oldToken + ":" + password;
+            String mAuth = oldToken + ":" + "jigga";
             String mAuth64 = Base64.encodeToString(mAuth.trim().getBytes(), Base64.NO_WRAP);
             try {
                 URL url = new URL(endpoint);
                 connection = (HttpURLConnection) url.openConnection();
-                connection.setRequestMethod("POST");
+                connection.setDoOutput(false);
+//                connection.setRequestMethod("POST");
 //                connection.setRequestProperty("Content-Type", "application/json");
-                connection.setRequestProperty("Accept", "application/json");
+//                connection.setRequestProperty("Accept", "application/json");
                 connection.setRequestProperty("Authorization", "Basic " + mAuth64);
                 connection.connect();
 
@@ -173,8 +174,14 @@ public class RuvSessionManager {
                 writer.close();
                 String respCode = String.valueOf(connection.getResponseCode());
                 Log.d(TAG, respCode);
-                if (respCode.equals("401") || respCode.equals("404")) {
-                    response = "Error";
+                if (respCode.substring(0, 1).equals("4") || respCode.substring(0, 1).equals("5")) {
+                    InputStream error =  connection.getErrorStream();
+                    Log.d(TAG, error.toString());
+                    Bundle msgData = new Bundle();
+                    msgData.putString("tokenResponse", "Error:\n" + error.toString());
+                    Message outgoingMsg = new Message();
+                    outgoingMsg.setData(msgData);
+                    mHandler.sendMessage(outgoingMsg);
                 } else {
                     InputStream stream = connection.getInputStream();
                     reader = new BufferedReader(new InputStreamReader(stream));
@@ -185,16 +192,17 @@ public class RuvSessionManager {
                         bildr.append(line);
                     }
                     response = bildr.toString();
+
+                    if (!response.trim().isEmpty()) {
+                        Bundle msgData = new Bundle();
+                        msgData.putString("tokenResponse", String.valueOf(response));
+                        Message outgoingMsg = new Message();
+                        outgoingMsg.setData(msgData);
+                        mHandler.sendMessage(outgoingMsg);
+                    }
+                    return true;
                 }
 
-                if (!response.trim().isEmpty()) {
-                    Bundle msgData = new Bundle();
-                    msgData.putString("tokenResponse", String.valueOf(response));
-                    Message outgoingMsg = new Message();
-                    outgoingMsg.setData(msgData);
-                    mHandler.sendMessage(outgoingMsg);
-                }
-                return true;
             } catch (MalformedURLException e) {
                 e.printStackTrace();
                 return false;
@@ -202,6 +210,7 @@ public class RuvSessionManager {
                 e.printStackTrace();
                 return false;
             }
+            return false;
         }
     }
 }

@@ -21,7 +21,6 @@ import stronglogic.ruviuz.content.Section;
  **/
 
 public class SectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-    private LayoutInflater layoutInflater;
     private Activity mActivity;
 
     private ArrayList<Section> sectionList;
@@ -32,7 +31,7 @@ public class SectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
 
 
-    public SectionAdapter(Activity activity, ArrayList sectionList)   {
+    public SectionAdapter(Activity activity, ArrayList<Section> sectionList)   {
         super();
         this.mActivity = activity;
         this.sectionList = sectionList;
@@ -40,7 +39,7 @@ public class SectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
 
     public static class SectionHolder extends RecyclerView.ViewHolder  {
-        TextView sectionId, sectionType, sectionLength, sectionWidth, sectionArea, sectionSlope, emptyArea, emptyLabel, emptyFt2, emptyTypeLabel, emptyType;
+        TextView sectionId, sectionType, sectionLength, sectionWidth, sectionTopWidth, sectionArea, sectionSlope, emptyArea, emptyLabel, emptyFt2, emptyTypeLabel, emptyType;
 
         SectionHolder(View mView) {
             super(mView);
@@ -48,6 +47,7 @@ public class SectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             sectionType = (TextView) mView.findViewById(R.id.sectionType);
             sectionLength = (TextView) mView.findViewById(R.id.sectionLength);
             sectionWidth = (TextView) mView.findViewById(R.id.sectionWidth);
+            sectionTopWidth = (TextView) mView.findViewById(R.id.sectionTopWidth);
             sectionSlope = (TextView) mView.findViewById(R.id.sectionSlope);
             sectionArea = (TextView) mView.findViewById(R.id.sectionArea);
             emptyLabel = (TextView) mView.findViewById(R.id.emptyLabel);
@@ -93,6 +93,7 @@ public class SectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             sectionHolder.sectionType.setText(section.getSectionType());
             sectionHolder.sectionLength.setText(String.valueOf(section.getLength()));
             sectionHolder.sectionWidth.setText(String.valueOf(section.getWidth()));
+            sectionHolder.sectionTopWidth.setText(String.valueOf(section.getTopWidth()));
             sectionHolder.sectionSlope.setText(String.valueOf(section.getSlope()));
             sectionHolder.sectionArea.setText(String.valueOf(section.getLength() * section.getWidth()));
             if (section.getMissing() > 0) {
