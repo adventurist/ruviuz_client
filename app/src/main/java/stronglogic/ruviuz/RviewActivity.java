@@ -1,5 +1,6 @@
 package stronglogic.ruviuz;
 
+import android.app.FragmentManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -48,15 +49,17 @@ import stronglogic.ruviuz.content.Customer;
 import stronglogic.ruviuz.content.Roof;
 import stronglogic.ruviuz.content.RuvFileInfo;
 import stronglogic.ruviuz.content.Section;
+import stronglogic.ruviuz.fragments.ImageEditFragment;
 import stronglogic.ruviuz.fragments.RuvFragment;
 import stronglogic.ruviuz.tasks.RviewTask;
 import stronglogic.ruviuz.util.RuvFilter;
 import stronglogic.ruviuz.views.RuvAdapter;
 
+import static stronglogic.ruviuz.MainActivity.baseUrl;
 import static stronglogic.ruviuz.MainActivity.getStatusBarHeight;
 import static stronglogic.ruviuz.MainActivity.sendViewToBack;
 
-public class RviewActivity extends AppCompatActivity implements RuvFragment.RuvFragListener {
+public class RviewActivity extends AppCompatActivity implements RuvFragment.RuvFragListener, ImageEditFragment.ImageFragListener {
 
     private static final String TAG = "RuviuzRVIEWACTIVITY";
     private static final int RUVIUZ_CAMERA = 15;
@@ -69,10 +72,13 @@ public class RviewActivity extends AppCompatActivity implements RuvFragment.RuvF
     private static final int CAMERA_REQUEST = 66;
     private static final int GEOLOCATION_REQUEST = 67;
 
+    public static final int RVIEW_IMG_EDIT = 900;
+
     private android.support.v7.widget.Toolbar mToolbar;
 
+    private ImageEditFragment imgEditFrag;
+
     private String authToken;
-    private String baseUrl;
 
     private int currentRid, fileCount, reopenDialog;
     private float slope, width, length;
@@ -301,7 +307,7 @@ public class RviewActivity extends AppCompatActivity implements RuvFragment.RuvF
                         for (int fNum = 0; fNum < fileNum; fNum++) {
                             JSONObject fileObject = rFiles.getJSONObject(fNum);
                             RuvFileInfo rFile = new RuvFileInfo();
-                            rFile.setUrl(MainActivity.baseUrl + "/files/" + fileObject.getString(String.valueOf(fNum)));
+                            rFile.setUrl(baseUrl + "/files/" + fileObject.getString(String.valueOf(fNum)));
                             if (fileObject.has("comment"))
                                 rFile.setComment(fileObject.getString("comment"));
                             filesArray.add(rFile);
@@ -316,9 +322,22 @@ public class RviewActivity extends AppCompatActivity implements RuvFragment.RuvF
                             JSONObject sectionObject = sections.getJSONObject(sNum);
 //                        }
                             Section section = new Section();
+                            if (sectionObject.has("type")) {
+                                if (sectionObject.getString("type").equals(Section.SectionType.MANSARD)) {
+                                    section.setSectionType(Section.SectionType.MANSARD);
+                                } else if (sectionObject.getString("type").equals(Section.SectionType.HIP_RECTANGLE)) {
+                                    section.setSectionType(Section.SectionType.HIP_RECTANGLE);
+                                } else if (sectionObject.getString("type").equals(Section.SectionType.HIP_SQUARE)) {
+                                    section.setSectionType(Section.SectionType.HIP_SQUARE);
+                                } else if (sectionObject.getString("type").equals(Section.SectionType.GABLE)) {
+                                    section.setSectionType(Section.SectionType.GABLE);
+                                }
+//                            else if (sectionObject.getString("type").equals(Section.SectionType.LEAN-TO-ROOF))
+                            }
                             section.setSlope(Float.valueOf(sectionObject.getString("slope")));
                             section.setLength(Float.valueOf(sectionObject.getString("length")));
                             section.setWidth(Float.valueOf(sectionObject.getString("width")));
+                            section.setTopWidth(Float.valueOf(sectionObject.getString("twidth")));
                             if (!Boolean.valueOf(sectionObject.getString("full"))) {
                                 section.toggleFull();
                                 if (sectionObject.has("empty"))
@@ -388,6 +407,23 @@ public class RviewActivity extends AppCompatActivity implements RuvFragment.RuvF
 //            rv.addItemDecoration(new HorizontalDividerItemDecoration.Builder(this).build());
             ruvFilter = new RuvFilter(ruvAdapter, roofArrayList);
             this.filterType = RuvFilter.filterType.ADDRESS;
+        }
+    }
+
+    public void editImgDialog(Bundle mBundle) {
+        FragmentManager fm = getFragmentManager();
+        if (imgEditFrag == null) {
+            imgEditFrag = new ImageEditFragment();
+            imgEditFrag.setArguments(mBundle);
+            if (!imgEditFrag.isAdded()) {
+                imgEditFrag.show(fm, "Edit Image");
+            }
+        } else {
+            fm.beginTransaction().remove(imgEditFrag).commit();
+            imgEditFrag = null;
+            imgEditFrag = new ImageEditFragment();
+            imgEditFrag.setArguments(mBundle);
+            imgEditFrag.show(fm, "Please Enter Metrics");
         }
     }
 
@@ -578,7 +614,7 @@ public class RviewActivity extends AppCompatActivity implements RuvFragment.RuvF
         intent.putExtra("fileCount", this.fileCount);
         intent.putExtra("fileUrls", this.fileUrls);
         intent.putExtra("fileComments", this.fileComments);
-        intent.putExtra("baseUrl", MainActivity.baseUrl);
+        intent.putExtra("baseUrl", baseUrl);
         this.ready = intent.getBooleanExtra("ready", false);
         if (mCustomer != null) {
             try {
@@ -699,4 +735,10 @@ public class RviewActivity extends AppCompatActivity implements RuvFragment.RuvF
                 break;
         }
     }
+
+    @Override
+    public void imageFragInteraction(Bundle bundle, int request) {
+        Log.d(TAG, String.valueOf(request));
+    }
+
 }

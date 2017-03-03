@@ -27,7 +27,7 @@
         android:layout_marginTop="48dp"
 
         android:id="@+id/fullscreen_content"
-        android:text="@string/set_values"
+        android:text="@string/measure_sections"
         android:textColor="#000"
         android:layout_gravity="center_horizontal" />
 
@@ -39,7 +39,7 @@
 
         <LinearLayout
             android:layout_width="220dp"
-            android:layout_height="175dp"
+            android:layout_height="140dp"
             android:layout_weight="0.6"
             android:id="@+id/section_fragment"
             android:layout_gravity="start"
@@ -51,7 +51,7 @@
 
         <android.support.v7.widget.RecyclerView
             android:layout_width="190dp"
-            android:layout_height="175dp"
+            android:layout_height="140dp"
             android:layout_weight="0.4"
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
@@ -81,6 +81,19 @@
                 android:textColor="@color/ruvGreen"
                 android:layout_weight="1"
                 android:text="@string/addsection" />
+
+            <android.support.design.widget.FloatingActionButton
+                android:layout_width="wrap_content"
+                app:elevation="8dp"
+                android:clickable="true"
+                app:fabSize="mini"
+                app:srcCompat="@drawable/checked"
+                android:id="@+id/doneBtn"
+                android:layout_gravity="end"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginEnd="36dp"
+                android:layout_height="36dp" />
         </LinearLayout>
 
         <ScrollView
@@ -92,32 +105,13 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/widgetWrap">
 
-                <Switch
-                    android:layout_width="84dp"
-                    android:layout_height="52dp"
-                    android:layout_marginStart="12dp"
-                    android:id="@+id/fullToggle"
-                    android:layout_alignParentTop="true"
-                    android:checked="true"
-                    android:text="@string/full"/>
 
-                <android.support.design.widget.FloatingActionButton
-                    android:layout_width="wrap_content"
-                    app:elevation="8dp"
-                    android:clickable="true"
-                    app:fabSize="mini"
-                    app:srcCompat="@drawable/checked"
-                    android:id="@+id/doneBtn"
-                    android:layout_gravity="top|end"
-                    android:layout_alignParentTop="true"
-                    android:layout_alignParentEnd="true"
-                    android:layout_marginEnd="32dp"
-                    android:layout_height="32dp" />
+
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_below="@id/fullToggle"
+                    android:layout_alignParentTop="true"
                     android:layout_alignParentStart="true"
                     android:text="Section Type"
                     android:layout_marginStart="12dp"
@@ -127,13 +121,13 @@
                     android:textColor="#000"/>
 
                 <Spinner
-                    android:layout_width="224dp"
+                    android:layout_width="196dp"
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
-                    android:layout_marginTop="8dp"
+                    android:layout_marginStart="8dp"
                     android:layout_marginEnd="12dp"
                     android:layout_toEndOf="@id/sectionTypeTv"
-                    android:layout_below="@id/fullToggle"
+                    android:layout_alignParentTop="true"
                     android:textColor="@color/colorPrimaryDark"
                     android:id="@+id/sectionTypeSpin"
                     android:dropDownSelector="@drawable/geolocate"
@@ -151,10 +145,47 @@
                     android:layout_marginTop="8dp"
                     android:text="@string/length"
                     android:textColor="#000" />
+                <RadioGroup
+                    android:id="@+id/numpickGrp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="48dp"
+                    android:layout_margin="0dp"
+                    android:layout_below="@id/lengthPickTv"
+                    android:orientation="horizontal" >
+
+                    <RadioButton
+                        android:id="@+id/btn1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="48dp"
+                        android:layout_margin="0dp"
+                        android:background="@drawable/numpick_select"
+                        android:button="@null"
+                        android:checked="true"
+                        android:gravity="center" />
+
+                    <RadioButton
+                        android:id="@+id/btn2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="48dp"
+                        android:layout_margin="0dp"
+                        android:background="@drawable/numpick_select"
+                        android:button="@null"
+                        android:gravity="center" />
+
+                    <RadioButton
+                        android:id="@+id/btn3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="48dp"
+                        android:layout_margin="0dp"
+                        android:background="@drawable/numpick_select"
+                        android:button="@null"
+                        android:gravity="center" />
+
+                </RadioGroup>
+
                 <me.angrybyte.numberpicker.view.ActualNumberPicker
                     android:id="@+id/lengthPickerFt"
                     android:layout_width="wrap_content"
-                    android:layout_centerHorizontal="false"
                     android:layout_marginStart="12dp"
                     android:background="#ffc400"
                     android:layout_alignParentStart="true"
@@ -177,8 +208,8 @@
                     app:text_color="#000"
                     app:text_size="20sp"
                     app:value="0"
-                    android:layout_below="@id/lengthPickTv"
-                    android:layout_marginTop="12dp"
+                    android:layout_below="@id/numpickGrp"
+
                     android:layout_height="48dp" />
 
                 <TextView
@@ -188,8 +219,11 @@
                     android:textColor="#000"
                     android:textSize="14sp"
                     android:layout_marginTop="8dp"
+                    android:layout_above="@id/lengthLabel"
                     android:layout_below="@+id/lengthPickerFt"
                     android:layout_marginStart="72dp" />
+
+
 
 
                 <me.angrybyte.numberpicker.view.ActualNumberPicker
@@ -419,6 +453,16 @@
                     android:layout_alignParentEnd="true"
                     android:layout_marginEnd="72dp" />
 
+                <Switch
+                    android:layout_width="84dp"
+                    android:layout_height="52dp"
+                    android:layout_marginStart="12dp"
+                    android:layout_marginTop="16dp"
+                    android:id="@+id/fullToggle"
+                    android:layout_below="@id/topWidthPickerFt"
+                    android:checked="true"
+                    android:text="@string/full"/>
+
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -426,7 +470,7 @@
                     android:textSize="18sp"
                     android:id="@+id/emptyLengthTv"
                     android:layout_centerHorizontal="true"
-                    android:layout_below="@id/topWidthPickerFt"
+                    android:layout_below="@id/fullToggle"
                     android:text="@string/empty_length"
                     android:layout_marginTop="8dp"
                     android:visibility="gone"
@@ -618,37 +662,6 @@
                     android:layout_alignParentEnd="true"
                     android:layout_marginEnd="72dp" />
 
-                <RadioGroup xmlns:android="http://schemas.android.com/apk/res/android"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:layout_widthPercent="100%"
-                    android:id="@+id/emptyType"
-                    android:orientation="horizontal"
-                    android:gravity="center"
-                    android:visibility="gone"
-                    android:layout_below="@id/emptyWidthFtTv"
-                    android:layout_marginBottom="16dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_alignParentBottom="true">
-                    <RadioButton android:id="@+id/chimney"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="36dp"
-                        android:text="@string/chimney"
-                        />
-                    <RadioButton android:id="@+id/skylight"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_horizontal"
-                        android:text="@string/skylight"
-                        />
-                    <RadioButton android:id="@+id/emptyOther"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="36dp"
-                        android:text="@string/other"
-                        />
-                </RadioGroup>
 
             </RelativeLayout>
 

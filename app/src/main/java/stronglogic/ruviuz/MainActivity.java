@@ -130,6 +130,11 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
     public static final int RUV_EDIT_OFF = 79;
     public static final int RUV_SESSION_SUCCESS = 80;
     public static final int RUV_SESSION_FAIL = 81;
+    public static final int RUV_SESSION_UPDATE = 82;
+
+    public enum ruvFrag { ADDRESS, CUSTOMER, EDIT, FILE, IMAGE, LOGIN, MAIN, SLOPE, WELCOME, NO_FRAG }
+
+    private ruvFrag activeFrag;
 
     public static final String baseUrl = "http://52.43.250.94:5000";
 
@@ -168,7 +173,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
     private Geocoder geocoder;
 
     private int fileCount, commentCount, currentRid, lastAction;
-    private float topwidth, width, length, slope;
+    private float width, length, slope;
     private BigDecimal price;
     private String material, address, postal, city, region;
     private String[] fileUrls = new String[3];
@@ -213,20 +218,22 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         setupWindowAnimations();
 
         MainActivity.this.progressBar = (ProgressBar) findViewById(R.id.tokenProgress);
-        MainActivity.this.progressBar.setMax(575);
+        MainActivity.this.progressBar.setMax(95);
 
         ruvSessionManager = new RuvSessionManager(MainActivity.this, new RuvSessionManager.SessionListener() {
             @Override
             public void returnData(String token, int result) {
                 if (result == RUV_SESSION_SUCCESS) {
                     MainActivity.this.authToken = token;
-//                    Snackbar.make(MainActivity.this.findViewById(R.id.MainParentView), "Login Successful", Snackbar.LENGTH_SHORT).show();
+                    ruvSessionManager.startTimer();
                     Toast.makeText(MainActivity.this, "Login Successful", Toast.LENGTH_SHORT).show();
                     if (MainActivity.this.isActive)
                     mainDialog();
+                } else if (result == RUV_SESSION_UPDATE) {
+                    Toast.makeText(MainActivity.this, "Setting new Token", Toast.LENGTH_SHORT).show();
+                    ruvSessionManager.startTimer();
                 } else {
-//                    Snackbar.make(MainActivity.this.findViewById(R.id.MainParentView), "Login FAILURE", Snackbar.LENGTH_SHORT).show();
-                    Toast.makeText(MainActivity.this, "Login FAILURE", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MainActivity.this, "Login FAILURE", Toast.LENGTH_SHORT).show();
                     if (MainActivity.this.isActive)
                     loginDialog();
                 }
@@ -530,24 +537,24 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
                 }
                 this.commentCount = realCount;
             }
-            if (this.ruvFiles == null) {
-                this.ruvFiles = new HashMap<>();
-
-            }
-            if (this.fileUrls == null) { this.fileUrls = new String[3]; }
-            if (this.fileComments == null) { this.fileComments = new String[3]; }
-            if (fileUrls != null)
-                for (int i = fileUrls.length; i > 0; i--) {
-                    if (fileUrls[i - 1] != null && !fileUrls[i - 1].equals("") &&
-                            fileComments[i - 1] != null && !fileComments[i- 1].equals("")) {
-                        RuvFileInfo rFile = new RuvFileInfo();
-                        rFile.setUrl(fileUrls[i - 1]);
-                        rFile.setFilename(fileUrls[i - 1].substring(fileUrls[i - 1].lastIndexOf('/') + 1));
-                        rFile.setComment(fileComments[i - 1]);
-                        ruvFiles.put(rFile.getFilename(), rFile);
-                    }
-                }
-
+//            if (this.ruvFiles == null) {
+//                this.ruvFiles = new HashMap<>();
+//
+//            }
+//            if (this.fileUrls == null) { this.fileUrls = new String[3]; }
+//            if (this.fileComments == null) { this.fileComments = new String[3]; }
+//            if (fileUrls != null) {
+//                for (int i = fileUrls.length; i > 0; i--) {
+//                    if (fileUrls[i - 1] != null && !fileUrls[i - 1].equals("") &&
+//                            fileComments[i - 1] != null && !fileComments[i - 1].equals("")) {
+//                        RuvFileInfo rFile = new RuvFileInfo();
+//                        rFile.setUrl(fileUrls[i - 1]);
+//                        rFile.setFilename(fileUrls[i - 1].substring(fileUrls[i - 1].lastIndexOf('/') + 1));
+//                        rFile.setComment(fileComments[i - 1]);
+//                        ruvFiles.put(rFile.getFilename(), rFile);
+//                    }
+//                }
+//            }
 
             if (xIntent.hasExtra("uri")) {
                 if (fileCount + 1 == 4) {
@@ -615,6 +622,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         draftCheck();
         if (getIntent().hasExtra("authToken")) authToken = getIntent().getStringExtra("authToken");
         if (authToken == null) {
+            Log.d(TAG,"AuthToken null. Logging in again");
             hideActivity();
             dismissAllDialogs();
             RuvSessionManager.setEmail(prefs.getString("email", "Email"));
@@ -622,6 +630,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
             ruvSessionManager.init_login();
         } else {
             dismissAllDialogs();
+            ruvSessionManager.startTimer();
         }
 
         if ((mainFragment == null || !mainFragment.isAdded()) && (mLoginFrag == null || !mLoginFrag.isAdded()) && (mCustomerFrag == null || !mCustomerFrag.isAdded()) && (slopeFrag == null || !slopeFrag.isAdded()) && (mWelcomeFrag == null || !mWelcomeFrag.isAdded())) {
@@ -636,6 +645,8 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
             hideActivity();
             fileDialog();
         }
+        updateFiles();
+        persistFragState(this.activeFrag);
     }
 
 
@@ -671,7 +682,6 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
     public void setupRecycler() {
         if (MainActivity.this.sectionList != null && MainActivity.this.sectionList.size() > -1) {
             this.secAdapter = new SectionAdapter(MainActivity.this, MainActivity.this.sectionList);
-            LinearLayoutManager layoutManager = new LinearLayoutManager(this);
             rv = (RecyclerView) findViewById(R.id.sectionView);
             rv.setAdapter(secAdapter);
             rv.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -698,6 +708,25 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
     }
 
 
+    public void updateFiles() {
+        if (this.ruvFiles == null) {
+            this.ruvFiles = new HashMap<>();
+
+        }
+        if (this.fileUrls == null) { this.fileUrls = new String[3]; }
+        if (this.fileComments == null) { this.fileComments = new String[3]; }
+
+        for (int i = fileUrls.length; i > 0; i--) {
+            if (fileUrls[i - 1] != null && !fileUrls[i - 1].equals("") &&
+                    fileComments[i - 1] != null && !fileComments[i - 1].equals("")) {
+                RuvFileInfo rFile = new RuvFileInfo();
+                rFile.setUrl(fileUrls[i - 1]);
+                rFile.setFilename(fileUrls[i - 1].substring(fileUrls[i - 1].lastIndexOf('/') + 1));
+                rFile.setComment(fileComments[i - 1]);
+                ruvFiles.put(rFile.getFilename(), rFile);
+            }
+        }
+    }
 
     BigDecimal calculatePrice() {
         try {
@@ -715,6 +744,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
     }
 
     public void welcomeDialog() {
+        MainActivity.this.activeFrag = ruvFrag.WELCOME;
         dismissAllDialogs();
         FragmentManager fm = getFragmentManager();
         if (mWelcomeFrag == null) {
@@ -734,6 +764,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
 
     public void loginDialog() {
 
+        MainActivity.this.activeFrag = ruvFrag.LOGIN;
         FragmentManager fm = getFragmentManager();
         if (mLoginFrag == null) {
             mLoginFrag = new LoginFragment();
@@ -764,6 +795,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
     }
 
     public void mainDialog() {
+        MainActivity.this.activeFrag = ruvFrag.MAIN;
         dismissAllDialogs();
         FragmentManager fm = getFragmentManager();
         if (mainFragment == null) {
@@ -788,6 +820,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
 
 
     public void addressDialog() {
+        MainActivity.this.activeFrag = ruvFrag.ADDRESS;
         dismissAllDialogs();
         FragmentManager fm = getFragmentManager();
         if (mAddressFrag == null) {
@@ -805,6 +838,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
     }
 
     public void customerDialog() {
+        MainActivity.this.activeFrag = ruvFrag.CUSTOMER;
         dismissAllDialogs();
         FragmentManager fm = getFragmentManager();
 
@@ -842,6 +876,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
 
 
     public void editDialog() {
+        MainActivity.this.activeFrag = ruvFrag.EDIT;
         updateValues();
         dismissAllDialogs();
         Bundle mBundle = new Bundle();
@@ -886,6 +921,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
     }
 
     public void slopeDialog() {
+        MainActivity.this.activeFrag = ruvFrag.SLOPE;
         updateValues();
         Bundle mBundle = new Bundle();
         mBundle.putFloat("slope", slope);
@@ -906,6 +942,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
     }
 
     public void fileDialog() {
+        MainActivity.this.activeFrag = ruvFrag.FILE;
         FragmentManager fm = getFragmentManager();
         Bundle mBundle = new Bundle();
         mBundle.putStringArray("fileUrls", fileUrls);
@@ -929,6 +966,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
     }
 
     public void editImgDialog(Bundle mBundle) {
+        MainActivity.this.activeFrag = ruvFrag.IMAGE;
         FragmentManager fm = getFragmentManager();
         if (imgEditFrag == null) {
             imgEditFrag = new ImageEditFragment();
@@ -1123,6 +1161,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
             secAdapter.swapData(this.sectionList);
             secAdapter.notifyDataSetChanged();
         }
+        updateFiles();
     }
 
     @Override
@@ -1365,17 +1404,6 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         return sent;
     }
 
-    private int sendRuuvComments() {
-        int sent = 0;
-        for (String comment : fileComments) {
-            if (comment != null) {
-                Bundle mBundle = new Bundle();
-
-                sent++;
-            }
-        }
-        return sent;
-    }
 
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
@@ -1426,6 +1454,40 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         return creds;
     }
 
+    public void persistFragState(MainActivity.ruvFrag activeFrag) {
+        switch (activeFrag) {
+            case ADDRESS:
+                addressDialog();
+                break;
+            case CUSTOMER:
+                customerDialog();
+                break;
+            case EDIT:
+                editDialog();
+                break;
+            case FILE:
+                fileDialog();
+                break;
+            case IMAGE:
+                editImgDialog(new Bundle());
+                break;
+            case LOGIN:
+                loginDialog();
+                break;
+            case MAIN:
+                mainDialog();
+                break;
+            case SLOPE:
+                slopeDialog();
+                break;
+            case WELCOME:
+                welcomeDialog();
+                break;
+            case NO_FRAG:
+                break;
+        }
+    }
+
     public void putPrefsData() {
         updateValues();
         SharedPreferences.Editor prefEdit = MainActivity.this.getSharedPreferences("RuviuzApp", Context.MODE_PRIVATE).edit();
@@ -1439,6 +1501,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         prefEdit.putFloat("slope", slope);
         prefEdit.putBoolean("premium", premium);
         prefEdit.putInt("currentRid", currentRid);
+        prefEdit.putString("activeFrag", activeFrag.toString());
         if (fileUrls != null) {
             prefEdit.putString("fileUrl1", fileUrls[0]);
             prefEdit.putString("fileUrl2", fileUrls[1]);
@@ -1464,6 +1527,12 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
             }
         }
         //TODO save SECTION data
+//        if (sectionList != null && sectionList.size() > 0) {
+//            try {
+//                JSONObject sectionObject = new JSONObject();
+//
+//            }
+//        }
         prefEdit.commit();
     }
 
@@ -1480,6 +1549,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         this.slope = mPrefs.getFloat("slope", 0f);
         this.premium = mPrefs.getBoolean("premium", false);
         this.currentRid = mPrefs.getInt("currentRid", 0);
+        this.activeFrag = ruvFrag.valueOf(mPrefs.getString("activeFrag", "NO_FRAG"));
 
         if (this.fileUrls == null) {
             this.fileUrls = new String[3];
@@ -1838,44 +1908,46 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
     }
     
     public void getIntentData(Intent intent) {
-        this.ready = intent.getBooleanExtra("ready", false);
-        this.authToken = intent.getStringExtra("authToken");
-        this.slope = intent.getFloatExtra("slope", 0);
-        this.width = intent.getFloatExtra("width", 0);
-        this.length = intent.getFloatExtra("length", 0);
-        this.address = intent.getStringExtra("address");
-        this.postal = intent.getStringExtra("postal");
-        this.city= intent.getStringExtra("city");
-        this.region= intent.getStringExtra("region");
-        this.premium = intent.getBooleanExtra("premium", false);
-        this.currentRid = intent.getIntExtra("currentRid", -1);
-        this.material = intent.getStringExtra("material");
-        this.fileCount = intent.getIntExtra("fileCount", 0);
-        this.fileUrls = intent.getStringArrayExtra("fileUrls");
-        this.fileComments = intent.getStringArrayExtra("fileComments");
-        this.editing = intent.getBooleanExtra("editing", false);
-        if (intent.hasExtra("customer"))
-            try {
-                JSONObject customerJson = new JSONObject(intent.getStringExtra("customer"));
-                if (this.mCustomer == null) this.mCustomer = new Customer();
-                this.mCustomer.setFirstname(customerJson.get("firstName").toString());
-                this.mCustomer.setLastname(customerJson.get("lastName").toString());
-                this.mCustomer.setEmail(customerJson.get("email").toString());
-                this.mCustomer.setPhone(customerJson.get("phone").toString());
-                this.mCustomer.setPrefix(customerJson.get("prefix").toString());
-                this.mCustomer.setMarried(Boolean.valueOf(customerJson.get("married").toString()));
-            } catch (JSONException e) {
-                e.printStackTrace();
+        if (intent != null) {
+            this.ready = intent.getBooleanExtra("ready", false);
+            this.authToken = intent.getStringExtra("authToken");
+            this.slope = intent.getFloatExtra("slope", 0);
+            this.width = intent.getFloatExtra("width", 0);
+            this.length = intent.getFloatExtra("length", 0);
+            this.address = intent.getStringExtra("address");
+            this.postal = intent.getStringExtra("postal");
+            this.city = intent.getStringExtra("city");
+            this.region = intent.getStringExtra("region");
+            this.premium = intent.getBooleanExtra("premium", false);
+            this.currentRid = intent.getIntExtra("currentRid", -1);
+            this.material = intent.getStringExtra("material");
+            this.fileCount = intent.getIntExtra("fileCount", 0);
+            this.fileUrls = intent.getStringArrayExtra("fileUrls");
+            this.fileComments = intent.getStringArrayExtra("fileComments");
+            this.editing = intent.getBooleanExtra("editing", false);
+            if (intent.hasExtra("customer"))
+                try {
+                    JSONObject customerJson = new JSONObject(intent.getStringExtra("customer"));
+                    if (this.mCustomer == null) this.mCustomer = new Customer();
+                    this.mCustomer.setFirstname(customerJson.get("firstName").toString());
+                    this.mCustomer.setLastname(customerJson.get("lastName").toString());
+                    this.mCustomer.setEmail(customerJson.get("email").toString());
+                    this.mCustomer.setPhone(customerJson.get("phone").toString());
+                    this.mCustomer.setPrefix(customerJson.get("prefix").toString());
+                    this.mCustomer.setMarried(Boolean.valueOf(customerJson.get("married").toString()));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            if (intent.hasExtra("REQUEST")) {
+                handleRequest(intent.getIntExtra("REQUEST", 0));
             }
-        if (intent.hasExtra("REQUEST")) {
-            handleRequest(intent.getIntExtra("REQUEST", 0));
-        }
 
-        this.sectionList = intent.getParcelableArrayListExtra("sectionList");
-        if (this.sectionList != null && this.secAdapter != null) {
-            if (this.sectionList.size() != secAdapter.getItemCount()) {
-                secAdapter.swapData(this.sectionList);
-                secAdapter.notifyDataSetChanged();
+            this.sectionList = intent.getParcelableArrayListExtra("sectionList");
+            if (this.sectionList != null && this.secAdapter != null) {
+                if (this.sectionList.size() != secAdapter.getItemCount()) {
+                    secAdapter.swapData(this.sectionList);
+                    secAdapter.notifyDataSetChanged();
+                }
             }
         }
     }

@@ -19,6 +19,7 @@
             android:layout_height="wrap_content"
             android:id="@+id/idLabel"
             android:layout_width="64dp"
+            android:textStyle="bold"
             android:layout_marginStart="8dp" />
 
         <TextView
@@ -37,6 +38,7 @@
             android:text="Address"
             android:layout_width="64dp"
             android:layout_height="wrap_content"
+            android:textStyle="bold"
             android:id="@+id/addressLabel"
             android:layout_alignBottom="@+id/idLabel"
             android:layout_marginStart="8dp"/>
@@ -55,88 +57,46 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/row2"
-            android:id="@+id/row3">
-        <TextView
-            android:text="Width"
-            android:layout_width="64dp"
-            android:layout_height="wrap_content"
-            android:id="@+id/widthLabel"
-            android:layout_alignBottom="@+id/addressLabel"
-            android:layout_marginStart="8dp"/>
+            android:id="@id/row3"
+            android:layout_below="@id/row2">
+            <TextView
+                android:text="@string/customer"
+                android:layout_width="64dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/custLabel"
+                android:textStyle="bold"
+                android:layout_marginStart="8dp"/>
 
-        <EditText
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:id="@+id/widthEt"
-            android:selectAllOnFocus="true"
-            android:layout_alignBottom="@+id/idTv"
-            android:layout_alignEnd="@+id/widthLabel"
-            android:textColor="@color/colorPrimaryDark">
-
-        </EditText>
+            <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:id="@+id/custEt"
+                android:textColor="@color/colorPrimaryDark"
+                android:selectAllOnFocus="true"
+/>
         </LinearLayout>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+        <android.support.v7.widget.RecyclerView
+            android:layout_width="wrap_content"
+            android:layout_height="120dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
+            android:layout_marginTop="4dp"
+            android:background="@color/ruvGreen"
+            android:layout_centerHorizontal="true"
             android:layout_below="@id/row3"
-            android:id="@+id/row4">
-        <TextView
-            android:text="Length"
-            android:layout_width="64dp"
-            android:layout_height="wrap_content"
-            android:id="@+id/lengthLabel"
-            android:layout_alignBottom="@+id/widthLabel"
-            android:layout_marginStart="8dp"/>
-
-        <EditText
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:minWidth="128dp"
-            android:selectAllOnFocus="true"
-            android:id="@+id/lengthEt"
-            android:layout_alignEnd="@+id/lengthLabel"
-            android:textColor="@color/colorPrimaryDark">
-
-        </EditText>
-        </LinearLayout>
+            android:id="@+id/sectionView"/>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/row4"
-            android:id="@+id/row5">
-        <TextView
-            android:text="Slope"
-            android:layout_width="64dp"
-            android:layout_height="wrap_content"
-            android:id="@+id/slopeLabel"
-            android:layout_alignBottom="@+id/lengthLabel"
-            android:layout_marginStart="8dp"/>
-
-        <EditText
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:minWidth="128dp"
-            android:layout_marginStart="8dp"
-            android:id="@+id/slopeEt"
-            android:selectAllOnFocus="true"
-            android:layout_alignEnd="@+id/slopeLabel"
-            android:textColor="@color/colorPrimaryDark">
-
-        </EditText>
-        </LinearLayout>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/row5"
+            android:layout_below="@id/sectionView"
             android:id="@+id/row6">
         <TextView
             android:text="Price"
             android:layout_width="64dp"
             android:layout_height="wrap_content"
             android:id="@+id/priceLabel"
+            android:textStyle="bold"
             android:layout_marginStart="8dp"/>
 
         <EditText
@@ -160,26 +120,24 @@
             android:layout_width="56dp"
             android:layout_height="56dp"
             android:id="@+id/imgBtn"
-            android:background="@drawable/getfile"
+            android:background="@drawable/attach"
             android:layout_alignParentStart="true"
-            android:text="@string/upload"
             android:layout_marginStart="16dp"
-            android:backgroundTint="@android:color/holo_red_dark"
+            android:backgroundTint="@color/ruvGreen"
             android:layout_centerHorizontal="true"
             android:textAppearance="@style/TextAppearance.AppCompat.Widget.Button"
             android:elevation="0dp" />
 
-        <ImageButton
+        <Button
             android:layout_height="56dp"
             android:id="@+id/takePhoto"
-            android:background="?attr/actionModeSplitBackground"
+            android:background="@drawable/takephoto"
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
-            android:text="@string/take_pic"
             android:textAlignment="center"
             android:textAllCaps="false"
             android:elevation="0dp"
-            android:src="@android:drawable/ic_menu_camera"
+            android:src="@drawable/ruvbtn_bl"
             android:layout_width="56dp"
             />
 
@@ -205,9 +163,9 @@
 
             <ImageView
                 android:layout_width="wrap_content"
-                android:layout_height="124dp"
-                android:maxHeight="124dp"
+                android:layout_height="wrap_content"
                 android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
                 android:layout_marginStart="4dp"
                 android:layout_marginEnd="4dp"
                 android:id="@+id/ruvUpPhoto1"
@@ -216,19 +174,24 @@
             </ImageView>
             <ImageView
                 android:layout_width="wrap_content"
-                android:layout_height="124dp"
-                android:maxHeight="124dp"
+                android:layout_height="wrap_content"
                 android:layout_marginStart="4dp"
+                android:layout_marginEnd="4dp"
+                android:layout_below="@id/ruvPhoto1"
                 android:layout_centerHorizontal="true"
-                android:id="@+id/ruvUpPhoto2">
+                android:id="@+id/ruvUpPhoto2"
+                android:elevation="1dp">
+
             </ImageView>
             <ImageView
                 android:layout_width="wrap_content"
-                android:layout_height="124dp"
-                android:maxHeight="124dp"
-                android:layout_alignParentEnd="true"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_marginStart="4dp"
                 android:layout_marginEnd="4dp"
-                android:id="@+id/ruvUpPhoto3">
+                android:layout_below="@id/ruvPhoto2"
+                android:id="@+id/ruvUpPhoto3"
+                android:elevation="1dp">
             </ImageView>
         </RelativeLayout>
     </RelativeLayout>

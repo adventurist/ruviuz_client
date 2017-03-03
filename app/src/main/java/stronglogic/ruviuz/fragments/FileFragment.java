@@ -242,7 +242,7 @@ public class FileFragment extends DialogFragment {
                                             FileFragment.this.fileCount--;
                                             Bundle mBundle = new Bundle();
                                             putBundleData(mBundle);
-                                            FileFragment.this.mListener.fileFragInteraction(fileUrls, fileComments, fileCount, 69);
+                                            FileFragment.this.mListener.fileFragInteraction(fileUrls, fileComments, fileCount, MainActivity.RUV_ADD_FILES);
                                             FileFragment.this.dismiss();
                                         }
                                         return true;
@@ -312,7 +312,7 @@ public class FileFragment extends DialogFragment {
                                             FileFragment.this.fileCount--;
                                             Bundle mBundle = new Bundle();
                                             putBundleData(mBundle);
-                                            FileFragment.this.mListener.fileFragInteraction(fileUrls, fileComments, fileCount, 69);
+                                            FileFragment.this.mListener.fileFragInteraction(fileUrls, fileComments, fileCount, MainActivity.RUV_ADD_FILES);
                                             FileFragment.this.dismiss();
                                         }
                                         return true;
@@ -381,7 +381,7 @@ public class FileFragment extends DialogFragment {
                                             FileFragment.this.fileCount--;
                                             Bundle mBundle = new Bundle();
                                             putBundleData(mBundle);
-                                            FileFragment.this.mListener.fileFragInteraction(fileUrls, fileComments, fileCount, 69);
+                                            FileFragment.this.mListener.fileFragInteraction(fileUrls, fileComments, fileCount, MainActivity.RUV_ADD_FILES);
                                             FileFragment.this.dismiss();
                                         }
                                         return true;

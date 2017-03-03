@@ -1,5 +1,6 @@
 package stronglogic.ruviuz.fragments;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.Context;
@@ -41,7 +42,7 @@ public class ImageEditFragment extends DialogFragment {
 
     private Toolbar mToolbar;
 
-    private MainActivity mActivity;
+    private Activity mActivity;
 
     private ImageView editIv;
 
@@ -78,9 +79,14 @@ public class ImageEditFragment extends DialogFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (!((MainActivity) getActivity()).readyStatus()) {
-            ((MainActivity) getActivity()).hideActivity();
-            ((MainActivity) getActivity()).dismissOtherDialogs(ImageEditFragment.this.getClass());
+        if (mActivity == null) mActivity = getActivity();
+
+        if (mActivity instanceof MainActivity) {
+            MainActivity mainActivity = (MainActivity) getActivity();
+            if (mainActivity.readyStatus()) {
+                mainActivity .hideActivity();
+                mainActivity .dismissOtherDialogs(ImageEditFragment.this.getClass());
+            }
         }
         setStyle(DialogFragment.STYLE_NORMAL, R.style.RuvFullFrag);
         if (getArguments() != null) {
@@ -89,6 +95,9 @@ public class ImageEditFragment extends DialogFragment {
             editCommentText = getArguments().getString("editCommentText");
             getBundleData(getArguments());
         }
+
+        if (fileUrls == null) this.fileUrls = new String[3];
+        if (fileComments == null) this.fileComments = new String[3];
     }
 
     @Override
@@ -183,9 +192,9 @@ public class ImageEditFragment extends DialogFragment {
         }
 
         editIv = (ImageView) mView.findViewById(R.id.editImg);
-
+        String imgUri = mActivity instanceof MainActivity ? editImgUrl : MainActivity.baseUrl + "/files/" + editImgUrl;
         Glide.with(mActivity)
-                .load(editImgUrl)
+                .load(imgUri)
 //                .override(72, 54)
                 .fitCenter()
                 .diskCacheStrategy(DiskCacheStrategy.RESULT)
@@ -269,9 +278,9 @@ public class ImageEditFragment extends DialogFragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof MainActivity) {
-            this.mActivity = (MainActivity) context;
-        }
+//        if (context instanceof MainActivity) {
+//            this.mActivity = (MainActivity) context;
+//        }
         if (context instanceof ImageFragListener) {
             mListener = (ImageFragListener) context;
         } else {
