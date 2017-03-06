@@ -54,7 +54,7 @@ public class PropertyFragment extends DialogFragment implements View.OnClickList
 
     private Toolbar mToolbar;
 
-    private int numFloors;
+    private int numFloors, cleanupFactor;
 
     private String material;
 
@@ -214,8 +214,8 @@ public class PropertyFragment extends DialogFragment implements View.OnClickList
         backward.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mListener.propertyFragInteraction(193f);
-
+                dismiss();
+                mActivity.addressDialog();
             }
         });
 
@@ -224,13 +224,7 @@ public class PropertyFragment extends DialogFragment implements View.OnClickList
         forward.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (roofSlope != null) {
-
-                    float returnFloat = Float.valueOf(PropertyFragment.this.roofSlope.getText().toString());
-                    mListener.propertyFragInteraction(returnFloat);
-                } else {
-                    mListener.propertyFragInteraction(1f);
-                }
+                mListener.propertyFragInteraction(numFloors, material, cleanupFactor);
             }
         });
 
@@ -303,6 +297,6 @@ public class PropertyFragment extends DialogFragment implements View.OnClickList
      */
     public interface PropertyListener {
         // TODO: Update argument type and name
-        void propertyFragInteraction(float slope);
+        void propertyFragInteraction(int numFloors, String material, int cleanupFactor);
     }
 }

@@ -316,6 +316,11 @@ public class SectionActivity extends AppCompatActivity implements SectionFragmen
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
 
+                SectionActivity.this.ftPicker.setValue(0);
+                SectionActivity.this.inPicker.setValue(0);
+                SectionActivity.this.ftPicker.jumpDrawablesToCurrentState();
+                SectionActivity.this.inPicker.jumpDrawablesToCurrentState();
+
                 switch (checkedId) {
 
                     case R.id.lgtPickBtn:
@@ -339,6 +344,11 @@ public class SectionActivity extends AppCompatActivity implements SectionFragmen
         emptyNumGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
+
+                SectionActivity.this.emptFtPicker.setValue(0);
+                SectionActivity.this.emptInPicker.setValue(0);
+                SectionActivity.this.emptFtPicker.jumpDrawablesToCurrentState();
+                SectionActivity.this.emptInPicker.jumpDrawablesToCurrentState();
 
                 switch (checkedId) {
 

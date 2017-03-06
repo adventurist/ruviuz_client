@@ -176,7 +176,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
 
     private Geocoder geocoder;
 
-    private int fileCount, commentCount, currentRid, lastAction, numFloors;
+    private int fileCount, commentCount, currentRid, lastAction, numFloors, cleanupFactor;
     private float width, length, slope;
     private BigDecimal price;
     private String material, address, postal, city, region;
@@ -317,6 +317,8 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
                         mBundle.putString("region", region);
                         mBundle.putString("price", calculatePrice().toString());
                         mBundle.putString("material", material);
+                        mBundle.putString("numFloors", String.valueOf(numFloors));
+                        mBundle.putString("cleanupFactor", String.valueOf(cleanupFactor));
                         mBundle.putString("firstName", mCustomer.getFirstname());
                         mBundle.putString("lastName", mCustomer.getLastname());
                         mBundle.putString("email", mCustomer.getEmail());
@@ -1010,9 +1012,12 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         Toast.makeText(this, output, Toast.LENGTH_SHORT).show();
         this.authToken = output;
 
-
+        //TODO verify that welcome frag does not persist after login
         if (mLoginFrag != null) {
             mLoginFrag.dismiss();
+            if (mWelcomeFrag != null && mWelcomeFrag.isAdded()) {
+                mWelcomeFrag.dismiss();
+            }
             getFragmentManager().beginTransaction().remove(mLoginFrag).commit();
             mainDialog();
         }
@@ -1070,10 +1075,15 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
     }
 
     @Override
-    public void propertyFragInteraction(float slope) {
+    public void propertyFragInteraction(int numFloors, String material, int cleanupFactor) {
         if (mPropertyFrag != null && mPropertyFrag.isAdded()) {
             mPropertyFrag.dismiss();
         }
+
+        this.numFloors = numFloors;
+        this.material = material;
+        this.cleanupFactor = cleanupFactor;
+
         slopeDialog();
     }
 
@@ -1912,6 +1922,8 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         intent.putExtra("region", this.region);
         intent.putExtra("premium", this.premium);
         intent.putExtra("currentRid", this.currentRid);
+        intent.putExtra("cleanupFactor", this.cleanupFactor);
+        intent.putExtra("numFloors", this.numFloors);
         intent.putExtra("material",this.material);
         intent.putExtra("fileCount", this.fileCount);
         intent.putExtra("fileUrls", this.fileUrls);
@@ -1950,6 +1962,8 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
             this.premium = intent.getBooleanExtra("premium", false);
             this.currentRid = intent.getIntExtra("currentRid", -1);
             this.material = intent.getStringExtra("material");
+            this.cleanupFactor = intent.getIntExtra("cleanupFactor", -1);
+            this.numFloors = intent.getIntExtra("numFloors", -1);
             this.fileCount = intent.getIntExtra("fileCount", 0);
             this.fileUrls = intent.getStringArrayExtra("fileUrls");
             this.fileComments = intent.getStringArrayExtra("fileComments");
@@ -2199,6 +2213,8 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
                     ruuvJson.put("region", mBundle.getString("region"));
                     ruuvJson.put("price", mBundle.getString("price"));
                     ruuvJson.put("material", mBundle.getString("material"));
+                    ruuvJson.put("cleanupFactor", mBundle.getString("cleanupFactor"));
+                    ruuvJson.put("numFloors", mBundle.getString("numFloors"));
                     ruuvJson.put("firstName", mBundle.getString("firstName"));
                     ruuvJson.put("lastName", mBundle.getString("lastName"));
                     ruuvJson.put("email", mBundle.getString("email"));
