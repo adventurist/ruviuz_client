@@ -64,16 +64,18 @@ public class SectionActivity extends AppCompatActivity implements SectionFragmen
     private final static int TOP_WIDTH_SELECTED = 302;
 
     private int activePicker;
+    private int activeEmptyPicker;
 
-    private me.angrybyte.numberpicker.view.ActualNumberPicker ftPicker, inPicker, sEmptyLengthPickFt, sEmptyLengthPickIn, sEmptyWidthPickFt, sEmptyWidthPickIn;
-    private TextView sectionLengthTv, sectionLengthInTv, sectionWidthTv, sectionWidthInTv, sectionTwidthTv, sectionTwidthInTv, sectionTypeTv, sEmptyLength, sEmptyWidth, sEmptyWidthFtTv, sEmptyWidthInTv, sEmptyLengthFtTv, sEmptyLengthInTv, sEmptyLengthTv, sEmptyWidthTv;
-    
+    private me.angrybyte.numberpicker.view.ActualNumberPicker ftPicker, inPicker, emptFtPicker, emptInPicker;
+
+
+    private TextView sectionLengthTv, sectionLengthInTv, sectionWidthTv, sectionWidthInTv, sectionTwidthTv, sectionTwidthInTv, sectionTypeTv, selectedTv, emptTv, emptFtTv, emptInTv, sEmptyWidthInTv, emptSelTv, sEmptyLengthInTv, sEmptyLengthTv, sEmptyWidthTv;
+
     private Button sectionBtn;
     private FloatingActionButton doneBtn;
     private Switch fullToggle;
 
-    RadioGroup numGroup;
-    RadioButton lgtPickBtn, wdtPickBtn, tWdtPickBtn;
+    RadioGroup numGroup, emptyNumGroup;
     private RelativeLayout widgetWrap;
 
     private SectionFragment sectionFrag;
@@ -156,18 +158,6 @@ public class SectionActivity extends AppCompatActivity implements SectionFragmen
 
 
 
-//        if (SectionActivity.this.secView != null) {
-//
-//            sectionTypeTv = (TextView) secView.findViewById(R.id.sectionType);
-//            sectionLengthTv = (TextView) secView.findViewById(R.id.sectionLength);
-//            sectionWidthTv = (TextView) secView.findViewById(R.id.sectionWidth);
-//            sectionLengthInTv = (TextView) secView.findViewById(R.id.sectionLengthIn);
-//            sectionWidthInTv = (TextView) secView.findViewById(R.id.sectionWidthIn);
-//            sectionTwidthTv = (TextView) secView.findViewById(R.id.sectionTwidth);
-//            sectionTwidthInTv = (TextView) secView.findViewById(R.id.sectionTwidthIn);
-//
-//        }
-
         sectionBtn = (Button) findViewById(R.id.dummy_button);
         sectionBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -219,7 +209,9 @@ public class SectionActivity extends AppCompatActivity implements SectionFragmen
                             SectionActivity.this.sEmptyWidthTv = (TextView) SectionActivity.this.secView.findViewById(R.id.emptyWidth);
                             SectionActivity.this.sEmptyLengthInTv = (TextView) SectionActivity.this.secView.findViewById(R.id.emptyLengthIn);
                             SectionActivity.this.sEmptyWidthInTv = (TextView) SectionActivity.this.secView.findViewById(R.id.emptyWidthIn);
+
                             if (SectionActivity.this.sEmptyLengthTv != null && SectionActivity.this.sEmptyWidthTv != null && SectionActivity.this.sEmptyLengthInTv != null && SectionActivity.this.sEmptyWidthInTv != null) {
+
                                 float emLen = (SectionActivity.this.sEmptyLengthTv.getText().toString().equals("") ?
                                         0.0f : Float.valueOf(SectionActivity.this.sEmptyLengthTv.getText().toString()))
                                         +  (SectionActivity.this.sEmptyLengthInTv.getText().toString().equals("") ?
@@ -234,20 +226,18 @@ public class SectionActivity extends AppCompatActivity implements SectionFragmen
                                 section.toggleFull();
                                 section.setEmptyType(SectionActivity.this.emptyType);
                                 section.setMissing(emptyArea);
+
                                 if (SectionActivity.this.sectionTypeTv != null)
                                 SectionActivity.this.sectionTypeTv.setText("");
                                 SectionActivity.this.sEmptyLengthTv.setText("");
                                 SectionActivity.this.sEmptyWidthTv.setText("");
                                 SectionActivity.this.sEmptyLengthInTv.setText("");
                                 SectionActivity.this.sEmptyWidthInTv.setText("");
-                                SectionActivity.this.sEmptyLengthPickFt.setValue(0);
-                                SectionActivity.this.sEmptyLengthPickFt.jumpDrawablesToCurrentState();
-                                SectionActivity.this.sEmptyLengthPickIn.setValue(0);
-                                SectionActivity.this.sEmptyLengthPickIn.jumpDrawablesToCurrentState();
-                                SectionActivity.this.sEmptyWidthPickFt.setValue(0);
-                                SectionActivity.this.sEmptyWidthPickFt.jumpDrawablesToCurrentState();
-                                SectionActivity.this.sEmptyWidthPickIn.setValue(0);
-                                SectionActivity.this.sEmptyWidthPickIn.jumpDrawablesToCurrentState();
+
+                                SectionActivity.this.emptFtPicker.setValue(0);
+                                SectionActivity.this.emptFtPicker.jumpDrawablesToCurrentState();
+                                SectionActivity.this.emptInPicker.setValue(0);
+                                SectionActivity.this.emptInPicker.jumpDrawablesToCurrentState();
 
                             }
                         }
@@ -286,26 +276,31 @@ public class SectionActivity extends AppCompatActivity implements SectionFragmen
         fullToggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
                 if (!isChecked) {
                     final Dialog etypeDialog = new Dialog(SectionActivity.this);
                     etypeDialog.setTitle("Choose a Type");
+
                     if (etypeDialog.getWindow() != null) etypeDialog.getWindow().setWindowAnimations(R.style.ruvanimate);
                     etypeDialog.setContentView(R.layout.empt_dialog);
                     etypeDialog.show();
+
                     RadioGroup rg = (RadioGroup) etypeDialog.findViewById(R.id.emptyType);
                     rg.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
                         @Override
                         public void onCheckedChanged(RadioGroup group, int checkedId) {
+
                             RadioButton radioBtn = (RadioButton) etypeDialog.findViewById(checkedId);
+
                             if (SectionActivity.this.secView == null) SectionActivity.this.secView = sectionFrag.getView();
 
                                 TextView sEtypeTv = (TextView) SectionActivity.this.secView.findViewById(R.id.eType);
                                 SectionActivity.this.emptyType = radioBtn.getText().toString();
                                 sEtypeTv.setText(SectionActivity.this.emptyType);
+
                             etypeDialog.dismiss();
                         }
                     });
-
 
                     emptyPickersVisible();
                 } else {
@@ -314,23 +309,49 @@ public class SectionActivity extends AppCompatActivity implements SectionFragmen
             }
         });
 
+        selectedTv = (TextView) findViewById(R.id.selectedTv);
+
         numGroup = (RadioGroup) findViewById(R.id.numpickGrp);
         numGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
 
                 switch (checkedId) {
+
                     case R.id.lgtPickBtn:
                         SectionActivity.this.activePicker = LENGTH_SELECTED;
+                        SectionActivity.this.selectedTv.setText(R.string.length);
                         break;
                     case R.id.wdtPickBtn:
                         SectionActivity.this.activePicker = WIDTH_SELECTED;
+                        SectionActivity.this.selectedTv.setText(R.string.width);
                         break;
                     case R.id.tWdthPickBtn:
                         SectionActivity.this.activePicker = TOP_WIDTH_SELECTED;
+                        SectionActivity.this.selectedTv.setText(R.string.top_width);
+                        break;
 
                 }
+            }
+        });
 
+        emptyNumGroup = (RadioGroup) findViewById(R.id.emptyNumpickGrp);
+        emptyNumGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+
+                switch (checkedId) {
+
+                    case R.id.emptyLgtPickBtn:
+                        SectionActivity.this.activeEmptyPicker = LENGTH_SELECTED;
+                        SectionActivity.this.emptSelTv.setText(R.string.length);
+                        break;
+                    case R.id.emptyWdtPickBtn:
+                        SectionActivity.this.activeEmptyPicker = WIDTH_SELECTED;
+                        SectionActivity.this.emptSelTv.setText(R.string.width);
+                        break;
+
+                }
             }
         });
 
@@ -394,70 +415,54 @@ public class SectionActivity extends AppCompatActivity implements SectionFragmen
             }
         });
 
-        sEmptyLengthPickFt = (ActualNumberPicker) findViewById(R.id.emptyLengthPickerFt);
-        sEmptyLengthPickFt.setListener(new OnValueChangeListener() {
+        emptFtPicker = (ActualNumberPicker) findViewById(R.id.emptyPickerFt);
+        emptFtPicker.setListener(new OnValueChangeListener() {
             @Override
             public void onValueChanged(int oldValue, int newValue) {
+                Log.d(TAG, "Value Changed");
                 if (sectionFrag == null || !sectionFrag.isAdded()) addSectionFragment();
-                if (sectionFrag.getView() != null) {
-                    TextView sEmptyLengthTv = (TextView) sectionFrag.getView().findViewById(R.id.emptyLength);
-                    if (sEmptyLengthTv != null) {
-                        String newMeasurement = String.valueOf(newValue);
+                if (SectionActivity.this.secView == null) SectionActivity.this.secView = sectionFrag.getView();
+                String newMeasurement = String.valueOf(newValue);
+                switch (SectionActivity.this.activeEmptyPicker) {
+                    case LENGTH_SELECTED:
+                        TextView sEmptyLengthTv = (TextView) SectionActivity.this.secView.findViewById(R.id.emptyLength);
+                        if (sEmptyLengthTv != null) {
                         sEmptyLengthTv.setText(newMeasurement);
                     }
+                        break;
+                    case WIDTH_SELECTED:
+                        TextView emptyWidthTv = (TextView) SectionActivity.this.secView.findViewById(R.id.emptyWidth);
+                        newMeasurement = String.valueOf((float) newValue);
+                        emptyWidthTv.setText(newMeasurement);
+                        break;
                 }
-
             }
         });
 
-        sEmptyLengthPickIn = (ActualNumberPicker) findViewById(R.id.emptyLengthPickerIn);
-        sEmptyLengthPickIn.setListener(new OnValueChangeListener() {
+        emptInPicker = (ActualNumberPicker) findViewById(R.id.emptyPickerIn);
+        emptInPicker.setListener(new OnValueChangeListener() {
             @Override
             public void onValueChanged(int oldValue, int newValue) {
+                Log.d(TAG, "Value Changed");
                 if (sectionFrag == null || !sectionFrag.isAdded()) addSectionFragment();
-                if (sectionFrag.getView() != null) {
-                    TextView sEmptyLengthInTv = (TextView) sectionFrag.getView().findViewById(R.id.emptyLengthIn);
-                    if (sEmptyLengthInTv != null) {
-                        float newMeasurement = (float) (newValue);
-                        String newString = String.valueOf(newMeasurement);
-                        sEmptyLengthInTv.setText(newString);
-                    }
+                if (SectionActivity.this.secView == null) SectionActivity.this.secView = sectionFrag.getView();
+                String newMeasurement = String.valueOf(newValue);
+                switch (SectionActivity.this.activeEmptyPicker) {
+                    case LENGTH_SELECTED:
+                        TextView sEmptyLengthTv = (TextView) SectionActivity.this.secView.findViewById(R.id.emptyLengthIn);
+                        if (sEmptyLengthTv != null) {
+                            sEmptyLengthTv.setText(newMeasurement);
+                        }
+                        break;
+                    case WIDTH_SELECTED:
+                        TextView emptyWidthTv = (TextView) SectionActivity.this.secView.findViewById(R.id.emptyWidthIn);
+                        newMeasurement = String.valueOf((float) newValue);
+                        emptyWidthTv.setText(newMeasurement);
+                        break;
                 }
             }
         });
 
-        sEmptyWidthPickFt = (ActualNumberPicker) findViewById(R.id.emptyWidthPickerFt);
-        sEmptyWidthPickFt.setListener(new OnValueChangeListener() {
-            @Override
-            public void onValueChanged(int oldValue, int newValue) {
-                if (sectionFrag == null || !sectionFrag.isAdded()) addSectionFragment();
-                if (sectionFrag.getView() != null) {
-                    TextView sEmptyWidthTv = (TextView) sectionFrag.getView().findViewById(R.id.emptyWidth);
-                    if (sEmptyWidthTv != null) {
-                        String newMeasurement = String.valueOf(newValue);
-                        sEmptyWidthTv.setText(newMeasurement);
-                    }
-                }
-
-            }
-        });
-
-        sEmptyWidthPickIn = (ActualNumberPicker) findViewById(R.id.emptyWidthPickerIn);
-        sEmptyWidthPickIn.setListener(new OnValueChangeListener() {
-            @Override
-            public void onValueChanged(int oldValue, int newValue) {
-                if (sectionFrag == null || !sectionFrag.isAdded()) addSectionFragment();
-                if (sectionFrag.getView() != null) {
-                    TextView sEmptyWidthInTv = (TextView) sectionFrag.getView().findViewById(R.id.emptyWidthIn);
-                    if (sEmptyWidthInTv != null) {
-                        float newMeasurement = (float) newValue;
-                        String newString = String.valueOf(newMeasurement);
-                        sEmptyWidthInTv.setText(newString);
-                    }
-                }
-
-            }
-        });
 
         doneBtn = (FloatingActionButton) findViewById(R.id.doneBtn);
         doneBtn.setOnClickListener(new View.OnClickListener() {
@@ -520,49 +525,37 @@ public class SectionActivity extends AppCompatActivity implements SectionFragmen
     }
 
     private void emptyPickersVisible() {
-        if (SectionActivity.this.sEmptyLength == null) SectionActivity.this.sEmptyLength = (TextView) findViewById(R.id.emptyLengthTv);
-        SectionActivity.this.sEmptyLength.setVisibility(View.VISIBLE);
-        if (SectionActivity.this.sEmptyLengthPickFt == null) SectionActivity.this.sEmptyLengthPickFt = (ActualNumberPicker) findViewById(R.id.emptyLengthPickerFt);
-        SectionActivity.this.sEmptyLengthPickFt.setVisibility(View.VISIBLE);
-        if (SectionActivity.this.sEmptyLengthFtTv == null) SectionActivity.this.sEmptyLengthFtTv = (TextView) findViewById(R.id.emptyLengthFtTv);
-        SectionActivity.this.sEmptyLengthFtTv.setVisibility(View.VISIBLE);
-        if (SectionActivity.this.sEmptyLengthPickIn == null) SectionActivity.this.sEmptyLengthPickIn = (ActualNumberPicker) findViewById(R.id.emptyLengthPickerIn);
-        SectionActivity.this.sEmptyLengthPickIn.setVisibility(View.VISIBLE);
-        if (SectionActivity.this.sEmptyLengthInTv == null) SectionActivity.this.sEmptyLengthInTv = (TextView) findViewById(R.id.emptyLengthInTv);
-        SectionActivity.this.sEmptyLengthInTv.setVisibility(View.VISIBLE);
-        if (SectionActivity.this.sEmptyWidth == null) SectionActivity.this.sEmptyWidth = (TextView) findViewById(R.id.emptyWidthTv);
-        SectionActivity.this.sEmptyWidth.setVisibility(View.VISIBLE);
-        if (SectionActivity.this.sEmptyWidthPickFt == null) SectionActivity.this.sEmptyWidthPickFt = (ActualNumberPicker) findViewById(R.id.emptyWidthPickerFt);
-        SectionActivity.this.sEmptyWidthPickFt.setVisibility(View.VISIBLE);
-        if (SectionActivity.this.sEmptyWidthFtTv == null) SectionActivity.this.sEmptyWidthFtTv = (TextView) findViewById(R.id.emptyWidthFtTv);
-        SectionActivity.this.sEmptyWidthFtTv.setVisibility(View.VISIBLE);
-        if (SectionActivity.this.sEmptyWidthPickIn == null) SectionActivity.this.sEmptyWidthPickIn = (ActualNumberPicker) findViewById(R.id.emptyWidthPickerIn);
-        SectionActivity.this.sEmptyWidthPickIn.setVisibility(View.VISIBLE);
-        if (SectionActivity.this.sEmptyWidthInTv == null) SectionActivity.this.sEmptyWidthInTv = (TextView) findViewById(R.id.emptyWidthInTv);
-        SectionActivity.this.sEmptyWidthInTv.setVisibility(View.VISIBLE);
+        if (SectionActivity.this.emptTv == null) SectionActivity.this.emptTv = (TextView) findViewById(R.id.emptyTv);
+        SectionActivity.this.emptTv.setVisibility(View.VISIBLE);
+        if (SectionActivity.this.emptFtPicker == null) SectionActivity.this.emptFtPicker = (ActualNumberPicker) findViewById(R.id.emptyPickerFt);
+        SectionActivity.this.emptFtPicker.setVisibility(View.VISIBLE);
+        if (SectionActivity.this.emptInPicker == null) SectionActivity.this.emptInPicker = (ActualNumberPicker) findViewById(R.id.emptyPickerIn);
+        SectionActivity.this.emptInPicker.setVisibility(View.VISIBLE);
+        if (SectionActivity.this.emptFtTv== null) SectionActivity.this.emptFtTv = (TextView) findViewById(R.id.emptyFtTv);
+        SectionActivity.this.emptFtTv.setVisibility(View.VISIBLE);
+        if (SectionActivity.this.emptInTv == null) SectionActivity.this.emptInTv = (TextView) findViewById(R.id.emptyInTv);
+        SectionActivity.this.emptInTv.setVisibility(View.VISIBLE);
+        if (SectionActivity.this.emptSelTv == null) SectionActivity.this.emptSelTv = (TextView) findViewById(R.id.selectedEmptyTv);
+        SectionActivity.this.emptSelTv.setVisibility(View.VISIBLE);
+        if (SectionActivity.this.emptyNumGroup == null) SectionActivity.this.emptyNumGroup = (RadioGroup) findViewById(R.id.emptyNumpickGrp);
+        SectionActivity.this.emptyNumGroup.setVisibility(View.VISIBLE);
     }
 
     private void emptyPickersHidden() {
-        if (SectionActivity.this.sEmptyLength == null) SectionActivity.this.sEmptyWidth = (TextView) findViewById(R.id.emptyLengthTv);
-        SectionActivity.this.sEmptyWidth.setVisibility(View.GONE);
-        if (SectionActivity.this.sEmptyLengthPickFt == null) SectionActivity.this.sEmptyLengthPickFt = (ActualNumberPicker) findViewById(R.id.emptyLengthPickerFt);
-        SectionActivity.this.sEmptyLengthPickFt.setVisibility(View.GONE);
-        if (SectionActivity.this.sEmptyLengthFtTv == null) SectionActivity.this.sEmptyLengthFtTv = (TextView) findViewById(R.id.emptyLengthFtTv);
-        SectionActivity.this.sEmptyLengthFtTv.setVisibility(View.GONE);
-        if (SectionActivity.this.sEmptyLengthPickIn == null) SectionActivity.this.sEmptyLengthPickIn = (ActualNumberPicker) findViewById(R.id.emptyLengthPickerIn);
-        SectionActivity.this.sEmptyLengthPickIn.setVisibility(View.GONE);
-        if (SectionActivity.this.sEmptyLengthInTv == null) SectionActivity.this.sEmptyLengthInTv = (TextView) findViewById(R.id.emptyLengthInTv);
-        SectionActivity.this.sEmptyLengthInTv.setVisibility(View.GONE);
-        if (SectionActivity.this.sEmptyWidth == null) SectionActivity.this.sEmptyWidth = (TextView) findViewById(R.id.emptyLengthTv);
-        SectionActivity.this.sEmptyWidth.setVisibility(View.GONE);
-        if (SectionActivity.this.sEmptyWidthPickFt == null) SectionActivity.this.sEmptyWidthPickFt = (ActualNumberPicker) findViewById(R.id.emptyWidthPickerFt);
-        SectionActivity.this.sEmptyWidthPickFt.setVisibility(View.GONE);
-        if (SectionActivity.this.sEmptyWidthFtTv == null) SectionActivity.this.sEmptyWidthFtTv = (TextView) findViewById(R.id.emptyWidthFtTv);
-        SectionActivity.this.sEmptyWidthFtTv.setVisibility(View.GONE);
-        if (SectionActivity.this.sEmptyWidthPickIn == null) SectionActivity.this.sEmptyWidthPickIn = (ActualNumberPicker) findViewById(R.id.emptyWidthPickerIn);
-        SectionActivity.this.sEmptyWidthPickIn.setVisibility(View.GONE);
-        if (SectionActivity.this.sEmptyWidthInTv == null) SectionActivity.this.sEmptyWidthInTv = (TextView) findViewById(R.id.emptyWidthInTv);
-        SectionActivity.this.sEmptyWidthInTv.setVisibility(View.GONE);
+        if (SectionActivity.this.emptTv == null) SectionActivity.this.emptTv = (TextView) findViewById(R.id.emptyTv);
+        SectionActivity.this.emptTv.setVisibility(View.GONE);
+        if (SectionActivity.this.emptFtPicker == null) SectionActivity.this.emptFtPicker = (ActualNumberPicker) findViewById(R.id.emptyPickerFt);
+        SectionActivity.this.emptFtPicker.setVisibility(View.GONE);
+        if (SectionActivity.this.emptInPicker == null) SectionActivity.this.emptInPicker = (ActualNumberPicker) findViewById(R.id.emptyPickerIn);
+        SectionActivity.this.emptInPicker.setVisibility(View.GONE);
+        if (SectionActivity.this.emptFtTv== null) SectionActivity.this.emptFtTv = (TextView) findViewById(R.id.emptyFtTv);
+        SectionActivity.this.emptFtTv.setVisibility(View.GONE);
+        if (SectionActivity.this.emptInTv == null) SectionActivity.this.emptInTv = (TextView) findViewById(R.id.emptyInTv);
+        SectionActivity.this.emptInTv.setVisibility(View.GONE);
+        if (SectionActivity.this.emptSelTv == null) SectionActivity.this.emptSelTv = (TextView) findViewById(R.id.selectedEmptyTv);
+        SectionActivity.this.emptSelTv.setVisibility(View.GONE);
+        if (SectionActivity.this.emptyNumGroup == null) SectionActivity.this.emptyNumGroup = (RadioGroup) findViewById(R.id.emptyNumpickGrp);
+        SectionActivity.this.emptyNumGroup.setVisibility(View.GONE);
     }
 
 

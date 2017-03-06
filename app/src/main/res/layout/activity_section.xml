@@ -25,7 +25,6 @@
         android:textStyle="bold"
         android:textAlignment="center"
         android:layout_marginTop="48dp"
-
         android:id="@+id/fullscreen_content"
         android:text="@string/measure_sections"
         android:textColor="#000"
@@ -48,7 +47,6 @@
             android:orientation="horizontal"
             />
 
-
         <android.support.v7.widget.RecyclerView
             android:layout_width="190dp"
             android:layout_height="140dp"
@@ -58,6 +56,7 @@
             android:background="@color/ruvGreen"
             android:id="@+id/sectionView"/>
     </LinearLayout>
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -100,22 +99,21 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_above="@id/fullscreen_content_controls">
+
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/widgetWrap">
-
-
-
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentTop="true"
                     android:layout_alignParentStart="true"
-                    android:text="Section Type"
+                    android:text="@string/section_type"
                     android:layout_marginStart="12dp"
                     android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
                     android:textSize="18sp"
                     android:id="@+id/sectionTypeTv"
                     android:textColor="#000"/>
@@ -133,6 +131,15 @@
                     android:dropDownSelector="@drawable/geolocate"
                     android:textSize="16sp"/>
 
+                <Switch
+                    android:layout_width="84dp"
+                    android:layout_height="52dp"
+                    android:layout_marginStart="12dp"
+                    android:layout_marginTop="8dp"
+                    android:id="@+id/fullToggle"
+                    android:layout_below="@id/sectionTypeTv"
+                    android:checked="true"
+                    android:text="@string/full"/>
 
 
                 <TextView
@@ -141,8 +148,8 @@
                     android:textSize="18sp"
                     android:id="@+id/measureTv"
                     android:layout_centerHorizontal="true"
-                    android:layout_below="@id/sectionTypeSpin"
-                    android:layout_marginTop="8dp"
+                    android:layout_below="@id/sectionTypeTv"
+                    android:layout_marginTop="16dp"
                     android:text="@string/measure"
                     android:textColor="#000" />
 
@@ -158,10 +165,10 @@
                     <RadioButton
                         android:id="@+id/lgtPickBtn"
                         android:layout_width="96dp"
-                        android:layout_height="48dp"
+                        android:layout_height="32dp"
                         android:layout_gravity="start"
                         android:layout_margin="0dp"
-                        android:background="@drawable/numpick_select"
+                        android:background="@drawable/numpick_sel"
                         android:text="@string/length"
                         android:button="@null"
                         android:checked="true"
@@ -170,22 +177,22 @@
                     <RadioButton
                         android:id="@+id/wdtPickBtn"
                         android:layout_width="96dp"
-                        android:layout_height="48dp"
+                        android:layout_height="32dp"
                         android:layout_margin="0dp"
                         android:layout_gravity="center_horizontal"
                         android:text="@string/width"
-                        android:background="@drawable/numpick_select"
+                        android:background="@drawable/numpick_sel" 
                         android:button="@null"
                         android:gravity="center" />
 
                     <RadioButton
                         android:id="@+id/tWdthPickBtn"
                         android:layout_width="96dp"
-                        android:layout_height="48dp"
+                        android:layout_height="32dp"
                         android:layout_margin="0dp"
                         android:layout_gravity="end"
                         android:text="@string/top_width"
-                        android:background="@drawable/numpick_select"
+                        android:background="@drawable/numpick_sel" 
                         android:button="@null"
                         android:gravity="center" />
 
@@ -217,7 +224,6 @@
                     app:text_size="20sp"
                     app:value="0"
                     android:layout_below="@id/numpickGrp"
-
                     android:layout_height="48dp" />
 
                 <TextView
@@ -229,9 +235,6 @@
                     android:layout_marginTop="8dp"
                     android:layout_below="@+id/ftPicker"
                     android:layout_marginStart="72dp" />
-
-
-
 
                 <me.angrybyte.numberpicker.view.ActualNumberPicker
                     android:id="@+id/inPicker"
@@ -273,7 +276,6 @@
                     android:layout_below="@+id/inPicker"
                     />
 
-
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -283,39 +285,62 @@
                     android:layout_below="@id/ftPicker"
                     android:text="@string/length"
                     android:layout_marginTop="8dp"
-                    android:textColor="#000" />
+                    android:textColor="@color/ruvGreen"
+                    android:textStyle="bold"/>
 
-
-
-                <Switch
-                    android:layout_width="84dp"
-                    android:layout_height="52dp"
-                    android:layout_marginStart="12dp"
-                    android:layout_marginTop="16dp"
-                    android:id="@+id/fullToggle"
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="18sp"
+                    android:id="@+id/emptyTv"
+                    android:layout_centerHorizontal="true"
                     android:layout_below="@id/selectedTv"
-                    android:checked="true"
-                    android:text="@string/full"/>
-
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="18sp"
-                    android:id="@+id/emptyLengthTv"
-                    android:layout_centerHorizontal="true"
-                    android:layout_below="@id/fullToggle"
-                    android:text="@string/empty_length"
-                    android:layout_marginTop="8dp"
+                    android:text="@string/measure_empty"
+                    android:layout_marginTop="16dp"
                     android:visibility="gone"
                     android:textColor="#000" />
 
+                <RadioGroup
+                    android:id="@+id/emptyNumpickGrp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="48dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_centerHorizontal="true"
+                    android:layout_below="@id/emptyTv"
+                    android:visibility="gone"
+                    android:orientation="horizontal" >
+
+                    <RadioButton
+                        android:id="@+id/emptyLgtPickBtn"
+                        android:layout_width="96dp"
+                        android:layout_height="32dp"
+                        android:layout_gravity="start"
+                        android:layout_margin="0dp"
+                        android:background="@drawable/numpick_sel" 
+                        android:text="@string/length"
+                        android:button="@null"
+                        android:checked="true"
+                        android:gravity="center" />
+
+                    <RadioButton
+                        android:id="@+id/emptyWdtPickBtn"
+                        android:layout_width="96dp"
+                        android:layout_height="32dp"
+                        android:layout_margin="0dp"
+                        android:layout_gravity="center_horizontal"
+                        android:text="@string/width"
+                        android:background="@drawable/numpick_sel" 
+                        android:button="@null"
+                        android:gravity="center" />
+
+                </RadioGroup>
+
                 <me.angrybyte.numberpicker.view.ActualNumberPicker
-                    android:id="@+id/emptyLengthPickerFt"
+                    android:id="@+id/emptyPickerFt"
                     android:layout_width="wrap_content"
                     android:layout_alignParentStart="true"
                     android:layout_marginStart="12dp"
-                    android:background="#ee52ff"
+                    android:background="#ffc400"
                     android:visibility="gone"
                     app:bar_color="@android:color/white"
                     app:bar_width="2dp"
@@ -336,7 +361,7 @@
                     app:text_color="#000"
                     app:text_size="20sp"
                     app:value="0"
-                    android:layout_below="@+id/emptyLengthTv"
+                    android:layout_below="@id/emptyNumpickGrp"
                     android:layout_marginTop="12dp"
                     android:layout_height="48dp" />
 
@@ -344,21 +369,20 @@
                     android:layout_width="wrap_content"
                     android:visibility="gone"
                     android:layout_height="wrap_content"
-                    android:id="@+id/emptyLengthFtTv"
+                    android:id="@+id/emptyFtTv"
                     android:text="@string/ft"
                     android:textColor="#000"
                     android:textSize="14sp"
                     android:layout_marginTop="8dp"
-                    android:layout_below="@+id/emptyLengthPickerFt"
+                    android:layout_below="@+id/emptyPickerFt"
                     android:layout_marginStart="72dp" />
 
-
                 <me.angrybyte.numberpicker.view.ActualNumberPicker
-                    android:id="@+id/emptyLengthPickerIn"
+                    android:id="@+id/emptyPickerIn"
                     android:layout_width="wrap_content"
                     android:layout_marginStart="12dp"
                     android:visibility="gone"
-                    android:background="#ee52ff"
+                    android:background="#ffc400"
                     app:bar_color="@android:color/white"
                     app:bar_width="2dp"
                     app:bars_count="26"
@@ -378,7 +402,7 @@
                     app:text_color="#000"
                     app:text_size="20sp"
                     app:value="0"
-                    android:layout_below="@+id/emptyLengthTv"
+                    android:layout_below="@id/emptyNumpickGrp"
                     android:layout_alignParentEnd="true"
                     android:layout_marginTop="12dp"
                     android:layout_marginEnd="12dp"
@@ -389,11 +413,11 @@
                     android:layout_height="wrap_content"
                     android:text="@string/inches"
                     android:textColor="#000"
-                    android:id="@+id/emptyLengthInTv"
+                    android:id="@+id/emptyInTv"
                     android:textSize="14sp"
                     android:visibility="gone"
                     android:layout_marginTop="8dp"
-                    android:layout_below="@+id/emptyLengthPickerIn"
+                    android:layout_below="@+id/emptyPickerIn"
                     android:layout_alignParentEnd="true"
                     android:layout_marginEnd="72dp" />
 
@@ -401,101 +425,14 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="18sp"
-                    android:id="@+id/emptyWidthTv"
-                    android:visibility="gone"
+                    android:id="@+id/selectedEmptyTv"
                     android:layout_centerHorizontal="true"
-                    android:layout_below="@id/emptyLengthPickerFt"
-                    android:text="@string/empty_width"
+                    android:layout_below="@id/emptyPickerFt"
+                    android:text="@string/length"
                     android:layout_marginTop="8dp"
-                    android:textColor="#000" />
-
-                <me.angrybyte.numberpicker.view.ActualNumberPicker
-                    android:id="@+id/emptyWidthPickerFt"
-                    android:layout_width="wrap_content"
-                    android:layout_alignParentStart="true"
-                    android:visibility="gone"
-                    android:layout_marginStart="12dp"
-                    android:background="#ee52ff"
-                    app:bar_color="@android:color/white"
-                    app:bar_width="2dp"
-                    app:bars_count="26"
-                    app:controls_color="@android:color/white"
-                    app:draw_over_controls="true"
-                    app:draw_over_text="false"
-                    app:fast_controls_color="@android:color/darker_gray"
-                    app:highlight_color="#263238"
-                    app:max_value="200"
-                    app:min_value="0"
-                    app:selection_color="#fff"
-                    app:show_bars="true"
-                    app:show_controls="true"
-                    app:show_fast_controls="false"
-                    app:show_highlight="true"
-                    app:show_text="true"
-                    app:text_color="#000"
-                    app:text_size="20sp"
-                    app:value="0"
-                    android:layout_below="@+id/emptyWidthTv"
-                    android:layout_marginTop="12dp"
-                    android:layout_height="48dp" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/emptyWidthFtTv"
-                    android:text="@string/ft"
-                    android:visibility="gone"
-                    android:textColor="#000"
-                    android:textSize="14sp"
-                    android:layout_marginTop="8dp"
-                    android:layout_below="@+id/emptyWidthPickerFt"
-                    android:layout_marginStart="72dp" />
-
-
-                <me.angrybyte.numberpicker.view.ActualNumberPicker
-                    android:id="@+id/emptyWidthPickerIn"
-                    android:layout_width="wrap_content"
-                    android:layout_marginStart="12dp"
-                    android:visibility="gone"
-                    android:background="#ee52ff"
-                    app:bar_color="@android:color/white"
-                    app:bar_width="2dp"
-                    app:bars_count="26"
-                    app:controls_color="@android:color/white"
-                    app:draw_over_controls="true"
-                    app:draw_over_text="false"
-                    app:fast_controls_color="@android:color/darker_gray"
-                    app:highlight_color="#263238"
-                    app:max_value="72"
-                    app:min_value="0"
-                    app:selection_color="#fff"
-                    app:show_bars="true"
-                    app:show_controls="true"
-                    app:show_fast_controls="false"
-                    app:show_highlight="true"
-                    app:show_text="true"
-                    app:text_color="#000"
-                    app:text_size="20sp"
-                    app:value="0"
-                    android:layout_below="@+id/emptyWidthTv"
-                    android:layout_alignParentEnd="true"
-                    android:layout_marginTop="12dp"
-                    android:layout_marginEnd="12dp"
-                    android:layout_height="48dp" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:visibility="gone"
-                    android:text="@string/inches"
-                    android:textColor="#000"
-                    android:id="@+id/emptyWidthInTv"
-                    android:textSize="14sp"
-                    android:layout_marginTop="8dp"
-                    android:layout_below="@+id/emptyWidthPickerIn"
-                    android:layout_alignParentEnd="true"
-                    android:layout_marginEnd="72dp" />
-
+                    android:textColor="@color/ruvGreen"
+                    android:textStyle="bold"
+                    android:visibility="gone"/>
 
             </RelativeLayout>
 

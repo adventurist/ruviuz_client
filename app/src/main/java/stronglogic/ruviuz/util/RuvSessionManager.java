@@ -114,7 +114,7 @@ public class RuvSessionManager {
     public void startTimer() {
         Log.d(TAG, "SessionManager Countdown");
         if (RuvSessionManager.this.timer == null) {
-            RuvSessionManager.this.timer = new CountDownTimer(95000, 1000) {
+            RuvSessionManager.this.timer = new CountDownTimer(575000, 1000) {
                 @Override
                 public void onTick(long millisUntilFinished) {
                     if (mActivity instanceof MainActivity) {

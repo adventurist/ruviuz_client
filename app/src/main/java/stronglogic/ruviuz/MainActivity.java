@@ -89,6 +89,7 @@ import stronglogic.ruviuz.fragments.FileFragment;
 import stronglogic.ruviuz.fragments.ImageEditFragment;
 import stronglogic.ruviuz.fragments.LoginFragment;
 import stronglogic.ruviuz.fragments.MainFragment;
+import stronglogic.ruviuz.fragments.PropertyFragment;
 import stronglogic.ruviuz.fragments.SectionFragment;
 import stronglogic.ruviuz.fragments.SlopeFragment;
 import stronglogic.ruviuz.fragments.WelcomeFragment;
@@ -100,7 +101,7 @@ import stronglogic.ruviuz.util.RuvLocation;
 import stronglogic.ruviuz.util.RuvSessionManager;
 import stronglogic.ruviuz.views.SectionAdapter;
 
-public class MainActivity extends AppCompatActivity implements LoginFragment.LoginFragListener, MainFragment.MainfragListener, WelcomeFragment.WelcomeFragListener, AddressFragment.AddressFragListener, SectionFragment.SectionListener, SlopeFragment.SlopeFragListener, FileFragment.FileFragListener, CustomerFragment.CustomerFragListener, EditFragment.EditFragListener, ImageEditFragment.ImageFragListener, RuuvSection.sectionListener, Handler.Callback {
+public class MainActivity extends AppCompatActivity implements LoginFragment.LoginFragListener, MainFragment.MainfragListener, WelcomeFragment.WelcomeFragListener, AddressFragment.AddressFragListener, SectionFragment.SectionListener, SlopeFragment.SlopeFragListener, FileFragment.FileFragListener, CustomerFragment.CustomerFragListener, PropertyFragment.PropertyListener, EditFragment.EditFragListener, ImageEditFragment.ImageFragListener, RuuvSection.sectionListener, Handler.Callback {
 
     private static final String TAG = "RuviuzMAINACTIVITY";
     
@@ -132,7 +133,9 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
     public static final int RUV_SESSION_FAIL = 81;
     public static final int RUV_SESSION_UPDATE = 82;
 
-    public enum ruvFrag { ADDRESS, CUSTOMER, EDIT, FILE, IMAGE, LOGIN, MAIN, SLOPE, WELCOME, NO_FRAG }
+    private int editMode = RUV_EDIT_OFF;
+
+    public enum ruvFrag { ADDRESS, CUSTOMER, PROPERTY, EDIT, FILE, IMAGE, LOGIN, MAIN, SLOPE, WELCOME, NO_FRAG }
 
     private ruvFrag activeFrag;
 
@@ -146,6 +149,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
     private SlopeFragment slopeFrag;
     private FileFragment fileFrag;
     private CustomerFragment mCustomerFrag;
+    private PropertyFragment mPropertyFrag;
     private WelcomeFragment mWelcomeFrag;
     private EditFragment editFrag;
     private ImageEditFragment imgEditFrag;
@@ -172,7 +176,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
 
     private Geocoder geocoder;
 
-    private int fileCount, commentCount, currentRid, lastAction;
+    private int fileCount, commentCount, currentRid, lastAction, numFloors;
     private float width, length, slope;
     private BigDecimal price;
     private String material, address, postal, city, region;
@@ -183,7 +187,6 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
     private boolean premium, ready, editing, isActive;
 
     private Bundle editFragArgs;
-    private int editMode = RUV_EDIT_OFF;
 
     public void saveEditFragState(Bundle args) {
         editFragArgs = args;
@@ -837,6 +840,24 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         }
     }
 
+    public void propertyDialog() {
+        MainActivity.this.activeFrag = ruvFrag.PROPERTY;
+        dismissAllDialogs();
+        FragmentManager fm = getFragmentManager();
+        if ( mPropertyFrag == null) {
+            mPropertyFrag = new PropertyFragment();
+            if (!mPropertyFrag.isAdded()) {
+                mPropertyFrag.show(fm, "Please Enter Property Details");
+            }
+        }
+        if (mPropertyFrag!= null) {
+            fm.beginTransaction().remove(mPropertyFrag).commit();
+            mPropertyFrag = null;
+            mPropertyFrag = new PropertyFragment();
+            mPropertyFrag.show(fm, "Please Enter Property Details");
+        }
+    }
+
     public void customerDialog() {
         MainActivity.this.activeFrag = ruvFrag.CUSTOMER;
         dismissAllDialogs();
@@ -1015,7 +1036,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
             getFragmentManager().beginTransaction().remove(mAddressFrag).commit();
         }
         if (!ready)
-        slopeDialog();
+            propertyDialog();
     }
 
 
@@ -1046,6 +1067,14 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
             mCustomerFrag.dismiss();
         }
         addressDialog();
+    }
+
+    @Override
+    public void propertyFragInteraction(float slope) {
+        if (mPropertyFrag != null && mPropertyFrag.isAdded()) {
+            mPropertyFrag.dismiss();
+        }
+        slopeDialog();
     }
 
     @Override
@@ -2104,6 +2133,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         if (mainFragment != null && mainFragment.isAdded()) mainFragment.dismiss();
         if (mLoginFrag != null && mLoginFrag.isAdded()) mLoginFrag.dismiss();
         if (mCustomerFrag != null && mCustomerFrag.isAdded()) mCustomerFrag.dismiss();
+        if (mPropertyFrag != null && mPropertyFrag.isAdded()) mPropertyFrag.dismiss();
         if (mAddressFrag != null && mAddressFrag.isAdded()) mAddressFrag.dismiss();
         if (slopeFrag != null && slopeFrag.isAdded()) slopeFrag.dismiss();
         if (editFrag != null && editFrag.isAdded()) editFrag.dismiss();
@@ -2115,6 +2145,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         if (mainFragment != null && mainFragment.isAdded() && mainFragment.getClass() != mClass) mainFragment.dismiss();
         if (mLoginFrag != null && mLoginFrag.isAdded() && mLoginFrag.getClass() != mClass) mLoginFrag.dismiss();
         if (mCustomerFrag != null && mCustomerFrag.isAdded() && mCustomerFrag.getClass() != mClass) mCustomerFrag.dismiss();
+        if (mPropertyFrag != null && mPropertyFrag.isAdded() && mPropertyFrag.getClass() != mClass) mPropertyFrag.dismiss();
         if (mAddressFrag != null && mAddressFrag.isAdded() && mAddressFrag.getClass() != mClass) mAddressFrag.dismiss();
         if (slopeFrag != null && slopeFrag.isAdded() && slopeFrag.getClass() != mClass) slopeFrag.dismiss();
         if (editFrag != null && editFrag.isAdded() && editFrag.getClass() != mClass) editFrag.dismiss();

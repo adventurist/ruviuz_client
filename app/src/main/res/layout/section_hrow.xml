@@ -97,7 +97,7 @@
         android:layout_width="48dp"
         android:layout_height="20dp"
         android:layout_margin="4dp"
-        android:text="@string/width"
+        android:text="@string/twidth"
         android:layout_below="@id/sectionWidth"
         android:id="@+id/topWidthLabel"/>
 

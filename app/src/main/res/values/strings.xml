@@ -185,6 +185,15 @@
     <string name="rectangular_hip">Rect. Hip</string>
     <string name="square_hip">Square Hip</string>
     <string name="measure_sections">Measure Sections</string>
+    <string name="measure_empty">Measure Empty Area</string>
+    <string name="twidth">TWidth</string>
+    <string name="section_type">Section Type</string>
+    <string name="num_of_floors">Floors\n(above ground)</string>
+    <string name="property_info">Property Info</string>
+    <string name="prep_requirement">Preparation Requirements</string>
+    <string name="high">High</string>
+    <string name="moderate">Moderate</string>
+    <string name="none">None</string>
 
 
 </resources>
