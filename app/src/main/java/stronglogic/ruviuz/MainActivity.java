@@ -2211,7 +2211,6 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
                     ruuvJson.put("postal", mBundle.getString("postal"));
                     ruuvJson.put("city", mBundle.getString("city"));
                     ruuvJson.put("region", mBundle.getString("region"));
-                    ruuvJson.put("price", mBundle.getString("price"));
                     ruuvJson.put("material", mBundle.getString("material"));
                     ruuvJson.put("cleanupFactor", mBundle.getString("cleanupFactor"));
                     ruuvJson.put("numFloors", mBundle.getString("numFloors"));
