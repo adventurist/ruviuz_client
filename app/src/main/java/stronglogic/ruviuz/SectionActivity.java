@@ -69,7 +69,7 @@ public class SectionActivity extends AppCompatActivity implements SectionFragmen
     private me.angrybyte.numberpicker.view.ActualNumberPicker ftPicker, inPicker, emptFtPicker, emptInPicker;
 
 
-    private TextView sectionLengthTv, sectionLengthInTv, sectionWidthTv, sectionWidthInTv, sectionTwidthTv, sectionTwidthInTv, sectionTypeTv, selectedTv, emptTv, emptFtTv, emptInTv, sEmptyWidthInTv, emptSelTv, sEmptyLengthInTv, sEmptyLengthTv, sEmptyWidthTv;
+    private TextView sectionLengthTv, sectionLengthInTv, sectionWidthTv, sectionWidthInTv, sectionTwidthTv, sectionTwidthInTv, sectionTypeTv, selectedTv, emptTv, emptyTv, emptFtTv, emptInTv, sEmptyWidthInTv, emptSelTv, sEmptyLengthInTv, sEmptyLengthTv, sEmptyWidthTv;
 
     private Button sectionBtn;
     private FloatingActionButton doneBtn;
@@ -87,7 +87,7 @@ public class SectionActivity extends AppCompatActivity implements SectionFragmen
 
     private String authToken, emptyType, sectionType;
 
-    private int fileCount, currentRid;
+    private int fileCount, currentRid, numFloors, cleanupFactor;
     private float topwidth, width, length, slope;
     private String material, address, postal, city, region;
     private String[] fileUrls = new String[3];
@@ -129,6 +129,7 @@ public class SectionActivity extends AppCompatActivity implements SectionFragmen
         }
 
         SectionActivity.this.activePicker = LENGTH_SELECTED;
+        SectionActivity.this.activeEmptyPicker = LENGTH_SELECTED;
 
         sectionSpinner = (Spinner) findViewById(R.id.sectionTypeSpin);
         String[] sectionTypes = getResources().getStringArray(R.array.sectionTypes);
@@ -209,6 +210,7 @@ public class SectionActivity extends AppCompatActivity implements SectionFragmen
                             SectionActivity.this.sEmptyWidthTv = (TextView) SectionActivity.this.secView.findViewById(R.id.emptyWidth);
                             SectionActivity.this.sEmptyLengthInTv = (TextView) SectionActivity.this.secView.findViewById(R.id.emptyLengthIn);
                             SectionActivity.this.sEmptyWidthInTv = (TextView) SectionActivity.this.secView.findViewById(R.id.emptyWidthIn);
+                            SectionActivity.this.emptyTv = (TextView) SectionActivity.this.secView.findViewById(R.id.eType);
 
                             if (SectionActivity.this.sEmptyLengthTv != null && SectionActivity.this.sEmptyWidthTv != null && SectionActivity.this.sEmptyLengthInTv != null && SectionActivity.this.sEmptyWidthInTv != null) {
 
@@ -227,8 +229,8 @@ public class SectionActivity extends AppCompatActivity implements SectionFragmen
                                 section.setEmptyType(SectionActivity.this.emptyType);
                                 section.setMissing(emptyArea);
 
-                                if (SectionActivity.this.sectionTypeTv != null)
-                                SectionActivity.this.sectionTypeTv.setText("");
+//                                if (SectionActivity.this.sectionTypeTv != null)
+//                                SectionActivity.this.sectionTypeTv.setText("");
                                 SectionActivity.this.sEmptyLengthTv.setText("");
                                 SectionActivity.this.sEmptyWidthTv.setText("");
                                 SectionActivity.this.sEmptyLengthInTv.setText("");
@@ -238,6 +240,9 @@ public class SectionActivity extends AppCompatActivity implements SectionFragmen
                                 SectionActivity.this.emptFtPicker.jumpDrawablesToCurrentState();
                                 SectionActivity.this.emptInPicker.setValue(0);
                                 SectionActivity.this.emptInPicker.jumpDrawablesToCurrentState();
+
+
+                                emptyTv.setText("");
 
                             }
                         }
@@ -354,10 +359,12 @@ public class SectionActivity extends AppCompatActivity implements SectionFragmen
 
                     case R.id.emptyLgtPickBtn:
                         SectionActivity.this.activeEmptyPicker = LENGTH_SELECTED;
+                        if (SectionActivity.this.emptSelTv != null)
                         SectionActivity.this.emptSelTv.setText(R.string.length);
                         break;
                     case R.id.emptyWdtPickBtn:
                         SectionActivity.this.activeEmptyPicker = WIDTH_SELECTED;
+                        if (SectionActivity.this.emptSelTv != null)
                         SectionActivity.this.emptSelTv.setText(R.string.width);
                         break;
 
@@ -373,26 +380,27 @@ public class SectionActivity extends AppCompatActivity implements SectionFragmen
                 Log.d(TAG, "Value Changed");
                 if (sectionFrag == null || !sectionFrag.isAdded()) addSectionFragment();
                 if (SectionActivity.this.secView == null) SectionActivity.this.secView = sectionFrag.getView();
-                String newMeasurement;
-                Log.d(TAG, String.valueOf(activePicker));
-                switch (SectionActivity.this.activePicker) {
-                    case LENGTH_SELECTED:
-                        TextView sectionLengthTv = (TextView) SectionActivity.this.secView.findViewById(R.id.sectionLength);
-                        newMeasurement = String.valueOf((float) newValue);
-                        sectionLengthTv.setText(newMeasurement);
-                        break;
-                    case WIDTH_SELECTED:
-                        TextView sectionWidthTv = (TextView) SectionActivity.this.secView.findViewById(R.id.sectionWidth);
-                        newMeasurement = String.valueOf((float) newValue);
-                        sectionWidthTv.setText(newMeasurement);
-                        break;
-                    case TOP_WIDTH_SELECTED:
-                        TextView sectionTwidthTv = (TextView) SectionActivity.this.secView.findViewById(R.id.sectionTwidth);
-                        newMeasurement = String.valueOf((float) newValue);
-                        sectionTwidthTv.setText(newMeasurement);
-                        break;
+                if (oldValue != newValue) {
+                    String newMeasurement;
+                    Log.d(TAG, String.valueOf(activePicker));
+                    switch (SectionActivity.this.activePicker) {
+                        case LENGTH_SELECTED:
+                            TextView sectionLengthTv = (TextView) SectionActivity.this.secView.findViewById(R.id.sectionLength);
+                            newMeasurement = String.valueOf((float) newValue);
+                            sectionLengthTv.setText(newMeasurement);
+                            break;
+                        case WIDTH_SELECTED:
+                            TextView sectionWidthTv = (TextView) SectionActivity.this.secView.findViewById(R.id.sectionWidth);
+                            newMeasurement = String.valueOf((float) newValue);
+                            sectionWidthTv.setText(newMeasurement);
+                            break;
+                        case TOP_WIDTH_SELECTED:
+                            TextView sectionTwidthTv = (TextView) SectionActivity.this.secView.findViewById(R.id.sectionTwidth);
+                            newMeasurement = String.valueOf((float) newValue);
+                            sectionTwidthTv.setText(newMeasurement);
+                            break;
+                    }
                 }
-
             }
         });
 
@@ -403,24 +411,26 @@ public class SectionActivity extends AppCompatActivity implements SectionFragmen
                 Log.d(TAG, "Value Changed");
                 if (sectionFrag == null || !sectionFrag.isAdded()) addSectionFragment();
                 if (SectionActivity.this.secView == null) SectionActivity.this.secView = sectionFrag.getView();
-                String newMeasurement;
-                Log.d(TAG, String.valueOf(activePicker));
-                switch (SectionActivity.this.activePicker) {
-                    case LENGTH_SELECTED:
-                        TextView sectionLengthTvIn = (TextView) SectionActivity.this.secView.findViewById(R.id.sectionLengthIn);
-                        newMeasurement = String.valueOf((float) newValue);
-                        sectionLengthTvIn.setText(newMeasurement);
-                        break;
-                    case WIDTH_SELECTED:
-                        TextView sectionWidthTvIn = (TextView) SectionActivity.this.secView.findViewById(R.id.sectionWidthIn);
-                        newMeasurement = String.valueOf((float) newValue);
-                        sectionWidthTvIn.setText(newMeasurement);
-                        break;
-                    case TOP_WIDTH_SELECTED:
-                        TextView sectionTwidthTvIn = (TextView) SectionActivity.this.secView.findViewById(R.id.sectionTwidthIn);
-                        newMeasurement = String.valueOf((float) newValue);
-                        sectionTwidthTvIn.setText(newMeasurement);
-                        break;
+                if (oldValue != newValue) {
+                    String newMeasurement;
+                    Log.d(TAG, String.valueOf(activePicker));
+                    switch (SectionActivity.this.activePicker) {
+                        case LENGTH_SELECTED:
+                            TextView sectionLengthTvIn = (TextView) SectionActivity.this.secView.findViewById(R.id.sectionLengthIn);
+                            newMeasurement = String.valueOf((float) newValue);
+                            sectionLengthTvIn.setText(newMeasurement);
+                            break;
+                        case WIDTH_SELECTED:
+                            TextView sectionWidthTvIn = (TextView) SectionActivity.this.secView.findViewById(R.id.sectionWidthIn);
+                            newMeasurement = String.valueOf((float) newValue);
+                            sectionWidthTvIn.setText(newMeasurement);
+                            break;
+                        case TOP_WIDTH_SELECTED:
+                            TextView sectionTwidthTvIn = (TextView) SectionActivity.this.secView.findViewById(R.id.sectionTwidthIn);
+                            newMeasurement = String.valueOf((float) newValue);
+                            sectionTwidthTvIn.setText(newMeasurement);
+                            break;
+                    }
                 }
             }
         });
@@ -581,6 +591,8 @@ public class SectionActivity extends AppCompatActivity implements SectionFragmen
         intent.putExtra("premium", this.premium);
         intent.putExtra("material", this.material);
         intent.putExtra("currentRid", this.currentRid);
+        intent.putExtra("cleanupFactor", this.cleanupFactor);
+        intent.putExtra("numFloors", this.numFloors);
         intent.putExtra("fileCount", this.fileCount);
         intent.putExtra("fileUrls", this.fileUrls);
         intent.putExtra("fileComments", this.fileComments);
@@ -617,6 +629,8 @@ public class SectionActivity extends AppCompatActivity implements SectionFragmen
         this.premium = intent.getBooleanExtra("premium", false);
         this.material = intent.getStringExtra("material");
         this.currentRid = intent.getIntExtra("currentRid", -1);
+        this.cleanupFactor = intent.getIntExtra("cleanupFactor", -1);
+        this.numFloors = intent.getIntExtra("numFloors", -1);
         this.fileCount = intent.getIntExtra("fileCount", 0);
         this.fileUrls = intent.getStringArrayExtra("fileUrls");
         this.fileComments = intent.getStringArrayExtra("fileComments");

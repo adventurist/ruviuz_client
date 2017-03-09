@@ -188,7 +188,7 @@
     <string name="measure_empty">Measure Empty Area</string>
     <string name="twidth">TWidth</string>
     <string name="section_type">Section Type</string>
-    <string name="num_of_floors">Floors\n(above ground)</string>
+    <string name="floors">Floors</string>
     <string name="property_info">Property Info</string>
     <string name="prep_requirement">Preparation Requirements</string>
     <string name="high">High</string>

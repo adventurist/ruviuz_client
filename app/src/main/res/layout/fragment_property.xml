@@ -91,8 +91,7 @@
         <Spinner
             android:layout_width="196dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginStart="16dp"
+            android:layout_marginStart="24dp"
             android:textColor="@color/colorPrimaryDark"
             android:layout_toEndOf="@id/matLabel"
             android:layout_alignParentTop="true"
@@ -102,7 +101,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/num_of_floors"
+            android:text="@string/floors"
             android:layout_marginTop="72dp"
             android:layout_marginStart="16dp"
             android:layout_centerVertical="true"
@@ -137,17 +136,17 @@
                 android:background="@drawable/ruvbtn_clr"
                 android:src="@drawable/uparrow" />
 
-        <biz.kasual.materialnumberpicker.MaterialNumberPicker
-            android:layout_width="96dp"
-            android:layout_height="48dp"
-            android:id="@+id/floorPicker"
-            app:npMinValue="1"
-            app:npMaxValue="25"
-            app:npDefaultValue="2"
-            app:npBackgroundColor="@color/ruvGreen"
-            app:npSeparatorColor="@color/ruvGreenStatus"
-            app:npTextColor="#000"
-            app:npTextSize="16sp"/>
+            <biz.kasual.materialnumberpicker.MaterialNumberPicker
+                android:layout_width="96dp"
+                android:layout_height="48dp"
+                android:id="@+id/floorPicker"
+                app:npMinValue="1"
+                app:npMaxValue="25"
+                app:npDefaultValue="2"
+                app:npBackgroundColor="@color/ruvGreen"
+                app:npSeparatorColor="@color/ruvGreenStatus"
+                app:npTextColor="#000"
+                app:npTextSize="16sp"/>
 
             <ImageButton
                 android:id="@+id/floorDown"

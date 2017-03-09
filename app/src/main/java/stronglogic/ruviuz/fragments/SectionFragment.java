@@ -58,18 +58,18 @@ public class SectionFragment extends Fragment {
                              Bundle savedInstanceState) {
         View mView = inflater.inflate(R.layout.fragment_section, container, false);
 
-        sectionType = (TextView) mView.findViewById(R.id.sectionType);
-        sectionLength = (TextView) mView.findViewById(R.id.sectionLength);
-        sectionWidth = (TextView) mView.findViewById(R.id.sectionWidth);
-        emptyLength = (TextView) mView.findViewById(R.id.emptyLength);
-        emptyWidth = (TextView) mView.findViewById(R.id.emptyWidth);
-
-        sectionLengthIn = (TextView) mView.findViewById(R.id.sectionLengthIn);
-        sectionWidthIn = (TextView) mView.findViewById(R.id.sectionWidthIn);
-        emptyLengthIn = (TextView) mView.findViewById(R.id.emptyLengthIn);
-        emptyWidthIn = (TextView) mView.findViewById(R.id.emptyWidthIn);
-
-        eType = (TextView) mView.findViewById(R.id.eType);
+//        sectionType = (TextView) mView.findViewById(R.id.sectionType);
+//        sectionLength = (TextView) mView.findViewById(R.id.sectionLength);
+//        sectionWidth = (TextView) mView.findViewById(R.id.sectionWidth);
+//        emptyLength = (TextView) mView.findViewById(R.id.emptyLength);
+//        emptyWidth = (TextView) mView.findViewById(R.id.emptyWidth);
+//
+//        sectionLengthIn = (TextView) mView.findViewById(R.id.sectionLengthIn);
+//        sectionWidthIn = (TextView) mView.findViewById(R.id.sectionWidthIn);
+//        emptyLengthIn = (TextView) mView.findViewById(R.id.emptyLengthIn);
+//        emptyWidthIn = (TextView) mView.findViewById(R.id.emptyWidthIn);
+//
+//        eType = (TextView) mView.findViewById(R.id.eType);
 
 //        RuvDrawable vDrawable = new RuvDrawable(Color.BLACK,Color.GREEN,Color.LTGRAY,2,Color.RED,50);
 //        View vView = new View(mActivity);

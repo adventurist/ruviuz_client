@@ -2011,6 +2011,9 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
 
     public void handleRequest(int request) {
         Log.d(TAG, "Rview REQUEST:: " + request);
+        if (request != GEOLOCATION_REQUEST) {
+            dismissAllDialogs();
+        }
         if (request == WELCOME_REQUEST) {
             welcomeDialog();
         }

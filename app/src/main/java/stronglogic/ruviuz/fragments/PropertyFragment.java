@@ -227,12 +227,13 @@ public class PropertyFragment extends DialogFragment implements View.OnClickList
                 mListener.propertyFragInteraction(numFloors, material, cleanupFactor);
             }
         });
-
         flrPicker = (MaterialNumberPicker) mView.findViewById(R.id.floorPicker);
         flrPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
             @Override
             public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
                 PropertyFragment.this.numFloors = newVal;
+                View childView = flrPicker.getChildAt(0);
+                if (childView != null) childView.setBackgroundColor(Color.RED);
             }
         });
 
