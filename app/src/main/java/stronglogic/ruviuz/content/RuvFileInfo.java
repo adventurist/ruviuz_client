@@ -15,6 +15,8 @@ public class RuvFileInfo {
 
     private String comment;
 
+    private String time;
+
 
     public RuvFileInfo() {
         this.comment = "";
@@ -47,6 +49,14 @@ public class RuvFileInfo {
 
     public String getComment() {
         return this.comment;
+    }
+
+    public void setTime(String time) {
+        this.time = time;
+    }
+
+    public String getTime() {
+        return this.time;
     }
 }
 

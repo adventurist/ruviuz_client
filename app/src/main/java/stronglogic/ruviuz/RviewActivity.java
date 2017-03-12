@@ -295,6 +295,8 @@ public class RviewActivity extends AppCompatActivity implements RuvFragment.RuvF
                     Roof roof = new Roof();
                     roof.setId(Integer.valueOf(roofJson.getString("id")));
                     roof.setPrice(new BigDecimal(roofJson.getString("price")));
+                    roof.setFloors(Integer.valueOf(roofJson.getString("floors")));
+                    roof.setCleanUpFactor(Integer.valueOf(roofJson.getString("rstate")));
                     String addrStr = addrJson.getString("address") + "\n" + addrJson.getString("city") + "," + addrJson.getString("region") + "\n" + addrJson.getString("postal");
                     roof.setAddress(addrStr);
                     if (roofJson.has("customer"))
@@ -310,6 +312,8 @@ public class RviewActivity extends AppCompatActivity implements RuvFragment.RuvF
                             rFile.setUrl(baseUrl + "/files/" + fileObject.getString(String.valueOf(fNum)));
                             if (fileObject.has("comment"))
                                 rFile.setComment(fileObject.getString("comment"));
+                            if (fileObject.has("time"))
+                                rFile.setTime(fileObject.getString("time"));
                             filesArray.add(rFile);
                         }
                         roof.setFiles(filesArray);

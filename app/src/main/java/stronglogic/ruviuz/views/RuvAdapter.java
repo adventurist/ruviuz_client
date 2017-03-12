@@ -74,7 +74,7 @@ public class RuvAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
 
     private static class RuvHolder extends RecyclerView.ViewHolder  {
-        TextView addressTv, custTv, priceTv, idTv, widthTv, lengthTv, slopeTv, cTv1, cTv2, cTv3;
+        TextView addressTv, custTv, priceTv, idTv, rdyTv, flrTv, cTv1, cTv2, cTv3, cTime1, cTime2, cTime3;
         ImageView ruvPhoto1, ruvPhoto2, ruvPhoto3;
         Button roofOptions;
         private RecyclerView rv;
@@ -86,9 +86,8 @@ public class RuvAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             addressTv = (TextView) mView.findViewById(R.id.addressTv);
             custTv = (TextView) mView.findViewById(R.id.custTv);
             idTv = (TextView) mView.findViewById(R.id.idTv );
-//            widthTv = (TextView) mView.findViewById(R.id.widthTv);
-//            lengthTv = (TextView) mView.findViewById((R.id.lengthTv));
-//            slopeTv = (TextView) mView.findViewById(R.id.slopeTv);
+            rdyTv = (TextView) mView.findViewById(R.id.readyTv);
+            flrTv = (TextView) mView.findViewById((R.id.flrTv));
             this.rv = (RecyclerView) mView.findViewById(R.id.sectionRecycler);
 
             LinearLayoutManager layoutMgr = new LinearLayoutManager(this.rv.getContext(),
@@ -107,6 +106,9 @@ public class RuvAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             cTv1 = (TextView) mView.findViewById(R.id.ruvComment1);
             cTv2 = (TextView) mView.findViewById(R.id.ruvComment2);
             cTv3 = (TextView) mView.findViewById(R.id.ruvComment3);
+            cTime1 = (TextView) mView.findViewById(R.id.cmtTime1);
+            cTime2 = (TextView) mView.findViewById(R.id.cmtTime2);
+            cTime3 = (TextView) mView.findViewById(R.id.cmtTime3);
             roofOptions = (Button) mView.findViewById(R.id.roofOptions);
         }
     }
@@ -141,9 +143,8 @@ public class RuvAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             ruvHolder.addressTv.setText(Roof.getAddress());
             if (!Roof.getCustomerName().equals(""))
                 ruvHolder.custTv.setText(Roof.getCustomerName());
-//            ruvHolder.widthTv.setText(String.valueOf(Roof.getWidth()));
-//            ruvHolder.lengthTv.setText(String.valueOf(Roof.getLength()));
-//            ruvHolder.slopeTv.setText(String.valueOf(Roof.getSlope()));
+            ruvHolder.flrTv.setText(String.valueOf(Roof.getFloors()));
+            ruvHolder.rdyTv.setText(String.valueOf(Roof.getCleanUpFactor()));
             ruvHolder.priceTv.setText(ruvPrice);
 
             ArrayList<Section> feedList = Roof.getSections();
@@ -165,6 +166,8 @@ public class RuvAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 if (!Roof.getFiles().get(0).getComment().equals("")) {
                     ruvHolder.cTv1.setVisibility(View.VISIBLE);
                     ruvHolder.cTv1.setText(Roof.getFiles().get(0).getComment());
+                    ruvHolder.cTime1.setVisibility(View.VISIBLE);
+                    ruvHolder.cTime1.setText(Roof.getFiles().get(0).getTime());
                 }
                 if (rFiles.size() > 1 && rFiles.get(1) != null) {
                     Glide.with(mActivity)
@@ -175,6 +178,8 @@ public class RuvAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     if (!Roof.getFiles().get(1).getComment().equals("")) {
                         ruvHolder.cTv2.setVisibility(View.VISIBLE);
                         ruvHolder.cTv2.setText(Roof.getFiles().get(1).getComment());
+                        ruvHolder.cTime2.setVisibility(View.VISIBLE);
+                        ruvHolder.cTime2.setText(Roof.getFiles().get(1).getTime());
                     }
                 } else {
                     Glide.clear(ruvHolder.ruvPhoto2);
@@ -188,6 +193,8 @@ public class RuvAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     if (!Roof.getFiles().get(2).getComment().equals("")) {
                         ruvHolder.cTv3.setVisibility(View.VISIBLE);
                         ruvHolder.cTv3.setText(Roof.getFiles().get(2).getComment());
+                        ruvHolder.cTime3.setVisibility(View.VISIBLE);
+                        ruvHolder.cTime3.setText(Roof.getFiles().get(2).getTime());
                     }
                 } else {
                     Glide.clear(ruvHolder.ruvPhoto3);

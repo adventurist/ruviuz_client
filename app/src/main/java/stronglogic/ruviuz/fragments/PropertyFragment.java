@@ -20,6 +20,8 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.NumberPicker;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -47,6 +49,8 @@ public class PropertyFragment extends DialogFragment implements View.OnClickList
     private ImageButton upBtn, dwnBtn;
 
     private MaterialNumberPicker flrPicker;
+
+    private RadioGroup rdyGroup;
 
     private TextView roofSlope;
 
@@ -181,7 +185,7 @@ public class PropertyFragment extends DialogFragment implements View.OnClickList
         }
 
         materialSpinner = (Spinner) mView.findViewById(R.id.materialSpin);
-        String[] materials = mActivity.getResources().getStringArray(R.array.roofMaterials);
+        final String[] materials = mActivity.getResources().getStringArray(R.array.roofMaterials);
 
         ArrayAdapter materialAdapter = new ArrayAdapter<>(mActivity, android.R.layout.simple_spinner_dropdown_item, materials);
         materialAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -224,6 +228,7 @@ public class PropertyFragment extends DialogFragment implements View.OnClickList
         forward.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (material == null || material.equals("")) material = materials[0];
                 mListener.propertyFragInteraction(numFloors, material, cleanupFactor);
             }
         });
@@ -246,6 +251,15 @@ public class PropertyFragment extends DialogFragment implements View.OnClickList
         if (PropertyFragment.this.numFloors < 0) {
             PropertyFragment.this.numFloors = 0;
         }
+
+        rdyGroup = (RadioGroup) mView.findViewById(R.id.rdyGroup);
+        rdyGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                RadioButton radioBtn = (RadioButton) mView.findViewById(checkedId);
+                PropertyFragment.this.cleanupFactor = radioBtn.getText().toString().equals("None") ? 0 : radioBtn.getText().toString().equals("Moderate") ? 1 : 2;
+            }
+        });
 
         return mView;
     }
