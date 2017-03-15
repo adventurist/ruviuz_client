@@ -221,7 +221,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         setupWindowAnimations();
 
         MainActivity.this.progressBar = (ProgressBar) findViewById(R.id.tokenProgress);
-        MainActivity.this.progressBar.setMax(95);
+        MainActivity.this.progressBar.setMax(175);
 
         ruvSessionManager = new RuvSessionManager(MainActivity.this, new RuvSessionManager.SessionListener() {
             @Override
@@ -750,7 +750,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
 
     public void welcomeDialog() {
         MainActivity.this.activeFrag = ruvFrag.WELCOME;
-        dismissAllDialogs();
+//        dismissAllDialogs();
         FragmentManager fm = getFragmentManager();
         if (mWelcomeFrag == null) {
             mWelcomeFrag= new WelcomeFragment();
@@ -801,7 +801,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
 
     public void mainDialog() {
         MainActivity.this.activeFrag = ruvFrag.MAIN;
-        dismissAllDialogs();
+//        dismissAllDialogs();
         FragmentManager fm = getFragmentManager();
         if (mainFragment == null) {
             mainFragment = new MainFragment();
@@ -826,7 +826,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
 
     public void addressDialog() {
         MainActivity.this.activeFrag = ruvFrag.ADDRESS;
-        dismissAllDialogs();
+//        dismissAllDialogs();
         FragmentManager fm = getFragmentManager();
         if (mAddressFrag == null) {
             mAddressFrag = new AddressFragment();
@@ -844,7 +844,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
 
     public void propertyDialog() {
         MainActivity.this.activeFrag = ruvFrag.PROPERTY;
-        dismissAllDialogs();
+//        dismissAllDialogs();
         FragmentManager fm = getFragmentManager();
         if ( mPropertyFrag == null) {
             mPropertyFrag = new PropertyFragment();
@@ -862,7 +862,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
 
     public void customerDialog() {
         MainActivity.this.activeFrag = ruvFrag.CUSTOMER;
-        dismissAllDialogs();
+//        dismissAllDialogs();
         FragmentManager fm = getFragmentManager();
 
         Bundle args = new Bundle();
@@ -901,7 +901,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
     public void editDialog() {
         MainActivity.this.activeFrag = ruvFrag.EDIT;
         updateValues();
-        dismissAllDialogs();
+//        dismissAllDialogs();
         Bundle mBundle = new Bundle();
         mBundle.putInt("editMode", editMode);
         mBundle.putFloat("length", length);
@@ -2148,6 +2148,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
     //TODO still not working consistently
     public void dismissAllDialogs() {
         if (mainFragment != null && mainFragment.isAdded()) mainFragment.dismiss();
+        if (mWelcomeFrag != null && mWelcomeFrag.isAdded()) mWelcomeFrag.dismiss();
         if (mLoginFrag != null && mLoginFrag.isAdded()) mLoginFrag.dismiss();
         if (mCustomerFrag != null && mCustomerFrag.isAdded()) mCustomerFrag.dismiss();
         if (mPropertyFrag != null && mPropertyFrag.isAdded()) mPropertyFrag.dismiss();
@@ -2160,6 +2161,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
 
     public void dismissOtherDialogs(Class mClass) {
         if (mainFragment != null && mainFragment.isAdded() && mainFragment.getClass() != mClass) mainFragment.dismiss();
+        if (mWelcomeFrag != null && mWelcomeFrag.isAdded() && mWelcomeFrag.getClass() != mClass) mWelcomeFrag.dismiss();
         if (mLoginFrag != null && mLoginFrag.isAdded() && mLoginFrag.getClass() != mClass) mLoginFrag.dismiss();
         if (mCustomerFrag != null && mCustomerFrag.isAdded() && mCustomerFrag.getClass() != mClass) mCustomerFrag.dismiss();
         if (mPropertyFrag != null && mPropertyFrag.isAdded() && mPropertyFrag.getClass() != mClass) mPropertyFrag.dismiss();

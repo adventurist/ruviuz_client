@@ -7,6 +7,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.graphics.drawable.Animatable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -19,6 +21,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.NumberPicker;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -31,6 +34,7 @@ import stronglogic.ruviuz.R;
 import stronglogic.ruviuz.RviewActivity;
 
 import static com.google.android.gms.internal.zzs.TAG;
+import static stronglogic.ruviuz.R.drawable.construction;
 
 /**
  * A simple {@link DialogFragment} subclass.
@@ -140,7 +144,7 @@ public class PropertyFragment extends DialogFragment implements View.OnClickList
         mToolbar.inflateMenu(R.menu.ruviuz_menu);
 
         if (mToolbar != null) {
-            mToolbar.setNavigationIcon(R.drawable.construction);
+            mToolbar.setNavigationIcon(construction);
 //            mToolbar.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.ruvGreen));
             mToolbar.setElevation(8f);
             mToolbar.setTitle(getActivity().getResources().getString(R.string.app_name));
@@ -260,7 +264,15 @@ public class PropertyFragment extends DialogFragment implements View.OnClickList
                 PropertyFragment.this.cleanupFactor = radioBtn.getText().toString().equals("None") ? 0 : radioBtn.getText().toString().equals("Moderate") ? 1 : 2;
             }
         });
+        ViewGroup vg = (ViewGroup) decorView;
+        Drawable rVector = (Drawable)mActivity.getDrawable(R.drawable.ruv_vector);
 
+//        Animatable ruvMan = (Animatable) rVector, vg;
+        ImageView ruvmanView = (ImageView) mView.findViewById(R.id.ruvMan);
+        ruvmanView.setBackground(rVector);
+        if (rVector instanceof Animatable) {
+            ((Animatable) rVector).start();
+        }
         return mView;
     }
 

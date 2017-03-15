@@ -31,7 +31,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:id="@+id/idTv"
-        android:textColor="#f9cb1e"
+        android:textColor="@color/ruvText"
         android:textStyle="bold">
 
     </TextView>
@@ -56,7 +56,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:id="@+id/addressTv"
-        android:textColor="#f9cb1e">
+        android:textColor="@color/ruvText">
     </TextView>
     </LinearLayout>
     <LinearLayout
@@ -80,7 +80,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:id="@+id/custTv"
-            android:textColor="#f9cb1e">
+            android:textColor="@color/ruvText">
         </TextView>
     </LinearLayout>
 
@@ -105,7 +105,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:id="@+id/flrTv"
-            android:textColor="#f9cb1e">
+            android:textColor="@color/ruvText">
         </TextView>
     </LinearLayout>
 
@@ -130,7 +130,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:id="@+id/readyTv"
-            android:textColor="#f9cb1e">
+            android:textColor="@color/ruvText">
         </TextView>
     </LinearLayout>
 
@@ -161,7 +161,7 @@
                 android:layout_marginStart="8dp"
                 android:inputType=""
                 android:id="@+id/priceTv"
-                android:textColor="#f9cb1e">
+                android:textColor="@color/ruvText">
             </TextView>
         </LinearLayout>
         <Button

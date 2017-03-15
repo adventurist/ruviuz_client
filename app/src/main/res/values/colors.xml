@@ -7,6 +7,7 @@
     <color name="ruvAccent">#ffc400</color>
     <color name="ruvSelected">#FFDD00FF</color>
     <color name="ruvGrey">#757575</color>
+    <color name="ruvText">#564400</color>
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303f9f</color>
     <color name="colorAccent">#ff4081</color>

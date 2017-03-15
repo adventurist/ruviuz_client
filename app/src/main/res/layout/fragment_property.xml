@@ -178,6 +178,12 @@
             android:layout_below="@+id/flrPickWrap"
             android:textSize="18sp"
             />
+        <ImageView
+            android:layout_width="256dp"
+            android:layout_height="256dp"
+            android:layout_below="@id/flrPickWrap"
+            android:layout_centerHorizontal="true"
+            android:id="@+id/ruvMan"/>
 
         <RadioGroup
             android:id="@+id/rdyGroup"

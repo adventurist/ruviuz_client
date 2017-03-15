@@ -90,6 +90,7 @@ public class ImageEditFragment extends DialogFragment {
         }
         setStyle(DialogFragment.STYLE_NORMAL, R.style.RuvFullFrag);
         if (getArguments() != null) {
+
             editImgUrl = getArguments().getString("editImgUrl");
             editIndex = getArguments().getInt("editIndex");
             editCommentText = getArguments().getString("editCommentText");

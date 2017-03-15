@@ -76,7 +76,7 @@ public class RuvFragment extends DialogFragment {
 
     private RuvFragListener ruvFragListener;
 
-    private TextView idTv;
+    private TextView idTv, cTimeTv1, cTimeTv2, cTimeTv3, ruvComment1, ruvComment2, ruvComment3;
     private EditText addressEt, priceEt, custEt;
     private ImageView ruvPhoto1, ruvPhoto2, ruvPhoto3;
     private Button imgBtn, updateBtn, photoBtn;
@@ -175,6 +175,11 @@ public class RuvFragment extends DialogFragment {
                                             .diskCacheStrategy(DiskCacheStrategy.RESULT)
                                             .into(ruvPhoto1);
                                     RuvFragment.this.fileUrls[0] = fJson.getString("filename");
+                                    if (roofFiles.getJSONObject(0).has("comment")) {
+                                        JSONObject cJson = new JSONObject(roofFiles.getJSONObject(0).getString("comment"));
+                                        ruvComment1.setText(cJson.getString("body"));
+                                        cTimeTv1.setText(cJson.getString("entry_date"));
+                                    }
                                     if (roofFiles.length() > 1 && roofFiles.get(1) != null) {
                                         fJson = new JSONObject(roofFiles.getJSONObject(1).getString("file"));
                                         Glide.with(mActivity)
@@ -183,6 +188,11 @@ public class RuvFragment extends DialogFragment {
                                                 .diskCacheStrategy(DiskCacheStrategy.RESULT)
                                                 .into(ruvPhoto2);
                                         RuvFragment.this.fileUrls[1] = fJson.getString("filename");
+                                        if (roofFiles.getJSONObject(1).has("comment")) {
+                                            JSONObject cJson = new JSONObject(roofFiles.getJSONObject(1).getString("comment"));
+                                            ruvComment2.setText(cJson.getString("body"));
+                                            cTimeTv2.setText(cJson.getString("entry_date"));
+                                        }
                                     } else {
 //                                        Glide.clear(ruvPhoto2);
                                     }
@@ -194,6 +204,11 @@ public class RuvFragment extends DialogFragment {
                                                 .diskCacheStrategy(DiskCacheStrategy.RESULT)
                                                 .into(ruvPhoto3);
                                         RuvFragment.this.fileUrls[2] = fJson.getString("filename");
+                                        if (roofFiles.getJSONObject(2).has("comment")) {
+                                            JSONObject cJson = new JSONObject(roofFiles.getJSONObject(2).getString("comment"));
+                                            ruvComment3.setText(cJson.getString("body"));
+                                            cTimeTv3.setText(cJson.getString("entry_date"));
+                                        }
                                     } else {
 //                                        Glide.clear(ruvPhoto3);
                                     }
@@ -320,9 +335,15 @@ public class RuvFragment extends DialogFragment {
         addressEt = (EditText) mView.findViewById(R.id.addressEt);
         custEt = (EditText) mView.findViewById(R.id.custEt);
         rv = (RecyclerView) mView.findViewById(R.id.sectionView);
-        ruvPhoto1 = (ImageView) mView.findViewById(R.id.ruvUpPhoto1);
-        ruvPhoto2  = (ImageView) mView.findViewById(R.id.ruvUpPhoto2);
-        ruvPhoto3  = (ImageView) mView.findViewById(R.id.ruvUpPhoto3);
+        ruvPhoto1 = (ImageView) mView.findViewById(R.id.ruvPhoto1);
+        ruvPhoto2  = (ImageView) mView.findViewById(R.id.ruvPhoto2);
+        ruvPhoto3  = (ImageView) mView.findViewById(R.id.ruvPhoto3);
+        ruvComment1 = (TextView) mView.findViewById(R.id.ruvComment1);
+        ruvComment2 = (TextView) mView.findViewById(R.id.ruvComment2);
+        ruvComment3 = (TextView) mView.findViewById(R.id.ruvComment3);
+        cTimeTv1 = (TextView) mView.findViewById(R.id.cmtTime1);
+        cTimeTv2 = (TextView) mView.findViewById(R.id.cmtTime2);
+        cTimeTv3 = (TextView) mView.findViewById(R.id.cmtTime3);
         imgBtn = (Button) mView.findViewById(R.id.imgBtn);
         updateBtn = (Button) mView.findViewById(R.id.ruvUpdate);
 
