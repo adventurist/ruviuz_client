@@ -408,18 +408,23 @@ public class RuvFragment extends DialogFragment {
             public void onClick(View v) {
                 Log.d(TAG, "Photo 1 Click");
                 Bundle mBundle = new Bundle();
+                mBundle.putString("callingClass", RuvFragment.this.getClass().getSimpleName());
                 mBundle.putString("editImgUrl", fileUrls[0]);
+                mBundle.putStringArray("fileUrls", fileUrls);
+                mBundle.putStringArray("fileComments", fileComments);
                 mBundle.putString("editCommentText", fileComments[0]);
                 mBundle.putInt("editIndex", 0);
                 mActivity.editImgDialog(mBundle);
             }
         });
+        //TODO put comments in bundle and figure out a better workflow
         ruvPhoto2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Log.d(TAG, "Photo 2 Click");
                 Bundle mBundle = new Bundle();
                 mBundle.putString("editImgUrl", fileUrls[1]);
+                mBundle.putStringArray("fileUrls", fileUrls);
                 mBundle.putString("editCommentText", fileComments[1]);
                 mBundle.putInt("editIndex", 1);
                 mActivity.editImgDialog(mBundle);

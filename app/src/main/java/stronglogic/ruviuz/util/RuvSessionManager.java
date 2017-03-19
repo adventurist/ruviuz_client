@@ -46,7 +46,7 @@ public class RuvSessionManager {
     private SessionListener mListener;
     private Handler mHandler;
 
-    private int timeLeft;
+    private int timeValue;
 
 
     public RuvSessionManager(Activity activity, SessionListener listener) {
@@ -92,7 +92,7 @@ public class RuvSessionManager {
 
 
     public void init_login() {
-        LoginTask loginTask = new LoginTask(RuvSessionManager.email, RuvSessionManager.password, baseUrl, new LoginTask.AsyncResponse() {
+        LoginTask.AsyncResponse delegate = new LoginTask.AsyncResponse() {
             @Override
             public void processFinish(String output) {
                 Log.d(TAG, output);
@@ -100,6 +100,7 @@ public class RuvSessionManager {
                     JSONObject respJson = new JSONObject(output);
                     if (respJson.has("token")) {
                         //TODO possibly loses thread scope
+                        RuvSessionManager.this.startTimer();
                         mListener.returnData(respJson.getString("token"), MainActivity.RUV_SESSION_SUCCESS);
                         setToken(respJson.getString("token"));
                     } else {
@@ -109,19 +110,21 @@ public class RuvSessionManager {
                     e.printStackTrace();
                 }
             }
-        });
+        };
+        LoginTask loginTask = new LoginTask(RuvSessionManager.email, RuvSessionManager.password, baseUrl, delegate);
         loginTask.execute();
     }
 
     public void startTimer() {
         Log.d(TAG, "SessionManager Countdown");
         if (RuvSessionManager.this.timer == null) {
-            RuvSessionManager.this.timer = new CountDownTimer(175000, 1000) {
+            RuvSessionManager.this.timer = new CountDownTimer(timeValue < 1 ? 175000 : timeValue, 1000) {
                 @Override
                 public void onTick(long millisUntilFinished) {
-                    if (mActivity instanceof MainActivity) {
-                        RuvSessionManager.this.timeLeft = Math.round((millisUntilFinished/1000));
-                        ((MainActivity) mActivity).progressBar.setProgress(RuvSessionManager.this.timeLeft);
+                    if (mActivity != null && mActivity instanceof MainActivity) {
+                        ((MainActivity) mActivity).setProgressBar(Math.round(millisUntilFinished/1000));
+                    } else {
+                        Log.d(TAG, "Lost contact with MainActivity");
                     }
                 }
 
@@ -133,13 +136,18 @@ public class RuvSessionManager {
                     refreshThread.start();
                 }
             };
+            RuvSessionManager.this.timer.start();
         } else {
             RuvSessionManager.this.timer.start();
         }
     }
 
     public int getTimerCount() {
-        return this.timeLeft;
+        return this.timeValue;
+    }
+
+    public void setTimeLeft(int time) {
+        this.timeValue = time;
     }
 
     private static class Refresher implements Runnable {

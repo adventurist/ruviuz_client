@@ -58,6 +58,7 @@ import com.google.android.gms.appindexing.Thing;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.yqritc.recyclerviewflexibledivider.HorizontalDividerItemDecoration;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -105,15 +106,15 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
 
     private static final String TAG = "RuviuzMAINACTIVITY";
     
-    private static final int CAMERA_PERMISSION = 6;
-    private static final int RUVIUZ_DATA_PERSIST = 14;
+    public static final int CAMERA_PERMISSION = 6;
+    public static final int RUVIUZ_DATA_PERSIST = 14;
     public static final int SECTION_ACTIVITY_COMPLETE = 22;
-    private static final int CURATION_MODE = 32;
-    public final static int CREATE_QUOTE = 33;
-    private final static int SEE_QUOTES = 34;
-    private final static int REQUEST_LOGIN = 35;
-    private final static int CREATE_ACCOUNT = 36;
-    private final static int SLOPE_FRAG_SUCCESS = 39;
+    public static final int CURATION_MODE = 32;
+    public static final int CREATE_QUOTE = 33;
+    public static final int SEE_QUOTES = 34;
+    public static final int REQUEST_LOGIN = 35;
+    public static final int CREATE_ACCOUNT = 36;
+    public static final int SLOPE_FRAG_SUCCESS = 39;
     public static final int RUV_ADD_FILES = 40;
     public static final int WELCOME_REQUEST = 60;
     public static final int LOGIN_REQUEST = 61;
@@ -204,7 +205,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
     private DrawerLayout mDrawerLayout;
     private NavigationView mDrawerView;
 
-    public ProgressBar progressBar;
+    private ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -222,6 +223,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
 
         MainActivity.this.progressBar = (ProgressBar) findViewById(R.id.tokenProgress);
         MainActivity.this.progressBar.setMax(175);
+        MainActivity.this.progressBar.setProgress(0);
 
         ruvSessionManager = new RuvSessionManager(MainActivity.this, new RuvSessionManager.SessionListener() {
             @Override
@@ -635,6 +637,9 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
             ruvSessionManager.init_login();
         } else {
             dismissAllDialogs();
+            if (progressBar != null && progressBar.getProgress() > 0) {
+                ruvSessionManager.setTimeLeft(progressBar.getProgress() * 1000);
+            }
             ruvSessionManager.startTimer();
         }
 
@@ -710,6 +715,10 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
             rv.addItemDecoration(new HorizontalDividerItemDecoration.Builder(this).build());
 
         }
+    }
+
+    public void setProgressBar(int time) {
+        MainActivity.this.progressBar.setProgress(time);
     }
 
 
@@ -1207,6 +1216,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
     public void editFragInteraction(Bundle bundle, int request) {
         Log.d(TAG, "Edit Frag Interaction received");
         if (request == RUV_IMAGE_EDIT) {
+            bundle.putString("callingClass", MainActivity.this.getClass().getSimpleName());
             editImgDialog(bundle);
         } else if (request == RUV_FINISH_EDIT) {
             this.length = bundle.getFloat("length");
@@ -1566,6 +1576,25 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
             }
         }
         //TODO save SECTION data
+        if (sectionList != null) {
+            try {
+                JSONArray sectionJsonArray = new JSONArray();
+                for (Section s : sectionList) {
+                    JSONObject sectionJson = new JSONObject();
+                    sectionJson.put("emptyType", s.getEmptyType());
+                    sectionJson.put("missing", s.getMissing());
+                    sectionJson.put("slope", s.getSlope());
+                    sectionJson.put("width", s.getWidth());
+                    sectionJson.put("topWidth", s.getTopWidth());
+                    sectionJson.put("length", s.getLength());
+                    sectionJson.put("sectionType", s.getSectionType());
+                    sectionJsonArray.put(sectionJson);
+                }
+                prefEdit.putString("sections", sectionJsonArray.toString());
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
 //        if (sectionList != null && sectionList.size() > 0) {
 //            try {
 //                JSONObject sectionObject = new JSONObject();
@@ -1620,6 +1649,43 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
             this.mCustomer.setPhone(customerJson.get("phone").toString());
             this.mCustomer.setMarried(Boolean.valueOf(customerJson.get("married").toString()));
             this.mCustomer.setPrefix(customerJson.get("prefix").toString());
+
+            JSONArray sectionJsonArr = new JSONArray(mPrefs.getString("sections", ""));
+            if (this.sectionList == null) this.sectionList = new ArrayList<Section>();
+            for (int i = sectionJsonArr.length(); i > 0 ; i--) {
+                Section section = new Section();
+                JSONObject sectionJson = sectionJsonArr.getJSONObject(i - 1);
+                if (sectionJson.has("emptyType"))
+                section.setEmptyType(
+                        sectionJson.getString("emptyType").equals(Section.EmptyType.CHIMNEY) ?
+                                Section.EmptyType.CHIMNEY
+                                : sectionJson.getString("emptyType").equals(Section.EmptyType.SKY_LIGHT) ?
+                                Section.EmptyType.SKY_LIGHT
+                                : sectionJson.getString("emptyType").equals(Section.EmptyType.OTHER) ?
+                                Section.EmptyType.OTHER
+                                : null
+                );
+                section.setMissing(Float.valueOf(sectionJson.getString("missing")));
+                section.setSlope(Float.valueOf(sectionJson.getString("slope")));
+                section.setWidth(Float.valueOf(sectionJson.getString("width")));
+                section.setTopWidth(Float.valueOf(sectionJson.getString("topWidth")));
+                section.setLength(Float.parseFloat(sectionJson.getString("length")));
+                section.setSectionType(sectionJson.getString("sectionType").equals(Section.SectionType.HIP_SQUARE) ?
+                        Section.SectionType.HIP_SQUARE
+                        : sectionJson.getString("SectionType").equals(Section.SectionType.HIP_RECTANGLE) ?
+                        Section.SectionType.HIP_RECTANGLE
+                        : sectionJson.getString("SectionType").equals(Section.SectionType.GABLE) ?
+                        Section.SectionType.GABLE
+                        : sectionJson.getString("SectionType").equals(Section.SectionType.MANSARD) ?
+                        Section.SectionType.MANSARD
+                        : null
+                );
+                sectionList.add(section);
+            }
+            if (secAdapter != null) {
+                secAdapter.swapData(MainActivity.this.sectionList);
+                secAdapter.notifyDataSetChanged();
+            }
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -1930,7 +1996,8 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         intent.putExtra("fileComments", this.fileComments);
         intent.putExtra("baseUrl", MainActivity.baseUrl);
         intent.putExtra("editing", MainActivity.this.isEditing());
-        this.ready = intent.getBooleanExtra("ready", false);
+        intent.putExtra("ready", this.ready);
+        intent.putExtra("ruvSessionTime", this.progressBar.getProgress());
         if (mCustomer != null) {
             try {
                 JSONObject customerJson = new JSONObject();
@@ -1968,6 +2035,9 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
             this.fileUrls = intent.getStringArrayExtra("fileUrls");
             this.fileComments = intent.getStringArrayExtra("fileComments");
             this.editing = intent.getBooleanExtra("editing", false);
+            if (this.progressBar != null) {
+                this.progressBar.setProgress(intent.getIntExtra("ruvSessionTime", 0));
+            }
             if (intent.hasExtra("customer"))
                 try {
                     JSONObject customerJson = new JSONObject(intent.getStringExtra("customer"));

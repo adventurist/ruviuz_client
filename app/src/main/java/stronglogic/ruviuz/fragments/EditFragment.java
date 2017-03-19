@@ -136,18 +136,17 @@ public class EditFragment extends DialogFragment {
             int height = ViewGroup.LayoutParams.MATCH_PARENT;
             d.getWindow().setLayout(width, height);
 
-            final View decorView = d.getWindow()
-                    .getDecorView();
+//            final View decorView = d.getWindow()
+//                    .getDecorView();
 
 //            decorView.animate().translationY(-100)
 //                    .setStartDelay(300)
 //                    .setDuration(3000)
 //                    .start();
-            decorView.animate().rotationBy(360f)
-                    .setStartDelay(50)
-                    .setDuration(700)
-                    .start();
-
+//            decorView.animate().rotationBy(360f)
+//                    .setStartDelay(50)
+//                    .setDuration(700)
+//                    .start();
         }
     }
 
@@ -845,7 +844,7 @@ public class EditFragment extends DialogFragment {
         this.fileCount = 0;
         this.fileUrls = null;
         this.mCustomer = null;
-
+//TODO properly clear the values of all daya in MainActivity
 
         roofLength.setText("0");
         roofWidth.setText("0");
