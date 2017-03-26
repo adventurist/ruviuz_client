@@ -33,6 +33,9 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+
 import stronglogic.ruviuz.CameraActivity;
 import stronglogic.ruviuz.MainActivity;
 import stronglogic.ruviuz.R;
@@ -86,6 +89,16 @@ public class FileFragment extends DialogFragment {
     public static FileFragment newInstance(String param1, String param2) {
         FileFragment fragment = new FileFragment();
         return fragment;
+    }
+
+    public static boolean validateURI(String uri) {
+        final URI mUri;
+        try {
+            mUri = new URI(uri);
+            return true;
+        } catch (URISyntaxException e1) {
+            return false;
+        }
     }
 
     @Override
@@ -431,6 +444,7 @@ public class FileFragment extends DialogFragment {
                 Intent intent = new Intent();
                 intent.setType("image/*");
                 intent.setAction(Intent.ACTION_GET_CONTENT);
+                intent.putExtra("callingClass", FileFragment.this.getClass().getSimpleName());
                 startActivityForResult(Intent.createChooser(intent,
                         "Select Picture"), RESULT_LOAD_IMAGE);
             }
@@ -660,9 +674,10 @@ public class FileFragment extends DialogFragment {
         if (fileCount < 3) {
             Uri rawUri = data.getData();
 
-            if (rawUri != null) {
+            if (rawUri != null && validateURI(rawUri.toString())) {
 
                 String imageUri = null;
+
                 String wholeID = DocumentsContract.getDocumentId(rawUri);
 
                 String id = wholeID.split(":")[1];

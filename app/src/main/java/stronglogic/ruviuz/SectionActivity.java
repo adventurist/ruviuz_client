@@ -75,7 +75,9 @@ public class SectionActivity extends AppCompatActivity implements SectionFragmen
     private FloatingActionButton doneBtn;
     private Switch fullToggle;
 
-    RadioGroup numGroup, emptyNumGroup;
+    private RadioGroup numGroup, emptyNumGroup;
+    private RadioButton lgtPickBtn;
+
     private RelativeLayout widgetWrap;
 
     private SectionFragment sectionFrag;
@@ -130,6 +132,8 @@ public class SectionActivity extends AppCompatActivity implements SectionFragmen
 
         SectionActivity.this.activePicker = LENGTH_SELECTED;
         SectionActivity.this.activeEmptyPicker = LENGTH_SELECTED;
+
+        SectionActivity.this.lgtPickBtn = (RadioButton) findViewById(R.id.lgtPickBtn);
 
         sectionSpinner = (Spinner) findViewById(R.id.sectionTypeSpin);
         String[] sectionTypes = getResources().getStringArray(R.array.sectionTypes);
@@ -264,6 +268,8 @@ public class SectionActivity extends AppCompatActivity implements SectionFragmen
                         SectionActivity.this.ftPicker.jumpDrawablesToCurrentState();
                         SectionActivity.this.inPicker.setValue(0);
                         SectionActivity.this.inPicker.jumpDrawablesToCurrentState();
+
+                        SectionActivity.this.lgtPickBtn.setChecked(true);
 
                         SectionActivity.this.sectionLengthTv.setText("");
                         SectionActivity.this.sectionWidthTv.setText("");

@@ -194,6 +194,7 @@
     <string name="high">High</string>
     <string name="moderate">Moderate</string>
     <string name="none">None</string>
+    <string name="client">Client</string>
 
 
 </resources>

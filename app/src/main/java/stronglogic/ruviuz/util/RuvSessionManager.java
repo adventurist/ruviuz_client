@@ -118,7 +118,7 @@ public class RuvSessionManager {
     public void startTimer() {
         Log.d(TAG, "SessionManager Countdown");
         if (RuvSessionManager.this.timer == null) {
-            RuvSessionManager.this.timer = new CountDownTimer(timeValue < 1 ? 175000 : timeValue, 1000) {
+            RuvSessionManager.this.timer = new CountDownTimer(timeValue < 1 ? 325000 : timeValue, 1000) {
                 @Override
                 public void onTick(long millisUntilFinished) {
                     if (mActivity != null && mActivity instanceof MainActivity) {
@@ -138,7 +138,8 @@ public class RuvSessionManager {
             };
             RuvSessionManager.this.timer.start();
         } else {
-            RuvSessionManager.this.timer.start();
+            Log.d(TAG, "current timer count: " + getTimerCount());
+            if (getTimerCount() < 2) RuvSessionManager.this.timer.start();
         }
     }
 
@@ -147,7 +148,8 @@ public class RuvSessionManager {
     }
 
     public void setTimeLeft(int time) {
-        this.timeValue = time;
+        Log.d(TAG, "setTimeLeft: " + String.valueOf(time));
+        this.timeValue = time > this.timeValue || this.timeValue > 0 ? this.timeValue : time;
     }
 
     private static class Refresher implements Runnable {

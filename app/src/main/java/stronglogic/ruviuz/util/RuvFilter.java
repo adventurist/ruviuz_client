@@ -3,6 +3,7 @@ package stronglogic.ruviuz.util;
 import android.util.Log;
 import android.widget.Filter;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 
 import stronglogic.ruviuz.content.Roof;
@@ -17,6 +18,8 @@ public class RuvFilter extends Filter {
 
     private final static String TAG = "RuviuzRUVFILTER";
 
+    public enum filterType { CUSTOMER, ADDRESS, PRICE }
+
     private ArrayList<Roof> originalList;
     private ArrayList<Roof> filteredList;
 
@@ -24,7 +27,9 @@ public class RuvFilter extends Filter {
 
     private filterType chosenType;
 
-    public enum filterType { CUSTOMER, ADDRESS }
+    private boolean multiSearch;
+
+    private ArrayList<filterType> chosenTypes;
 
 //    public RuvFilter (IndexAdapter adapter, ArrayList<Roof> originalList) {
 //        super();
@@ -61,6 +66,12 @@ public class RuvFilter extends Filter {
                         filteredList.add(ruv);
                     }
                 }
+            } else if (chosenType == filterType.PRICE) {
+                for (final Roof ruv : originalList) {
+                    if (ruv.getPrice().compareTo(BigDecimal.valueOf(Float.valueOf(filterPattern))) == 1) {
+                        filteredList.add(ruv);
+                    }
+                }
             }
         }
         results.values = filteredList;
@@ -79,13 +90,29 @@ public class RuvFilter extends Filter {
     }
 
     public boolean setType(filterType type) {
-        if (type == filterType.ADDRESS || type == filterType.CUSTOMER) {
+        if (type == filterType.ADDRESS || type == filterType.CUSTOMER || type == filterType.PRICE) {
             this.chosenType = type;
             Log.d(TAG, "Type set to " + String.valueOf(type));
             return true;
         } else {
             Log.d(TAG, "Attempting wrong filter type");
             return false;
+        }
+    }
+
+    public void setMultiSearch(boolean bool) {
+        this.multiSearch = bool;
+    }
+
+    public boolean isMulti() {
+        return this.multiSearch;
+    }
+
+    public void addSearchType(filterType type) {
+        if (this.chosenTypes == null) this.chosenTypes = new ArrayList<filterType>();
+
+        if (type == filterType.ADDRESS || type == filterType.CUSTOMER || type == filterType.PRICE) {
+            if (!chosenTypes.contains(type)) chosenTypes.add(type);
         }
     }
 }

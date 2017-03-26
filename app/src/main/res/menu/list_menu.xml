@@ -10,10 +10,22 @@
         android:icon="@android:drawable/ic_menu_search" />
 
     <item
-        android:id="@+id/actionType"
+        android:id="@+id/searchFacets"
             android:title="@string/typetoggle"
-        android:icon="@drawable/destroy"
-        ruviuz:showAsAction="always" />
+        android:icon="@drawable/ruv_search"
+        ruviuz:showAsAction="always">
+        <menu>
+            <item android:title="@string/client"
+                android:id="@+id/searchClient"
+                android:icon="@drawable/client"/>
+            <item android:title="@string/address"
+                android:id="@+id/searchAddress"
+                android:icon="@drawable/mapmark"/>
+            <item android:title="@string/price"
+                android:id="@+id/searchPrice"
+                android:icon="@drawable/ruv_money"/>
+        </menu>
+    </item>
     <item
         android:id="@+id/goHome"
         ruviuz:showAsAction="never"

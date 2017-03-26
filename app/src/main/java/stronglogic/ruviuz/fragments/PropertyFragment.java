@@ -56,6 +56,8 @@ public class PropertyFragment extends DialogFragment implements View.OnClickList
 
     private RadioGroup rdyGroup;
 
+    private RadioButton reqBtn1, reqBtn2, reqBtn3;
+
     private TextView roofSlope;
 
     private Spinner materialSpinner;
@@ -90,6 +92,9 @@ public class PropertyFragment extends DialogFragment implements View.OnClickList
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
+            this.numFloors = getArguments().getInt("numFloors");
+            this.cleanupFactor = getArguments().getInt("cleanupFactor");
+            this.material = getArguments().getString("material");
         }
         if (!((MainActivity) getActivity()).readyStatus()) {
             ((MainActivity)getActivity()).hideActivity();
@@ -237,6 +242,7 @@ public class PropertyFragment extends DialogFragment implements View.OnClickList
             }
         });
         flrPicker = (MaterialNumberPicker) mView.findViewById(R.id.floorPicker);
+        flrPicker.setValue(this.numFloors);
         flrPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
             @Override
             public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
@@ -257,6 +263,18 @@ public class PropertyFragment extends DialogFragment implements View.OnClickList
         }
 
         rdyGroup = (RadioGroup) mView.findViewById(R.id.rdyGroup);
+
+        reqBtn1 = (RadioButton) mView.findViewById(R.id.noneBtn);
+        if (this.cleanupFactor == 0) reqBtn1.setChecked(true);
+
+        reqBtn2 = (RadioButton) mView.findViewById(R.id.moderateBtn);
+        if (this.cleanupFactor == 1) reqBtn2.setChecked(true);
+
+        reqBtn3 = (RadioButton) mView.findViewById(R.id.highBtn);
+        if (this.cleanupFactor == 2) reqBtn3.setChecked(true);
+
+
+
         rdyGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {

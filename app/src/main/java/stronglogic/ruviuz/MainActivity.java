@@ -235,6 +235,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
                     if (MainActivity.this.isActive)
                     mainDialog();
                 } else if (result == RUV_SESSION_UPDATE) {
+                    MainActivity.this.authToken = token;
                     Toast.makeText(MainActivity.this, "Setting new Token", Toast.LENGTH_SHORT).show();
                     ruvSessionManager.startTimer();
                 } else {
@@ -272,7 +273,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         roofSlope.setText(String.valueOf(MainActivity.this.slope));
 
         addressTv = (TextView) findViewById(R.id.addressTv);
-        String addressString = address + "\n" + city + ", " + region + "\n" + postal;
+        String addressString = !address.equals("") ? address + "\n" + city + ", " + region + "\n" + postal : "";
         addressTv.setText(addressString);
         nameTv = (TextView) findViewById(R.id.nameTv);
         emailTv = (TextView) findViewById(R.id.emailTv);
@@ -521,12 +522,24 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
     @Override
     public void onResume() {
         super.onResume();
+
         MainActivity.this.isActive = true;
         if (this.prefs == null)
             this.prefs = MainActivity.this.getSharedPreferences("RuviuzApp", Context.MODE_PRIVATE);
+        if (this.fileUrls == null) this.fileUrls = new String[3];
+        if (this.fileComments == null) this.fileComments = new String[3];
+        
+        if (this.prefs.contains("fileUrl1")) {
+            fileUrls[0] = fileUrls[0] != null && !fileUrls[0].equals("") ? fileUrls[0] : this.prefs.getString("fileUrl1", "");
+            fileUrls[1] = fileUrls[1] != null && !fileUrls[1].equals("") ? fileUrls[1] : this.prefs.getString("fileUrl2", "");
+            fileUrls[2] = fileUrls[2] != null && !fileUrls[2].equals("") ? fileUrls[2] : this.prefs.getString("fileUrl3", "");
+            fileComments[0] = fileComments[0] != null && !fileComments[0].equals("") ? fileComments[0] : this.prefs.getString("fileComment1", "");
+            fileComments[1] = fileComments[1] != null &&!fileComments[1].equals("") ? fileComments[1] : this.prefs.getString("fileComment2", "");
+            fileComments[2] = fileComments[2] != null && !fileComments[2].equals("") ? fileComments[2] : this.prefs.getString("fileComment3", "");
+        }
 
         if (getIntent() != null) {
-//            getIntentData(getIntent());
+
             Intent xIntent = getIntent();
 
             if (fileUrls != null && (fileUrls.length > 0 || fileCount == 0)) {
@@ -544,24 +557,6 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
                 }
                 this.commentCount = realCount;
             }
-//            if (this.ruvFiles == null) {
-//                this.ruvFiles = new HashMap<>();
-//
-//            }
-//            if (this.fileUrls == null) { this.fileUrls = new String[3]; }
-//            if (this.fileComments == null) { this.fileComments = new String[3]; }
-//            if (fileUrls != null) {
-//                for (int i = fileUrls.length; i > 0; i--) {
-//                    if (fileUrls[i - 1] != null && !fileUrls[i - 1].equals("") &&
-//                            fileComments[i - 1] != null && !fileComments[i - 1].equals("")) {
-//                        RuvFileInfo rFile = new RuvFileInfo();
-//                        rFile.setUrl(fileUrls[i - 1]);
-//                        rFile.setFilename(fileUrls[i - 1].substring(fileUrls[i - 1].lastIndexOf('/') + 1));
-//                        rFile.setComment(fileComments[i - 1]);
-//                        ruvFiles.put(rFile.getFilename(), rFile);
-//                    }
-//                }
-//            }
 
             if (xIntent.hasExtra("uri")) {
                 if (fileCount + 1 == 4) {
@@ -626,20 +621,30 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         } else {
             refreshUi();
         }
+
+        this.getPrefsData();
+
         draftCheck();
+
         if (getIntent().hasExtra("authToken")) authToken = getIntent().getStringExtra("authToken");
+
         if (authToken == null) {
+
             Log.d(TAG,"AuthToken null. Logging in again");
             hideActivity();
             dismissAllDialogs();
             RuvSessionManager.setEmail(prefs.getString("email", "Email"));
             RuvSessionManager.setPass(prefs.getString("password", "Password"));
             ruvSessionManager.init_login();
+
         } else {
+
             dismissAllDialogs();
+
             if (progressBar != null && progressBar.getProgress() > 0) {
                 ruvSessionManager.setTimeLeft(progressBar.getProgress() * 1000);
             }
+
             ruvSessionManager.startTimer();
         }
 
@@ -648,21 +653,28 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         }
 
         if (isEditing()) {
+
             hideActivity();
             editDialog();
+
         }
         if (this.lastAction == RUV_ADD_FILES) {
+
             hideActivity();
             fileDialog();
+
         }
+
         updateFiles();
         persistFragState(this.activeFrag);
+
     }
 
 
     @Override
     public void onPause() {
         super.onPause();
+        Log.d(TAG, "onPause: ");
         putPrefsData();
         if (rLocation != null) {
             rLocation = null;
@@ -672,6 +684,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
 
     @Override
     public void onDestroy() {
+        Log.d(TAG, "onDestroy: ");
         super.onDestroy();
         putPrefsData();
         if (getIntent().hasExtra("uri"))
@@ -857,14 +870,14 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         FragmentManager fm = getFragmentManager();
         if ( mPropertyFrag == null) {
             mPropertyFrag = new PropertyFragment();
-            if (!mPropertyFrag.isAdded()) {
-                mPropertyFrag.show(fm, "Please Enter Property Details");
-            }
         }
-        if (mPropertyFrag!= null) {
-            fm.beginTransaction().remove(mPropertyFrag).commit();
-            mPropertyFrag = null;
-            mPropertyFrag = new PropertyFragment();
+
+        Bundle pBundle = new Bundle();
+        pBundle.putInt("numFloors", this.numFloors);
+        pBundle.putString("material", this.material);
+        pBundle.putInt("cleanupFactor", this.cleanupFactor);
+        if (!mPropertyFrag.isAdded()) {
+            mPropertyFrag.setArguments(pBundle);
             mPropertyFrag.show(fm, "Please Enter Property Details");
         }
     }
@@ -923,6 +936,9 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         mBundle.putString("postal", postal);
         mBundle.putString("price", String.valueOf(price));
         mBundle.putInt("fileCount", fileCount);
+        mBundle.putInt("numFloors", numFloors);
+        mBundle.putInt("cleanupFactor", cleanupFactor);
+        mBundle.putParcelableArrayList("sectionList", sectionList);
         if (fileUrls != null && fileUrls.length > 0) {
         mBundle.putStringArray("fileUrls", fileUrls);
             mBundle.putStringArray("fileComments", fileComments);
@@ -997,6 +1013,9 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         }
     }
 
+    /**
+     * @param mBundle
+     */
     public void editImgDialog(Bundle mBundle) {
         MainActivity.this.activeFrag = ruvFrag.IMAGE;
         FragmentManager fm = getFragmentManager();
@@ -1016,6 +1035,9 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
     }
 
 
+    /**
+     * @param output
+     */
     @Override
     public void loginFragInteraction(String output) {
         Toast.makeText(this, output, Toast.LENGTH_SHORT).show();
@@ -1033,6 +1055,12 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
     }
 
 
+    /**
+     * @param address
+     * @param postal
+     * @param city
+     * @param region
+     */
     @Override
     public void addressFragInteraction(String address, String postal, String city, String region) {
         this.address = address;
@@ -1060,6 +1088,13 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
     }
 
 
+    /**
+     * @param name
+     * @param email
+     * @param phone
+     * @param married
+     * @param prefix
+     */
     @Override
     public void customerfragInteraction(String[] name, String email, String phone,boolean married, String prefix) {
         Log.d(TAG, "CUSTOMERFRAGINTERACTION");
@@ -1083,6 +1118,11 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         addressDialog();
     }
 
+    /**
+     * @param numFloors
+     * @param material
+     * @param cleanupFactor
+     */
     @Override
     public void propertyFragInteraction(int numFloors, String material, int cleanupFactor) {
         if (mPropertyFrag != null && mPropertyFrag.isAdded()) {
@@ -1096,6 +1136,9 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         slopeDialog();
     }
 
+    /**
+     * @param action
+     */
     @Override
     public void welcomeInteraction(int action) {
 
@@ -1130,6 +1173,9 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         }
     }
 
+    /**
+     * @param action
+     */
     @Override
     public void mainfragInteraction(int action) {
         MainActivity.this.lastAction = action;
@@ -1170,6 +1216,10 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         }
     }
 
+    /**
+     * @param value
+     * @param result
+     */
     @Override
     public void slopeFragInteraction(float value, int result) {
         if (result == SLOPE_FRAG_SUCCESS) {
@@ -1188,6 +1238,14 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         }
     }
 
+    /**
+     * Returns new file data from FileFragment, to be incorporated into MainActivity
+     *
+     * @param {String Array} newFileUrls File URLs
+     * @param newFileComments
+     * @param newFileCount
+     * @param result
+     */
     @Override
     public void fileFragInteraction(String[] newFileUrls, String[] newFileComments, int newFileCount, int result) {
         if (result == RUV_ADD_FILES) {
@@ -1227,6 +1285,17 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
             this.city = bundle.getString("city");
             this.region = bundle.getString("region");
             this.postal = bundle.getString("postal");
+            this.currentRid = bundle.getInt("currentRid");
+            this.numFloors = bundle.getInt("numFloors");
+            this.cleanupFactor = bundle.getInt("cleanupFactor");
+
+            if (this.sectionList == null) this.sectionList = new ArrayList<Section>();
+            this.sectionList = bundle.getParcelableArrayList("sectionList");
+            if (this.secAdapter != null) {
+                this.sectionList = this.sectionList != null ? this.sectionList : new ArrayList<Section>();
+                this.secAdapter.swapData(this.sectionList);
+                this.secAdapter.notifyDataSetChanged();
+            }
 
             if (this.mCustomer == null) this.mCustomer = new Customer();
 
@@ -1241,8 +1310,6 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
             MainActivity.this.emailTv.setText(mCustomer.getEmail());
             MainActivity.this.phoneTv.setText(mCustomer.getPhone());
 
-//            roofLength.setText(String.valueOf(length));
-//            roofWidth.setText(String.valueOf(width));
             roofSlope.setText(String.valueOf(slope));
 
             this.materialTv.setText(this.material);
@@ -1258,14 +1325,17 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
                     this.fileUrls = new String[3];
                     this.fileUrls = bundle.getStringArray("fileUrls");
                 } else {
-                    String[] recFileUrls = bundle.getStringArray("fileUrls");
-                    if (this.fileUrls[0] != null && recFileUrls[0] != null) {
+                    this.fileUrls[0] = this.fileUrls[0] == null ? "" : this.fileUrls[0];
+                    String[] recFileUrls = bundle.getStringArray("fileUrls") != null ? bundle.getStringArray("fileUrls") : new String[3];
+                    if (recFileUrls != null && recFileUrls[0] != null) {
                         this.fileUrls[0] = recFileUrls[0];
                     }
-                    if (this.fileUrls[1] != null && recFileUrls[1] != null) {
+                    this.fileUrls[1] = this.fileUrls[1] == null ? "" : this.fileUrls[1];
+                    if (recFileUrls[1] != null) {
                         this.fileUrls[1] = recFileUrls[1];
                     }
-                    if (this.fileUrls[2] != null && recFileUrls[2] != null) {
+                    this.fileUrls[2] = this.fileUrls[2] == null ? "" : this.fileUrls[2];
+                    if (recFileUrls[2] != null) {
                         this.fileUrls[2] = recFileUrls[2];
                     }
                 }
@@ -1619,21 +1689,23 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         this.currentRid = mPrefs.getInt("currentRid", 0);
         this.activeFrag = ruvFrag.valueOf(mPrefs.getString("activeFrag", "NO_FRAG"));
 
-        if (this.fileUrls == null) {
-            this.fileUrls = new String[3];
-        }
+        if (this.fileUrls == null) this.fileUrls = new String[3];
+
+        if (this.fileComments == null) this.fileComments = new String[3];
+
         if (this.ruvFiles == null) {
             this.ruvFiles = new HashMap<>();
         }
-        fileUrls[0] = mPrefs.getString("fileUrl1", "");
-        fileUrls[1] = mPrefs.getString("fileUrl2", "");
-        fileUrls[2] = mPrefs.getString("fileUrl3", "");
-        fileComments[0] = mPrefs.getString("fileComment1", "");
-        fileComments[1] = mPrefs.getString("fileComment2", "");
-        fileComments[2] = mPrefs.getString("fileComment3", "");
+        fileUrls[0] = fileUrls[0] != null && fileUrls[0].equals("") ? mPrefs.getString("fileUrl1", "") : fileUrls[0];
+        fileUrls[1] = fileUrls[1] != null && fileUrls[1].equals("") ? mPrefs.getString("fileUrl2", "") : fileUrls[1];
+        fileUrls[2] = fileUrls[2] != null && fileUrls[2].equals("") ? mPrefs.getString("fileUrl3", "") : fileUrls[2];
+        fileComments[0] = fileComments[0] != null && fileComments[0].equals("") ? mPrefs.getString("fileComment1", "") : fileComments[0];
+        fileComments[1] = fileComments[1] != null && fileComments[1].equals("") ? mPrefs.getString("fileComment2", "") : fileComments[1];
+        fileComments[2] = fileComments[2] != null && fileComments[2].equals("") ? mPrefs.getString("fileComment3", "") : fileComments[2];
+
 
         for (int i = 0; i < 3; i++) {
-            if (!fileUrls[i].equals("") && !fileComments[i].equals("")) {
+            if (fileUrls[i] != null && !fileUrls[i].equals("") && !fileComments[i].equals("")) {
                 RuvFileInfo rFile = new RuvFileInfo();
                 rFile.setUrl(fileUrls[i]);
                 rFile.setComment(fileComments[i]);
@@ -1651,36 +1723,40 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
             this.mCustomer.setPrefix(customerJson.get("prefix").toString());
 
             JSONArray sectionJsonArr = new JSONArray(mPrefs.getString("sections", ""));
+
             if (this.sectionList == null) this.sectionList = new ArrayList<Section>();
-            for (int i = sectionJsonArr.length(); i > 0 ; i--) {
-                Section section = new Section();
-                JSONObject sectionJson = sectionJsonArr.getJSONObject(i - 1);
-                if (sectionJson.has("emptyType"))
-                section.setEmptyType(
-                        sectionJson.getString("emptyType").equals(Section.EmptyType.CHIMNEY) ?
-                                Section.EmptyType.CHIMNEY
-                                : sectionJson.getString("emptyType").equals(Section.EmptyType.SKY_LIGHT) ?
-                                Section.EmptyType.SKY_LIGHT
-                                : sectionJson.getString("emptyType").equals(Section.EmptyType.OTHER) ?
-                                Section.EmptyType.OTHER
-                                : null
-                );
-                section.setMissing(Float.valueOf(sectionJson.getString("missing")));
-                section.setSlope(Float.valueOf(sectionJson.getString("slope")));
-                section.setWidth(Float.valueOf(sectionJson.getString("width")));
-                section.setTopWidth(Float.valueOf(sectionJson.getString("topWidth")));
-                section.setLength(Float.parseFloat(sectionJson.getString("length")));
-                section.setSectionType(sectionJson.getString("sectionType").equals(Section.SectionType.HIP_SQUARE) ?
-                        Section.SectionType.HIP_SQUARE
-                        : sectionJson.getString("SectionType").equals(Section.SectionType.HIP_RECTANGLE) ?
-                        Section.SectionType.HIP_RECTANGLE
-                        : sectionJson.getString("SectionType").equals(Section.SectionType.GABLE) ?
-                        Section.SectionType.GABLE
-                        : sectionJson.getString("SectionType").equals(Section.SectionType.MANSARD) ?
-                        Section.SectionType.MANSARD
-                        : null
-                );
-                sectionList.add(section);
+
+            if (this.sectionList.size() < 1) {
+                for (int i = sectionJsonArr.length(); i > 0 ; i--) {
+                    Section section = new Section();
+                    JSONObject sectionJson = sectionJsonArr.getJSONObject(i - 1);
+                    if (sectionJson.has("emptyType"))
+                        section.setEmptyType(
+                                sectionJson.getString("emptyType").equals(Section.EmptyType.CHIMNEY) ?
+                                        Section.EmptyType.CHIMNEY
+                                        : sectionJson.getString("emptyType").equals(Section.EmptyType.SKY_LIGHT) ?
+                                        Section.EmptyType.SKY_LIGHT
+                                        : sectionJson.getString("emptyType").equals(Section.EmptyType.OTHER) ?
+                                        Section.EmptyType.OTHER
+                                        : null
+                        );
+                    section.setMissing(Float.valueOf(sectionJson.getString("missing")));
+                    section.setSlope(Float.valueOf(sectionJson.getString("slope")));
+                    section.setWidth(Float.valueOf(sectionJson.getString("width")));
+                    section.setTopWidth(Float.valueOf(sectionJson.getString("topWidth")));
+                    section.setLength(Float.parseFloat(sectionJson.getString("length")));
+                    section.setSectionType(sectionJson.getString("sectionType").equals(Section.SectionType.HIP_SQUARE) ?
+                            Section.SectionType.HIP_SQUARE
+                            : sectionJson.getString("SectionType").equals(Section.SectionType.HIP_RECTANGLE) ?
+                            Section.SectionType.HIP_RECTANGLE
+                            : sectionJson.getString("SectionType").equals(Section.SectionType.GABLE) ?
+                            Section.SectionType.GABLE
+                            : sectionJson.getString("SectionType").equals(Section.SectionType.MANSARD) ?
+                            Section.SectionType.MANSARD
+                            : null
+                    );
+                    sectionList.add(section);
+                }
             }
             if (secAdapter != null) {
                 secAdapter.swapData(MainActivity.this.sectionList);
@@ -1980,8 +2056,8 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         updateValues();
         intent.putExtra("authToken", this.authToken);
         intent.putExtra("slope", this.slope);
-        intent.putExtra("width", this.width);
-        intent.putExtra("length", this.length);
+//        intent.putExtra("width", this.width);
+//        intent.putExtra("length", this.length);
         intent.putExtra("address", this.address);
         intent.putExtra("postal", this.postal);
         intent.putExtra("city", this.city);

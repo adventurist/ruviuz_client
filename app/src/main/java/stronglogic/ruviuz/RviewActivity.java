@@ -304,7 +304,7 @@ public class RviewActivity extends AppCompatActivity implements RuvFragment.RuvF
                     if (roofJson.has("files")) {
                         JSONArray rFiles = new JSONArray(roofJson.getString("files"));
                         int fileNum = rFiles.length();
-                        Log.d(TAG, "Number of files for" + roof.getId() + ": " + String.valueOf(fileNum));
+                        Log.d(TAG, "Number of files for " + roof.getId() + ": " + String.valueOf(fileNum));
                         ArrayList<RuvFileInfo> filesArray = new ArrayList<>();
                         for (int fNum = 0; fNum < fileNum; fNum++) {
                             JSONObject fileObject = rFiles.getJSONObject(fNum);
@@ -408,7 +408,6 @@ public class RviewActivity extends AppCompatActivity implements RuvFragment.RuvF
             layoutMgr.setAutoMeasureEnabled(true);
             layoutMgr.setRecycleChildrenOnDetach(true);
             rv.setLayoutManager(layoutMgr);
-//            rv.addItemDecoration(new HorizontalDividerItemDecoration.Builder(this).build());
             ruvFilter = new RuvFilter(ruvAdapter, roofArrayList);
             this.filterType = RuvFilter.filterType.ADDRESS;
         }
@@ -457,7 +456,7 @@ public class RviewActivity extends AppCompatActivity implements RuvFragment.RuvF
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.list_menu, menu);
         final MenuItem searchItem = menu.findItem(R.id.search);
-        final MenuItem searchToggle = menu.findItem(R.id.actionType);
+        final MenuItem searchToggle = menu.findItem(R.id.searchFacets);
         searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
 
         ViewGroup.LayoutParams navButtonsParams = new ViewGroup.LayoutParams(RviewActivity.this.mToolbar.getHeight() * 2 / 3, mToolbar.getHeight() * 2 / 3);
@@ -469,6 +468,23 @@ public class RviewActivity extends AppCompatActivity implements RuvFragment.RuvF
 
         ((LinearLayout) searchView.getChildAt(0)).setGravity(Gravity.BOTTOM);
 
+        searchToggle.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                Log.d(TAG, String.valueOf(item.getItemId()));
+                switch (item.getItemId()) {
+                    case R.id.searchPrice:
+                        Log.d(TAG, "Searching Price");
+                        if (RviewActivity.this.filterType != RuvFilter.filterType.PRICE) {
+                            RviewActivity.this.filterType = RuvFilter.filterType.PRICE;
+                        } else {
+                            RviewActivity.this.filterType = RuvFilter.filterType.ADDRESS;
+                        }
+
+                }
+                return false;
+            }
+        });
 
 
         typeBtn.setOnClickListener(new View.OnClickListener() {
@@ -486,6 +502,7 @@ public class RviewActivity extends AppCompatActivity implements RuvFragment.RuvF
                         typeBtn.setBackground(getDrawable(R.drawable.mapmark));
                     }
                 }
+
             }
         });
         updateMenuWithIcon(menu.findItem(R.id.goHome), Color.WHITE);
@@ -525,9 +542,43 @@ public class RviewActivity extends AppCompatActivity implements RuvFragment.RuvF
                 break;
             case R.id.goHome:
                 Log.d(TAG, "Going HOME");
-//                dismissAllDialogs();
-//                hideActivity();
-//                welcomeDialog();
+                break;
+            case R.id.searchPrice:
+                Log.d(TAG, "Searching Price");
+//                if (RviewActivity.this.filterType != RuvFilter.filterType.PRICE) {
+//                    RviewActivity.this.filterType = RuvFilter.filterType.PRICE;
+//                    ruvFilter.setType(RviewActivity.this.filterType);
+                if (!ruvFilter.isMulti()) ruvFilter.setMultiSearch(true);
+                ruvFilter.addSearchType(RviewActivity.this.filterType);
+//                } else {
+//                    RviewActivity.this.filterType = RuvFilter.filterType.ADDRESS;
+//                    ruvFilter.setType(RviewActivity.this.filterType);
+//                }
+                break;
+            case R.id.searchAddress:
+                Log.d(TAG, "Searching Address");
+//                if (RviewActivity.this.filterType != RuvFilter.filterType.ADDRESS) {
+//                    RviewActivity.this.filterType = RuvFilter.filterType.PRICE;
+//                    ruvFilter.setType(RviewActivity.this.filterType);
+                if (!ruvFilter.isMulti()) ruvFilter.setMultiSearch(true);
+                ruvFilter.addSearchType(RviewActivity.this.filterType);
+//                } else {
+//                    RviewActivity.this.filterType = RuvFilter.filterType.ADDRESS;
+//                    ruvFilter.setType(RviewActivity.this.filterType);
+//                }
+                break;
+            case R.id.searchClient:
+                Log.d(TAG, "Searching Price");
+//                if (RviewActivity.this.filterType != RuvFilter.filterType.PRICE) {
+//                    RviewActivity.this.filterType = RuvFilter.filterType.PRICE;
+//                    ruvFilter.setType(RviewActivity.this.filterType);
+                if (!ruvFilter.isMulti()) ruvFilter.setMultiSearch(true);
+                ruvFilter.addSearchType(RviewActivity.this.filterType);
+//                } else {
+//                    RviewActivity.this.filterType = RuvFilter.filterType.ADDRESS;
+//                    ruvFilter.setType(RviewActivity.this.filterType);
+//                }
+                break;
             default:
                 return super.onOptionsItemSelected(item);
         }

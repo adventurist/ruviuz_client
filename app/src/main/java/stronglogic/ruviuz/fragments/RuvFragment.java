@@ -56,6 +56,7 @@ import stronglogic.ruviuz.R;
 import stronglogic.ruviuz.RviewActivity;
 import stronglogic.ruviuz.content.RuvFileInfo;
 import stronglogic.ruviuz.content.Section;
+import stronglogic.ruviuz.util.RuuvDelete;
 import stronglogic.ruviuz.util.RuuvFile;
 import stronglogic.ruviuz.views.SectionAdapter;
 
@@ -79,7 +80,7 @@ public class RuvFragment extends DialogFragment {
     private TextView idTv, cTimeTv1, cTimeTv2, cTimeTv3, ruvComment1, ruvComment2, ruvComment3;
     private EditText addressEt, priceEt, custEt;
     private ImageView ruvPhoto1, ruvPhoto2, ruvPhoto3;
-    private Button imgBtn, updateBtn, photoBtn;
+    private Button imgBtn, updateBtn, photoBtn, delBtn;
 
     private ArrayList<RuvFileInfo> ruvFiles;
 
@@ -313,6 +314,12 @@ public class RuvFragment extends DialogFragment {
                         e.printStackTrace();
                     }
                 }
+
+                if (inputMessage.getData().getString("RuuvDeleteMsg") != null) {
+                    Log.d(TAG, inputMessage.getData().getString("RuuvDeleteMsg"));
+                    String response = inputMessage.getData().getString("RuuvDelete");
+                    String jigga = "jigga";
+                }
             }
         };
     }
@@ -346,6 +353,7 @@ public class RuvFragment extends DialogFragment {
         cTimeTv3 = (TextView) mView.findViewById(R.id.cmtTime3);
         imgBtn = (Button) mView.findViewById(R.id.imgBtn);
         updateBtn = (Button) mView.findViewById(R.id.ruvUpdate);
+        delBtn = (Button) mView.findViewById(R.id.ruvDelete);
 
         imgBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -358,11 +366,20 @@ public class RuvFragment extends DialogFragment {
                         "Select Picture"), RESULT_LOAD_IMAGE);
             }
         });
+
         updateBtn.setOnClickListener(new View.OnClickListener()    {
             public void onClick(View v) {
                 updateRuv();
             }
         });
+
+        delBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                deleteRuv();
+            }
+        });
+
         getRuv();
 
         if (checkCameraHardware(mActivity)) {
@@ -519,6 +536,12 @@ public class RuvFragment extends DialogFragment {
         RuvUpThread ruvUpThread = new RuvUpThread(this, mHandler, baseUrl, authToken, mBundle);
         Thread updateThread = new Thread(ruvUpThread);
         updateThread.start();
+    }
+
+    public void deleteRuv() {
+        RuuvDelete ruvDelThread = new RuuvDelete(this, authToken, ruvId);
+        Thread deleteThread = new Thread(ruvDelThread);
+        deleteThread.start();
     }
 
 

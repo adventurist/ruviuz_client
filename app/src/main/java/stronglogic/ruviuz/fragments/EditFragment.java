@@ -43,6 +43,7 @@ import stronglogic.ruviuz.R;
 import stronglogic.ruviuz.RviewActivity;
 import stronglogic.ruviuz.content.Customer;
 import stronglogic.ruviuz.content.RuvFileInfo;
+import stronglogic.ruviuz.content.Section;
 
 import static android.app.Activity.RESULT_OK;
 import static stronglogic.ruviuz.MainActivity.RUV_FINISH_EDIT;
@@ -80,7 +81,9 @@ public class EditFragment extends DialogFragment {
     private ArrayList<String> ruvFileUrls;
     private RuvFileInfo rFileInfo;
 
-    private int fileCount, currentRid, actionMode;
+    private ArrayList<Section> sectionList;
+
+    private int fileCount, currentRid, cleanupFactor, numFloors, actionMode;
     private float width, length, slope;
     private BigDecimal price;
     private String address, postal, city, region, material, firstName, lastName, email, phone, prefix;
@@ -476,21 +479,21 @@ public class EditFragment extends DialogFragment {
             @Override
             public void onClick(View v) {
                 Bundle bundle = new Bundle();
-                bundle.putFloat("length", Float.valueOf(EditFragment.this.roofLength.getText().toString()));
-                bundle.putFloat("width", Float.valueOf(EditFragment.this.roofWidth.getText().toString()));
-                bundle.putFloat("slope", Float.valueOf(EditFragment.this.roofSlope.getText().toString()));
-                bundle.putString("material", EditFragment.this.material);
-                bundle.putString("address", EditFragment.this.addressEt.getText().toString());
-                bundle.putString("city", EditFragment.this.cityEt.getText().toString());
-                bundle.putString("region", EditFragment.this.regionEt.getText().toString());
-                bundle.putString("postal", EditFragment.this.postalEt.getText().toString());
-                bundle.putString("price", EditFragment.this.priceEt.getText().toString());
-                bundle.putInt("fileCount", fileCount);
-                bundle.putString("firstName", firstEt.getText().toString());
-                bundle.putString("lastName", lastEt.getText().toString());
-                bundle.putString("email", emailEt.getText().toString());
-                bundle.putString("phone", phoneEt.getText().toString());
-                bundle.putString("prefix", prefix);
+//                bundle.putFloat("length", Float.valueOf(EditFragment.this.roofLength.getText().toString()));
+//                bundle.putFloat("width", Float.valueOf(EditFragment.this.roofWidth.getText().toString()));
+//                bundle.putFloat("slope", Float.valueOf(EditFragment.this.roofSlope.getText().toString()));
+//                bundle.putString("material", EditFragment.this.material);
+//                bundle.putString("address", EditFragment.this.addressEt.getText().toString());
+//                bundle.putString("city", EditFragment.this.cityEt.getText().toString());
+//                bundle.putString("region", EditFragment.this.regionEt.getText().toString());
+//                bundle.putString("postal", EditFragment.this.postalEt.getText().toString());
+//                bundle.putString("price", EditFragment.this.priceEt.getText().toString());
+//                bundle.putInt("fileCount", fileCount);
+//                bundle.putString("firstName", firstEt.getText().toString());
+//                bundle.putString("lastName", lastEt.getText().toString());
+//                bundle.putString("email", emailEt.getText().toString());
+//                bundle.putString("phone", phoneEt.getText().toString());
+//                bundle.putString("prefix", prefix);
 
 //                if (fileUrls != null && fileUrls.length > 0) {
 //                    ArrayList<String> editFiles = new ArrayList<String>();
@@ -499,7 +502,8 @@ public class EditFragment extends DialogFragment {
 //                    }
 //                    bundle.putStringArrayList("fileUrls", editFiles);
 //                }
-                bundle.putStringArray("fileUrls", fileUrls);
+//                bundle.putStringArray("fileUrls", fileUrls);
+                putBundleData(bundle);
                 mListener.editFragInteraction(bundle, RUV_FINISH_EDIT);
             }
         });
@@ -617,8 +621,6 @@ public class EditFragment extends DialogFragment {
 
     public void putBundleData(Bundle bundle) {
         Log.d(TAG, "putBundleData");
-        bundle.putFloat("length", Float.valueOf(EditFragment.this.roofLength.getText().toString()));
-        bundle.putFloat("width", Float.valueOf(EditFragment.this.roofWidth.getText().toString()));
         bundle.putFloat("slope", Float.valueOf(EditFragment.this.roofSlope.getText().toString()));
         bundle.putString("material", EditFragment.this.material);
         bundle.putString("address", EditFragment.this.addressEt.getText().toString());
@@ -632,6 +634,12 @@ public class EditFragment extends DialogFragment {
         bundle.putString("email", emailEt.getText().toString());
         bundle.putString("phone", phoneEt.getText().toString());
         bundle.putString("prefix", prefix);
+        bundle.putInt("currentRid", this.currentRid);
+        bundle.putInt("cleanupFactor", this.cleanupFactor);
+        bundle.putInt("numFloors", this.numFloors);
+        bundle.putString("material", this.material);
+        bundle.putParcelableArrayList("sectionList", this.sectionList);
+
         if (this.fileUrls != null) {
             bundle.putStringArray("fileUrls", this.fileUrls);
         }
@@ -643,10 +651,6 @@ public class EditFragment extends DialogFragment {
 
     public void getBundleData(Bundle bundle) {
         Log.d(TAG, "getBundleData");
-        if (this.length <= 0)
-            this.length = bundle.getFloat("length");
-        if (this.width <= 0)
-            this.width = bundle.getFloat("width");
         if (this.slope <= 0)
             this.slope = bundle.getFloat("slope");
         if (this.material == null || this.material.equals(""))
@@ -673,21 +677,19 @@ public class EditFragment extends DialogFragment {
             this.price = new BigDecimal(bundle.getString("price"));
         if (this.fileCount <= 0)
             this.fileCount = bundle.getInt("fileCount", 0);
-//        if (bundle.getStringArrayList("fileUrls") != null && (this.ruvFiles != null && !ruvFileUrls.get(0).equals(""))) {
-//            this.ruvFileUrls = (ArrayList<String>)bundle.getStringArrayList("fileUrls");
-//        }
         if (bundle.getStringArray("fileUrls") != null) {
             if (this.fileUrls == null) this.fileUrls = new String[3];
             this.fileUrls = bundle.getStringArray("fileUrls");
-//            if (this.ruvFileUrls == null) this.ruvFileUrls = new ArrayList<String>();
-//            for (int i = 0; i < fileUrls.length; i++) {
-//                ruvFileUrls.add(fileUrls[i]);
-//            }
         }
         if (bundle.getStringArray("fileComments") != null) {
             this.fileComments = bundle.getStringArray("fileComments");
         }
         this.actionMode = bundle.getInt("editAction");
+        this.sectionList = bundle.getParcelableArrayList("sectionList");
+        this.numFloors = bundle.getInt("numFloors");
+        this.cleanupFactor = bundle.getInt("cleanupFactor");
+        this.currentRid = bundle.getInt("currentRid");
+
     }
 
     @Override
@@ -832,9 +834,13 @@ public class EditFragment extends DialogFragment {
 
     public void clearValues() {
         this.address = "";
+        this.addressEt.setText("");
         this.postal = "";
+        this.postalEt.setText("");
         this.city = "";
+        this.cityEt.setText("");
         this.region = "";
+        this.regionEt.setText("");
         this.price = new BigDecimal(0);
         this.width = 0f;
         this.length = 0f;
@@ -843,16 +849,29 @@ public class EditFragment extends DialogFragment {
         this.currentRid = 0;
         this.fileCount = 0;
         this.fileUrls = null;
+        this.numFloors = 0;
+        this.cleanupFactor = 0;
+        this.material = "";
         this.mCustomer = null;
-//TODO properly clear the values of all daya in MainActivity
+        this.email = "";
+        this.emailEt.setText("");
+        this.phone = "";
+        this.phoneEt.setText("");
+        this.firstEt.setText("");
+        this.lastEt.setText("");
 
-        roofLength.setText("0");
-        roofWidth.setText("0");
+//TODO properly clear the values of all daya in MainActivity
+        this.sectionList = new ArrayList<Section>();
         roofSlope.setText("0");
         String zeroPrice = "$" + String.valueOf(this.price);
         priceEt.setText(zeroPrice);
+        this.fileUrls = new String[3];
+        this.fileComments = new String[3];
         Glide.clear(ruvPhoto1);
         Glide.clear(ruvPhoto2);
         Glide.clear(ruvPhoto3);
+        cEt1.setText("");
+        cEt2.setText("");
+        cEt3.setText("");
     }
 }

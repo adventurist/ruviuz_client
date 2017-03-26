@@ -238,7 +238,21 @@
                 android:layout_below="@id/ruvComment3"
                 android:layout_alignParentEnd="true"
                 android:id="@+id/cmtTime3"/>
+
+            <Button
+                android:layout_width="82dp"
+                android:layout_height="56dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                android:id="@+id/ruvDelete"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentEnd="true"
+                android:background="@color/NumberHighlight"
+                android:text="@string/delete"
+                android:drawableTop="@drawable/ruv_delete_24"/>
+
         </RelativeLayout>
+
     </RelativeLayout>
 </ScrollView>
 
