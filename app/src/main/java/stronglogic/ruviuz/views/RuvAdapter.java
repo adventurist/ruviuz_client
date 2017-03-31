@@ -282,21 +282,9 @@ public class RuvAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         rFrag.setTargetFragment(rFrag, 2);
     }
 
-//    public void setupRecycler(ArrayList<Section> feedList)  {
-//        if (feedList.size() > -1) {
-//            this.secAdapter = new SectionAdapter(mActivity, feedList);
-//            LinearLayoutManager layoutManager = new LinearLayoutManager(mActivity);
-//            rv = (RecyclerView) findViewById(R.id.sectionView);
-//            rv.setAdapter(secAdapter);
-//            rv.setLayoutManager(layoutManager);
-//            LinearLayoutManager layoutMgr = new LinearLayoutManager(mActivity.getBaseContext(),
-//                    LinearLayoutManager.HORIZONTAL, false);
-//            layoutMgr.setAutoMeasureEnabled(true);
-//            layoutMgr.setRecycleChildrenOnDetach(true);
-//            rv.setLayoutManager(layoutMgr);
-//            rv.addItemDecoration(new VerticalDividerItemDecoration.Builder(mActivity).build());
-//
-//        }
-//    }
+    public void swapData(ArrayList<Roof> list) {
+        this.ruvList.clear();
+        this.ruvList.addAll(list);
+    }
 
 }

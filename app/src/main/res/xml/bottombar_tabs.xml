@@ -1,0 +1,21 @@
+<tabs>
+    <tab
+        id="@+id/priceTab"
+        icon="@drawable/ic_dollar_symbol"
+        title="Price Range" />
+    <tab
+        id="@+id/locationTab"
+        icon="@drawable/mapmark"
+        barColorWhenSelected="#e4572b"
+        title="Place" />
+    <tab
+        id="@+id/clientTab"
+        icon="@drawable/client"
+        barColorWhenSelected="#5D4037"
+        title="Client" />
+    <tab
+        id="@+id/nullTab"
+        title="NullTab"
+        visibility="gone"
+        />
+</tabs>

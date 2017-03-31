@@ -9,6 +9,7 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
@@ -308,8 +309,13 @@ public class SectionActivity extends AppCompatActivity implements SectionFragmen
                                 TextView sEtypeTv = (TextView) SectionActivity.this.secView.findViewById(R.id.eType);
                                 SectionActivity.this.emptyType = radioBtn.getText().toString();
                                 sEtypeTv.setText(SectionActivity.this.emptyType);
-
-                            etypeDialog.dismiss();
+                            final Handler xHandler = new Handler();
+                            xHandler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    etypeDialog.dismiss();
+                                }
+                            }, 400);
                         }
                     });
 

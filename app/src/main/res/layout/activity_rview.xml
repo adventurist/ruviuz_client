@@ -40,4 +40,28 @@
         android:id="@+id/recycView"
         android:background="@color/colorRow" />
 
+
+    <!--<com.roughike.bottombar.BottomBar-->
+        <!--android:id="@+id/bottomBar"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="62dp"-->
+        <!--android:layout_alignParentBottom="true"-->
+        <!--android:background="#848484"-->
+        <!--app:bb_inActiveTabAlpha="0.6"-->
+        <!--app:bb_activeTabAlpha="1"-->
+        <!--app:bb_inActiveTabColor="#fff"-->
+        <!--app:bb_activeTabColor="@color/ruvGreen"-->
+        <!--app:bb_badgesHideWhenActive="true"-->
+        <!--app:bb_showShadow="true"-->
+        <!--app:bb_tabXmlResource="@xml/bottombar_tabs" />-->
+
+    <com.aurelhubert.ahbottomnavigation.AHBottomNavigation
+        android:layout_width="match_parent"
+        android:layout_height="62dp"
+        android:id="@+id/bottomBar"
+        android:layout_alignParentBottom="true"
+        android:background="#848484"
+        android:animateLayoutChanges="true"
+            />
+
 </RelativeLayout>

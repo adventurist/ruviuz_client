@@ -1,5 +1,7 @@
 package stronglogic.ruviuz;
 
+import android.annotation.TargetApi;
+import android.app.Dialog;
 import android.app.FragmentManager;
 import android.content.Context;
 import android.content.Intent;
@@ -7,6 +9,7 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
@@ -17,6 +20,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.ListPopupWindow;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
@@ -26,15 +30,23 @@ import android.text.style.ImageSpan;
 import android.transition.Transition;
 import android.transition.TransitionInflater;
 import android.util.Log;
+import android.util.SparseArray;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.ListAdapter;
+import android.widget.RadioGroup;
+import android.widget.SimpleAdapter;
 import android.widget.Toast;
+
+import com.aurelhubert.ahbottomnavigation.AHBottomNavigation;
+import com.aurelhubert.ahbottomnavigation.AHBottomNavigationItem;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -44,6 +56,8 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
 
 import stronglogic.ruviuz.content.Customer;
 import stronglogic.ruviuz.content.Roof;
@@ -53,6 +67,7 @@ import stronglogic.ruviuz.fragments.ImageEditFragment;
 import stronglogic.ruviuz.fragments.RuvFragment;
 import stronglogic.ruviuz.tasks.RviewTask;
 import stronglogic.ruviuz.util.RuvFilter;
+import stronglogic.ruviuz.util.SparseArrayIterator;
 import stronglogic.ruviuz.views.RuvAdapter;
 
 import static stronglogic.ruviuz.MainActivity.baseUrl;
@@ -91,6 +106,9 @@ public class RviewActivity extends AppCompatActivity implements RuvFragment.RuvF
 
     private ArrayList<Roof> roofArrayList;
     private ArrayList<Section> sectionList;
+    private List<HashMap<String, Object>> priceMenuData = new ArrayList<>();
+    private List<HashMap<String, Object>> alphabetList = new ArrayList<>();
+    private ListPopupWindow popupWindow;
     public RecyclerView rv;
     private RuvAdapter ruvAdapter;
     private RuvFilter ruvFilter;
@@ -100,6 +118,7 @@ public class RviewActivity extends AppCompatActivity implements RuvFragment.RuvF
     private NavigationView mDrawerView;
     private SearchView searchView;
 
+    @TargetApi(23)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -131,6 +150,52 @@ public class RviewActivity extends AppCompatActivity implements RuvFragment.RuvF
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setElevation(8f);
         }
+
+//        mBottombar = (BottomBar) findViewById(R.id.bottomBar);
+
+        final AHBottomNavigation bottomNavigation = (AHBottomNavigation) findViewById(R.id.bottomBar);
+
+// Create items
+        AHBottomNavigationItem item1 = new AHBottomNavigationItem("Price", R.drawable.ic_dollar_symbol, R.color.ruvGreen);
+        AHBottomNavigationItem item2 = new AHBottomNavigationItem("Jigga", R.drawable.mapmark, R.color.colorUpdated);
+        AHBottomNavigationItem item3 = new AHBottomNavigationItem("Janga", R.drawable.client, R.color.colorUpdated);
+
+// Add items
+        bottomNavigation.addItem(item1);
+        bottomNavigation.addItem(item2);
+        bottomNavigation.addItem(item3);
+
+        bottomNavigation.setCurrentItem(AHBottomNavigation.CURRENT_ITEM_NONE);
+
+        // Change colors
+        bottomNavigation.setAccentColor(Color.parseColor("#F63D2B"));
+        bottomNavigation.setInactiveColor(Color.parseColor("#747474"));
+
+        // Force to tint the drawable (useful for font with icon for example)
+        bottomNavigation.setForceTint(true);
+
+        // Display color under navigation bar (API 21+)
+        // Don't forget these lines in your style-v21
+        // <item name="android:windowTranslucentNavigation">true</item>
+        // <item name="android:fitsSystemWindows">true</item>
+        bottomNavigation.setTranslucentNavigationEnabled(true);
+        bottomNavigation.setColored(true);
+
+        bottomNavigation.setOnTabSelectedListener(new AHBottomNavigation.OnTabSelectedListener() {
+            @Override
+            public boolean onTabSelected(int position, boolean wasSelected) {
+                switch(position) {
+                    case (0):
+                        showPriceMenu(bottomNavigation);
+                        break;
+                    case (1):
+                        showLetterMenu(bottomNavigation);
+                        break;
+                }
+
+             return true;
+            }
+        });
 
         Intent mIntent = getIntent();
 
@@ -223,7 +288,12 @@ public class RviewActivity extends AppCompatActivity implements RuvFragment.RuvF
                 return false;
             }
         });
+
+        //Set up lists for use in the BottomNavigation Menu (for quick searches)
+        setPriceList();
+        setAlphabetList();
     }
+
 
 
     private ActionBarDrawerToggle setupDrawerToggle() {
@@ -265,6 +335,122 @@ public class RviewActivity extends AppCompatActivity implements RuvFragment.RuvF
                 }
             }
         };
+    }
+
+    private void showPriceMenu(final View anchor) {
+        popupWindow = new ListPopupWindow(this);
+
+        ListAdapter adapter = new SimpleAdapter(
+                this,
+                priceMenuData,
+                R.layout.price_search_menu,
+                new String[] {"mTitle", "mIcon"}, // These are just the keys that the data uses (constant strings)
+                new int[] {R.id.shoe_select_text, R.id.shoe_select_icon}); // The view ids to map the data to
+
+        popupWindow.setAnchorView(anchor);
+        popupWindow.setAdapter(adapter);
+        popupWindow.setWidth(800);
+        popupWindow.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                int key = getPriceHashmap().keyAt(position);
+
+                ruvAdapter.swapData(RviewActivity.this.roofArrayList);
+                ruvAdapter.notifyDataSetChanged();
+
+                ruvFilter.setType(RuvFilter.filterType.PRICE);
+                ruvFilter.filter(String.valueOf(key));
+
+                popupWindow.dismiss();
+            }
+        });
+        popupWindow.show();
+    }
+
+    public void setPriceList() {
+
+        SparseArray priceArray = getPriceHashmap();
+        int mapSize = priceArray.size();
+
+        for (int i = 0; i < mapSize; i++) {
+
+            int k = priceArray.keyAt(i);
+
+            HashMap <String, Object> map = new HashMap<>();
+            map.put("mTitle", priceArray.get(k).toString());
+            map.put("mIcon", R.drawable.ic_dollar_symbol);
+            priceMenuData.add(map);
+
+        }
+    }
+
+    public SparseArray getPriceHashmap() {
+
+        SparseArray<String> priceArray = new SparseArray<>();
+        priceArray.append(500, "Under $500");
+        priceArray.append(2500, "Under $2500");
+        priceArray.append(5000, "Under $5000");
+        priceArray.append(8500, "Under $8500");
+        priceArray.append(12500, "Under $12500");
+        priceArray.append(18000, "Under $18000");
+        priceArray.append(25000, "Under $25000");
+        priceArray.append(50000, "Under $50000");
+        priceArray.append(100000, "Under $100000");
+
+        return priceArray;
+    }
+
+
+    private void showLetterMenu(final View anchor) {
+        popupWindow = new ListPopupWindow(this);
+
+        ListAdapter adapter = new SimpleAdapter(
+                this,
+                alphabetList,
+                R.layout.price_search_menu,
+                new String[] {"mTitle", "mIcon"}, // These are just the keys that the data uses (constant strings)
+                new int[] {R.id.shoe_select_text, R.id.shoe_select_icon}); // The view ids to map the data to
+
+        popupWindow.setAnchorView(anchor);
+        popupWindow.setAdapter(adapter);
+        popupWindow.setWidth(800);
+        popupWindow.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                int key = getPriceHashmap().keyAt(position);
+
+                ruvAdapter.swapData(RviewActivity.this.roofArrayList);
+                ruvAdapter.notifyDataSetChanged();
+
+                ruvFilter.setType(RuvFilter.filterType.CUSTOMER);
+                ruvFilter.filter(String.valueOf(key));
+
+                popupWindow.dismiss();
+            }
+        });
+        popupWindow.show();
+    }
+
+    public void setAlphabetList() {
+
+        char[] alphabet = getAlphabet();
+
+        for (int i = 0; i < 26; i++) {
+
+            HashMap <String, Object> map = new HashMap<>();
+            map.put("mTitle", alphabet[i]);
+            map.put("mIcon", R.drawable.ic_format_color_text_black_24dp);
+            alphabetList.add(map);
+
+        }
+    }
+
+    public char[] getAlphabet() {
+
+        return "abcdefghijklmnopqrstuvwxyz".toCharArray();
+
     }
 
     private void setupWindowAnimations() {
@@ -550,6 +736,31 @@ public class RviewActivity extends AppCompatActivity implements RuvFragment.RuvF
 //                    ruvFilter.setType(RviewActivity.this.filterType);
                 if (!ruvFilter.isMulti()) ruvFilter.setMultiSearch(true);
                 ruvFilter.addSearchType(RviewActivity.this.filterType);
+
+                final Dialog etypeDialog = new Dialog(RviewActivity.this);
+                etypeDialog.setTitle("Choose a Type");
+
+                if (etypeDialog.getWindow() != null) etypeDialog.getWindow().setWindowAnimations(R.style.ruvanimate);
+                etypeDialog.setContentView(R.layout.search_dialog);
+                etypeDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+                etypeDialog.show();
+
+                RadioGroup rg = (RadioGroup) etypeDialog.findViewById(R.id.emptyType);
+                rg.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(RadioGroup group, int checkedId) {
+
+//                        RadioButton radioBtn = (RadioButton) etypeDialog.findViewById(checkedId);
+
+                        final Handler xHandler = new Handler();
+                        xHandler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                etypeDialog.dismiss();
+                            }
+                        }, 400);
+                    }
+                });
 //                } else {
 //                    RviewActivity.this.filterType = RuvFilter.filterType.ADDRESS;
 //                    ruvFilter.setType(RviewActivity.this.filterType);
@@ -568,7 +779,7 @@ public class RviewActivity extends AppCompatActivity implements RuvFragment.RuvF
 //                }
                 break;
             case R.id.searchClient:
-                Log.d(TAG, "Searching Price");
+                Log.d(TAG, "Searching Client Name");
 //                if (RviewActivity.this.filterType != RuvFilter.filterType.PRICE) {
 //                    RviewActivity.this.filterType = RuvFilter.filterType.PRICE;
 //                    ruvFilter.setType(RviewActivity.this.filterType);
@@ -795,5 +1006,4 @@ public class RviewActivity extends AppCompatActivity implements RuvFragment.RuvF
     public void imageFragInteraction(Bundle bundle, int request) {
         Log.d(TAG, String.valueOf(request));
     }
-
 }

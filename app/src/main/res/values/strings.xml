@@ -95,6 +95,15 @@
         <item>Mrs.</item>
     </string-array>
 
+    <string-array name="priceRanges">
+        <item>Under $500</item>
+        <item>$500 - $1500</item>
+        <item>$1500 - $3500</item>
+        <item>$3500 - $1500</item>
+        <item>$500 - $1500</item>
+        <item>$500 - $1500</item>]
+    </string-array>
+
     <string-array name="roofMaterials">
         <item>Standard</item>
         <item>Premium</item>

@@ -68,7 +68,7 @@ public class RuvFilter extends Filter {
                 }
             } else if (chosenType == filterType.PRICE) {
                 for (final Roof ruv : originalList) {
-                    if (ruv.getPrice().compareTo(BigDecimal.valueOf(Float.valueOf(filterPattern))) == 1) {
+                    if (ruv.getPrice().compareTo(BigDecimal.valueOf(Float.valueOf(filterPattern))) == -1) {
                         filteredList.add(ruv);
                     }
                 }

@@ -29,7 +29,8 @@ import stronglogic.ruviuz.fragments.RuvFragment;
 public class RuuvDelete implements Runnable {
 
     public static final String TAG = "RuuvDELETE";
-    
+
+    private Handler mHandler;
     private WeakReference<RuvFragment> mReference;
     private RuvFragment rFrag;
 
