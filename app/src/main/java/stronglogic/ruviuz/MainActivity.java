@@ -1703,15 +1703,18 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         fileComments[1] = fileComments[1] != null && fileComments[1].equals("") ? mPrefs.getString("fileComment2", "") : fileComments[1];
         fileComments[2] = fileComments[2] != null && fileComments[2].equals("") ? mPrefs.getString("fileComment3", "") : fileComments[2];
 
-
         for (int i = 0; i < 3; i++) {
-            if (fileUrls[i] != null && !fileUrls[i].equals("") && !fileComments[i].equals("")) {
+            if (fileUrls[i] != null && !fileUrls[i].equals("")) {
                 RuvFileInfo rFile = new RuvFileInfo();
                 rFile.setUrl(fileUrls[i]);
-                rFile.setComment(fileComments[i]);
+
+                if (fileComments[i] != null && !fileComments[i].equals(""))
+                    rFile.setComment(fileComments[i]);
+
                 ruvFiles.put(fileUrls[i], rFile);
             }
         }
+
         try {
             JSONObject customerJson = new JSONObject(mPrefs.getString("customer", ""));
             if (this.mCustomer == null) this.mCustomer = new Customer();

@@ -3,9 +3,12 @@ package stronglogic.ruviuz;
 import android.annotation.TargetApi;
 import android.app.Dialog;
 import android.app.FragmentManager;
+import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteQueryBuilder;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -17,6 +20,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -39,6 +43,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.CursorAdapter;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.RadioGroup;
@@ -52,6 +57,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -67,7 +73,8 @@ import stronglogic.ruviuz.fragments.ImageEditFragment;
 import stronglogic.ruviuz.fragments.RuvFragment;
 import stronglogic.ruviuz.tasks.RviewTask;
 import stronglogic.ruviuz.util.RuvFilter;
-import stronglogic.ruviuz.util.SparseArrayIterator;
+import stronglogic.ruviuz.util.db.RuvDBContract;
+import stronglogic.ruviuz.util.db.RuvDBHelper;
 import stronglogic.ruviuz.views.RuvAdapter;
 
 import static stronglogic.ruviuz.MainActivity.baseUrl;
@@ -110,6 +117,7 @@ public class RviewActivity extends AppCompatActivity implements RuvFragment.RuvF
     private List<HashMap<String, Object>> alphabetList = new ArrayList<>();
     private ListPopupWindow popupWindow;
     public RecyclerView rv;
+    private RuvDBHelper ruvDbHelper;
     private RuvAdapter ruvAdapter;
     private RuvFilter ruvFilter;
     private RuvFilter.filterType filterType = RuvFilter.filterType.ADDRESS;
@@ -117,6 +125,8 @@ public class RviewActivity extends AppCompatActivity implements RuvFragment.RuvF
     private DrawerLayout mDrawerLayout;
     private NavigationView mDrawerView;
     private SearchView searchView;
+
+    protected int editPosition;
 
     @TargetApi(23)
     @Override
@@ -151,8 +161,6 @@ public class RviewActivity extends AppCompatActivity implements RuvFragment.RuvF
             getSupportActionBar().setElevation(8f);
         }
 
-//        mBottombar = (BottomBar) findViewById(R.id.bottomBar);
-
         final AHBottomNavigation bottomNavigation = (AHBottomNavigation) findViewById(R.id.bottomBar);
 
 // Create items
@@ -160,24 +168,14 @@ public class RviewActivity extends AppCompatActivity implements RuvFragment.RuvF
         AHBottomNavigationItem item2 = new AHBottomNavigationItem("Jigga", R.drawable.mapmark, R.color.colorUpdated);
         AHBottomNavigationItem item3 = new AHBottomNavigationItem("Janga", R.drawable.client, R.color.colorUpdated);
 
-// Add items
         bottomNavigation.addItem(item1);
         bottomNavigation.addItem(item2);
         bottomNavigation.addItem(item3);
 
         bottomNavigation.setCurrentItem(AHBottomNavigation.CURRENT_ITEM_NONE);
-
-        // Change colors
         bottomNavigation.setAccentColor(Color.parseColor("#F63D2B"));
         bottomNavigation.setInactiveColor(Color.parseColor("#747474"));
-
-        // Force to tint the drawable (useful for font with icon for example)
         bottomNavigation.setForceTint(true);
-
-        // Display color under navigation bar (API 21+)
-        // Don't forget these lines in your style-v21
-        // <item name="android:windowTranslucentNavigation">true</item>
-        // <item name="android:fitsSystemWindows">true</item>
         bottomNavigation.setTranslucentNavigationEnabled(true);
         bottomNavigation.setColored(true);
 
@@ -190,6 +188,10 @@ public class RviewActivity extends AppCompatActivity implements RuvFragment.RuvF
                         break;
                     case (1):
                         showLetterMenu(bottomNavigation);
+                        break;
+                    case (2):
+                        ruvFilter.resetList();
+                        ruvAdapter.notifyDataSetChanged();
                         break;
                 }
 
@@ -292,6 +294,9 @@ public class RviewActivity extends AppCompatActivity implements RuvFragment.RuvF
         //Set up lists for use in the BottomNavigation Menu (for quick searches)
         setPriceList();
         setAlphabetList();
+
+        ruvDbHelper = new RuvDBHelper(RviewActivity.this);
+
     }
 
 
@@ -338,6 +343,7 @@ public class RviewActivity extends AppCompatActivity implements RuvFragment.RuvF
     }
 
     private void showPriceMenu(final View anchor) {
+
         popupWindow = new ListPopupWindow(this);
 
         ListAdapter adapter = new SimpleAdapter(
@@ -349,15 +355,12 @@ public class RviewActivity extends AppCompatActivity implements RuvFragment.RuvF
 
         popupWindow.setAnchorView(anchor);
         popupWindow.setAdapter(adapter);
-        popupWindow.setWidth(800);
+        popupWindow.setWidth(450);
         popupWindow.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
                 int key = getPriceHashmap().keyAt(position);
-
-                ruvAdapter.swapData(RviewActivity.this.roofArrayList);
-                ruvAdapter.notifyDataSetChanged();
 
                 ruvFilter.setType(RuvFilter.filterType.PRICE);
                 ruvFilter.filter(String.valueOf(key));
@@ -403,29 +406,27 @@ public class RviewActivity extends AppCompatActivity implements RuvFragment.RuvF
 
 
     private void showLetterMenu(final View anchor) {
+
         popupWindow = new ListPopupWindow(this);
 
         ListAdapter adapter = new SimpleAdapter(
                 this,
                 alphabetList,
                 R.layout.price_search_menu,
-                new String[] {"mTitle", "mIcon"}, // These are just the keys that the data uses (constant strings)
+                new String[] { "mTitle", "mIcon" }, // These are just the keys that the data uses (constant strings)
                 new int[] {R.id.shoe_select_text, R.id.shoe_select_icon}); // The view ids to map the data to
 
         popupWindow.setAnchorView(anchor);
         popupWindow.setAdapter(adapter);
-        popupWindow.setWidth(800);
+        popupWindow.setWidth(200);
         popupWindow.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                int key = getPriceHashmap().keyAt(position);
+                char charValue = getAlphabet()[position];
 
-                ruvAdapter.swapData(RviewActivity.this.roofArrayList);
-                ruvAdapter.notifyDataSetChanged();
-
-                ruvFilter.setType(RuvFilter.filterType.CUSTOMER);
-                ruvFilter.filter(String.valueOf(key));
+                ruvFilter.setType(RuvFilter.filterType.CUSTOMER_FIRST);
+                ruvFilter.filter(String.valueOf(charValue));
 
                 popupWindow.dismiss();
             }
@@ -616,14 +617,36 @@ public class RviewActivity extends AppCompatActivity implements RuvFragment.RuvF
         }
     }
 
+
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
+
+        final SimpleCursorAdapter searchAdapter = new SimpleCursorAdapter(this, R.layout.search_suggest, null, new String[] { "pattern" }, new int[] { R.id.suggest_text }, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
+
+        searchView.setSuggestionsAdapter(searchAdapter);
+        searchView.setOnSuggestionListener(new SearchView.OnSuggestionListener() {
+            @Override
+            public boolean onSuggestionSelect(int position) {
+                String suggestion = getSuggestion(position);
+                searchView.setQuery(suggestion, true);
+                return false;
+            }
+
+            @Override
+            public boolean onSuggestionClick(int position) {
+                String suggestion = getSuggestion(position);
+                searchView.setQuery(suggestion, true);
+                return false;
+            }
+        });
+
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 Log.d(TAG, "QueryTxt::" + query);
                 ruvFilter.setType(RviewActivity.this.filterType);
                 ruvFilter.filter(query);
+                ruvDbHelper.insertSuggestion(69, query);
                 return false;
             }
 
@@ -632,10 +655,19 @@ public class RviewActivity extends AppCompatActivity implements RuvFragment.RuvF
                 Log.d(TAG, "TxtChng::" + newText);
                 ruvFilter.setType(RviewActivity.this.filterType);
                 ruvFilter.filter(newText);
+                searchAdapter.changeCursor(ruvDbHelper.getCursor(69, newText));
+
                 return false;
             }
         });
+
         return true;
+    }
+
+
+    private String getSuggestion(int position) {
+        Cursor cursor = (Cursor) searchView.getSuggestionsAdapter().getItem(position);
+        return cursor.getString(cursor.getColumnIndex(RuvDBContract.RuvEntry.PATTERN));
     }
     
     @Override
@@ -797,8 +829,25 @@ public class RviewActivity extends AppCompatActivity implements RuvFragment.RuvF
     }
 
 
+    public void setEditPosition(int position) {
+        this.editPosition = position;
+    }
 
+    @Override
+    public void ruvFragInteraction(String key, String data, int position) {
 
+        if (key.equals("Delete")) {
+            ruvAdapter.deletePosition(position);
+        }
+    }
+
+    /**
+     * Interface callback method from RuvFragment
+     * @param key
+     * Key to determine the type of action fired from the RuvFragment
+     * @param data
+     * Data reflects the result of retrieving a roof or an attempt to update a roofing quote
+     */
     @Override
     public void ruvFragInteraction(String key, String data) {
         if (key.equals("Update")) {
@@ -866,6 +915,12 @@ public class RviewActivity extends AppCompatActivity implements RuvFragment.RuvF
         }
     }
 
+
+    /**
+     *
+     * @param intent
+     * intent for outgoing activity data
+     */
     public void putIntentData(Intent intent) {
         intent.putExtra("authToken", this.authToken);
         intent.putExtra("slope", this.slope);
@@ -899,6 +954,10 @@ public class RviewActivity extends AppCompatActivity implements RuvFragment.RuvF
         intent.putParcelableArrayListExtra("sectionList", sectionList);
     }
 
+    /**
+     * @param intent
+     * Incoming intent which evoked this activity
+     */
     public void getIntentData(Intent intent) {
         Bundle extras = intent.getExtras();
         this.ready = intent.getBooleanExtra("ready", false);

@@ -34,6 +34,7 @@ import stronglogic.ruviuz.RviewActivity;
  * Use the {@link MetricFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
+@Deprecated
 public class MetricFragment extends DialogFragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private final static String TAG = "RUVIUZMETRICFRAGMENT";

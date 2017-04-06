@@ -122,6 +122,8 @@ public class RuvFragment extends DialogFragment {
         this.ruvId = getArguments().getInt("ruvId");
         this.position = getArguments().getInt("position");
 
+        mActivity.setEditPosition(this.position);
+
         this.fileUrls = new String[3];
         this.fileComments = new String[3];
 
@@ -317,8 +319,10 @@ public class RuvFragment extends DialogFragment {
 
                 if (inputMessage.getData().getString("RuuvDeleteMsg") != null) {
                     Log.d(TAG, inputMessage.getData().getString("RuuvDeleteMsg"));
-                    String response = inputMessage.getData().getString("RuuvDelete");
-                    String jigga = "jigga";
+                    String response = inputMessage.getData().getString("RuvDelete");
+                    Toast.makeText(mActivity, response, Toast.LENGTH_SHORT).show();
+                    ruvFragListener.ruvFragInteraction("Delete", inputMessage.getData().getString("Deleted"), position);
+
                 }
             }
         };
@@ -539,7 +543,7 @@ public class RuvFragment extends DialogFragment {
     }
 
     public void deleteRuv() {
-        RuuvDelete ruvDelThread = new RuuvDelete(this, authToken, ruvId);
+        RuuvDelete ruvDelThread = new RuuvDelete(this, authToken, ruvId, mHandler);
         Thread deleteThread = new Thread(ruvDelThread);
         deleteThread.start();
     }
@@ -563,6 +567,8 @@ public class RuvFragment extends DialogFragment {
 
     public interface RuvFragListener {
         void ruvFragInteraction(String key, String data);
+
+        void ruvFragInteraction(String key, String data, int position);
     }
 
     public void processImage(Intent data, int fileCount) {

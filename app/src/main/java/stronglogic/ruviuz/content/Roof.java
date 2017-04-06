@@ -19,6 +19,7 @@ public class Roof extends LauncherActivity.ListItem implements Serializable  {
     private int cleanUpFactor;
     private int id;
     private String customerName;
+    //TODO find solution for searching first and last name separately
     private boolean justUpdated;
 
     private ArrayList<Section> sections;

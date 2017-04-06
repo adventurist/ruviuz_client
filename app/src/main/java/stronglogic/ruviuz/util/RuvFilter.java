@@ -18,7 +18,7 @@ public class RuvFilter extends Filter {
 
     private final static String TAG = "RuviuzRUVFILTER";
 
-    public enum filterType { CUSTOMER, ADDRESS, PRICE }
+    public enum filterType { CUSTOMER, ADDRESS, PRICE, CUSTOMER_FIRST }
 
     private ArrayList<Roof> originalList;
     private ArrayList<Roof> filteredList;
@@ -62,7 +62,14 @@ public class RuvFilter extends Filter {
                 }
             } else if (chosenType == filterType.CUSTOMER) {
                 for (final Roof ruv : originalList) {
-                    if (ruv.getCustomerName().contains(filterPattern)) {
+                    //TODO find solution to switch between case sensitive/insensitive
+                    if (ruv.getCustomerName().toLowerCase().contains(filterPattern.toLowerCase())) {
+                        filteredList.add(ruv);
+                    }
+                }
+            } else if (chosenType == filterType.CUSTOMER_FIRST) {
+                for (final Roof ruv : originalList) {
+                    if (ruv.getCustomerName().toLowerCase().startsWith(filterPattern.toLowerCase())) {
                         filteredList.add(ruv);
                     }
                 }
@@ -72,6 +79,9 @@ public class RuvFilter extends Filter {
                         filteredList.add(ruv);
                     }
                 }
+            } else if (chosenType == null) {
+                filteredList.clear();
+                filteredList.addAll(originalList);
             }
         }
         results.values = filteredList;
@@ -90,7 +100,12 @@ public class RuvFilter extends Filter {
     }
 
     public boolean setType(filterType type) {
-        if (type == filterType.ADDRESS || type == filterType.CUSTOMER || type == filterType.PRICE) {
+
+        if (
+                type == filterType.ADDRESS || type == filterType.CUSTOMER ||
+                type == filterType.PRICE || type == filterType.CUSTOMER_FIRST
+            )
+        {
             this.chosenType = type;
             Log.d(TAG, "Type set to " + String.valueOf(type));
             return true;
@@ -114,6 +129,12 @@ public class RuvFilter extends Filter {
         if (type == filterType.ADDRESS || type == filterType.CUSTOMER || type == filterType.PRICE) {
             if (!chosenTypes.contains(type)) chosenTypes.add(type);
         }
+    }
+
+    public void resetList() {
+        adapter.ruvList.clear();
+        adapter.ruvList.addAll(originalList);
+        adapter.notifyDataSetChanged();
     }
 }
 

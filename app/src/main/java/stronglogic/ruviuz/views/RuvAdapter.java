@@ -22,6 +22,7 @@ import com.yqritc.recyclerviewflexibledivider.VerticalDividerItemDecoration;
 import java.util.ArrayList;
 
 import stronglogic.ruviuz.R;
+import stronglogic.ruviuz.RviewActivity;
 import stronglogic.ruviuz.content.Roof;
 import stronglogic.ruviuz.content.RuvFileInfo;
 import stronglogic.ruviuz.content.Section;
@@ -36,7 +37,6 @@ import stronglogic.ruviuz.util.RuvFilter;
  **/
 
 public class RuvAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-    private ArrayList<Roof> filteredList;
     private LayoutInflater layoutInflater;
     private Activity mActivity;
 
@@ -52,11 +52,7 @@ public class RuvAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private int reopenDialog;
 
-    private Bundle mBundle;
-
-    private RuvFilter ruvFilter;
-
-    public RecyclerView rv;
+    private RuvFragment rFrag;
 
     private SectionAdapter secAdapter;
 
@@ -270,7 +266,7 @@ public class RuvAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private void ruvDialog(int id, int position) {
         FragmentManager fm = mActivity.getFragmentManager();
-        RuvFragment rFrag = new RuvFragment();
+        rFrag = new RuvFragment();
         Bundle mBundle = new Bundle();
         mBundle.putString("authToken", authToken);
         mBundle.putString("baseUrl", baseUrl);
@@ -285,6 +281,22 @@ public class RuvAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public void swapData(ArrayList<Roof> list) {
         this.ruvList.clear();
         this.ruvList.addAll(list);
+    }
+
+    /**
+     * @param position
+     * Removes a row from the RuvAdapter RecyclerView
+     */
+    public void deletePosition(final int position) {
+
+        RuvAdapter.this.ruvList.remove(position);
+        notifyItemRemoved(position);
+        notifyItemRangeChanged(position, RuvAdapter.this.ruvList.size());
+
+        if (rFrag != null && rFrag.isAdded()) {
+            rFrag.dismiss();
+        }
+
     }
 
 }

@@ -39,11 +39,12 @@ public class RuuvDelete implements Runnable {
     private final String authToken;
 
 
-    public RuuvDelete(RuvFragment rFrag, String authToken, int ruvId) {
+    public RuuvDelete(RuvFragment rFrag, String authToken, int ruvId, Handler handler) {
         this.mReference = new WeakReference<RuvFragment>(rFrag);
         this.rFrag = rFrag;
         this.authToken = authToken;
         this.ruvId = ruvId;
+        this.mHandler = handler;
     }
 
 
@@ -90,7 +91,7 @@ public class RuuvDelete implements Runnable {
 
 
 
-            if (!response.trim().isEmpty()) {
+            if (response != null && !response.trim().isEmpty()) {
                 Bundle msgData = new Bundle();
                 msgData.putString("RuuvDeleteMsg", String.valueOf(response));
                 Message outgoingMsg = new Message();
