@@ -204,6 +204,7 @@
     <string name="moderate">Moderate</string>
     <string name="none">None</string>
     <string name="client">Client</string>
+    <string name="property">Property</string>
 
 
 </resources>

@@ -139,7 +139,7 @@ public class RuvSessionManager {
             RuvSessionManager.this.timer.start();
         } else {
             Log.d(TAG, "current timer count: " + getTimerCount());
-            if (getTimerCount() < 2) RuvSessionManager.this.timer.start();
+//            if (getTimerCount() < 2) RuvSessionManager.this.timer.start();
         }
     }
 

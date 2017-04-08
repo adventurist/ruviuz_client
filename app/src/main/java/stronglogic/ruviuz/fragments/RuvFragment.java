@@ -22,9 +22,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -78,15 +82,17 @@ public class RuvFragment extends DialogFragment {
     private RuvFragListener ruvFragListener;
 
     private TextView idTv, cTimeTv1, cTimeTv2, cTimeTv3, ruvComment1, ruvComment2, ruvComment3;
-    private EditText addressEt, priceEt, custEt;
+    private EditText addressEt, priceEt, firstEt, lastEt, cityEt, regionEt, slopeEt, emailEt, phoneEt, postalEt;
     private ImageView ruvPhoto1, ruvPhoto2, ruvPhoto3;
     private Button imgBtn, updateBtn, photoBtn, delBtn;
+    private Spinner materialSpinner;
 
     private ArrayList<RuvFileInfo> ruvFiles;
 
     private int ruvId, position, fileCount;
 
     private String baseUrl, authToken;
+private String material;
 
     private Handler mHandler;
 
@@ -223,25 +229,53 @@ public class RuvFragment extends DialogFragment {
                                 if (idTv != null) {
                                     idTv.setText(roofJson.getString("id"));
                                 }
-                                if (handlerJson.has("Address") && addressEt != null) {
+                                if (handlerJson.has("Address") && addressEt != null && cityEt != null && regionEt != null) {
                                     JSONArray address = new JSONArray(handlerJson.getString("Address"));
                                     if (address.length() > 1) { Log.d(TAG, "Multiple Addresses to be handled"); }
                                         //TODO Multiple addresses not handled
                                     JSONObject addressJson = new JSONObject(address.getJSONObject(0).getString("address"));
                                     String addrString = addressJson.getString("address") + "\n" + addressJson.getString("city") + ", " + addressJson.getString("region") + "\n" + addressJson.getString("postal");
                                     addressEt.setText(addrString);
+                                    cityEt.setText(addressJson.getString("city"));
+                                    regionEt.setText(addressJson.getString("region"));
+                                    postalEt.setText(addressJson.getString("postal"));
+
                                 }
                                 if (priceEt != null) {
                                     String ruvPrice = "$" + roofJson.getString("price");
                                     priceEt.setText(ruvPrice);
                                 }
-                                if (handlerJson.has("Customers") && custEt != null) {
+                                if (handlerJson.has("rstate") && handlerJson.has("floors") && materialSpinner != null) {
+                                    String[] materials = mActivity.getResources().getStringArray(R.array.roofMaterials);
+                                    ArrayAdapter materialAdapter = new ArrayAdapter<>(mActivity, android.R.layout.simple_spinner_dropdown_item, materials);
+                                    materialAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                                    materialSpinner.setAdapter(materialAdapter);
+
+                                    materialSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                                        @Override
+                                        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                                            RuvFragment.this.material = materialSpinner.getItemAtPosition(position).toString();
+                                            Log.d(TAG, "Material chosen: " + RuvFragment.this.material);
+                                        }
+
+                                        @Override
+                                        public void onNothingSelected(AdapterView<?> parent) {
+
+                                        }
+                                    });
+
+                                }
+                                if (handlerJson.has("Customers") && firstEt != null && lastEt != null &&
+                                        phoneEt != null && emailEt != null) {
                                     JSONArray custArray = new JSONArray(handlerJson.getString("Customers"));
                                     if (custArray.length() > 1) { Log.d(TAG, "Multiple Customers to be handled"); }
                                     //TODO Multiple customers not handled
                                     JSONObject custJson = new JSONObject(custArray.getJSONObject(0).getString("customer"));
-                                    String custString = custJson.getString("first") + " " + custJson.getString("last") + "\n" + custJson.getString("email") + "\n" + custJson.getString("phone");
-                                    custEt.setText(custString);
+//                                    String custString = custJson.getString("first") + " " + custJson.getString("last") + "\n" + custJson.getString("email") + "\n" + custJson.getString("phone");
+                                    firstEt.setText(custJson.getString("first"));
+                                    lastEt.setText(custJson.getString("last"));
+                                    phoneEt.setText(custJson.getString("phone"));
+                                    emailEt.setText(custJson.getString("email"));
                                 }
                                 if (handlerJson.has("Sections")) {
                                     JSONArray sections = new JSONArray(handlerJson.getString("Sections"));
@@ -270,6 +304,7 @@ public class RuvFragment extends DialogFragment {
 //                            else if (sectionObject.getString("type").equals(Section.SectionType.LEAN-TO-ROOF))
                                         }
                                         section.setSlope(Float.valueOf(sectionObject.getString("slope")));
+                                        slopeEt.setText(sectionObject.getString("slope"));
                                         section.setLength(Float.valueOf(sectionObject.getString("length")));
                                         section.setWidth(Float.valueOf(sectionObject.getString("width")));
                                         section.setTopWidth(Float.valueOf(sectionObject.getString("twidth")));
@@ -330,9 +365,18 @@ public class RuvFragment extends DialogFragment {
 
     @Override
     public void onStart() {
-        if (getDialog().getWindow() != null) getDialog().getWindow().setWindowAnimations(
-                    R.style.ruvanimate);
         super.onStart();
+
+        if (getDialog().getWindow() != null) {
+
+            Window w = getDialog().getWindow();
+            w.setWindowAnimations(R.style.ruvanimate);
+
+            ViewGroup.LayoutParams params = getDialog().getWindow().getAttributes();
+            int height = params.height;
+            int width = ViewGroup.LayoutParams.MATCH_PARENT;
+            w.setLayout(width, height);
+        }
     }
 
     @Override
@@ -344,7 +388,14 @@ public class RuvFragment extends DialogFragment {
         idTv = (TextView) mView.findViewById(R.id.idTv);
         priceEt = (EditText) mView.findViewById(R.id.priceEt);
         addressEt = (EditText) mView.findViewById(R.id.addressEt);
-        custEt = (EditText) mView.findViewById(R.id.custEt);
+        cityEt = (EditText) mView.findViewById(R.id.cityEt);
+        regionEt = (EditText) mView.findViewById(R.id.regionEt);
+        postalEt = (EditText) mView.findViewById(R.id.postalEt);
+        slopeEt = (EditText) mView.findViewById(R.id.slopeEt);
+        firstEt = (EditText) mView.findViewById(R.id.firstEt);
+        lastEt = (EditText) mView.findViewById(R.id.lastEt);
+        phoneEt = (EditText) mView.findViewById(R.id.phoneEt);
+        emailEt = (EditText) mView.findViewById(R.id.emailEt);
         rv = (RecyclerView) mView.findViewById(R.id.sectionView);
         ruvPhoto1 = (ImageView) mView.findViewById(R.id.ruvPhoto1);
         ruvPhoto2  = (ImageView) mView.findViewById(R.id.ruvPhoto2);
@@ -358,6 +409,7 @@ public class RuvFragment extends DialogFragment {
         imgBtn = (Button) mView.findViewById(R.id.imgBtn);
         updateBtn = (Button) mView.findViewById(R.id.ruvUpdate);
         delBtn = (Button) mView.findViewById(R.id.ruvDelete);
+        materialSpinner = (Spinner) mView.findViewById(R.id.materialSpin);
 
         imgBtn.setOnClickListener(new View.OnClickListener() {
             @Override

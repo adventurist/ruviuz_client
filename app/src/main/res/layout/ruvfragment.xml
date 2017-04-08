@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/holo_orange_light">
+    android:background="@color/ruvGreenStatus">
     <RelativeLayout
         android:layout_height="wrap_content"
         android:layout_width="wrap_content">
@@ -35,24 +36,67 @@
             android:layout_below="@id/row1"
             android:id="@+id/row2">
         <TextView
-            android:text="Address"
+            android:text="@string/address"
             android:layout_width="64dp"
             android:layout_height="wrap_content"
             android:textStyle="bold"
             android:id="@+id/addressLabel"
-            android:layout_alignBottom="@+id/idLabel"
             android:layout_marginStart="8dp"/>
 
-        <EditText
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:id="@+id/addressEt"
-            android:layout_alignEnd="@+id/addressLabel"
-            android:textColor="@color/colorPrimaryDark"
-            android:selectAllOnFocus="true"
-            android:inputType="textMultiLine|textPostalAddress">
-        </EditText>
+            <GridLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:columnCount="2"
+                android:layout_weight="66">
+
+                <EditText
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_columnSpan="2"
+                    android:id="@+id/addressEt"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:selectAllOnFocus="true"
+                    android:inputType="textMultiLine|textPostalAddress"
+                    android:hint="@string/address"/>
+
+                <EditText
+                    android:layout_width="64dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_columnSpan="1"
+                    android:layout_columnWeight="3"
+                    android:id="@+id/cityEt"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:selectAllOnFocus="true"
+                    android:hint="@string/city"
+                    android:inputType="textMultiLine|textPostalAddress"/>
+
+                <EditText
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_columnWeight="7"
+                    android:layout_columnSpan="1"
+                    android:id="@+id/regionEt"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:selectAllOnFocus="true"
+                    android:hint="@string/province"
+                    android:inputType="textMultiLine|textPostalAddress"/>
+
+                <EditText
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_columnWeight="7"
+                    android:layout_columnSpan="1"
+                    android:id="@+id/postalEt"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:selectAllOnFocus="true"
+                    android:hint="@string/postal_code"
+                    android:inputType="textMultiLine|textPostalAddress"/>
+
+        </GridLayout>
         </LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"
@@ -65,16 +109,239 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/custLabel"
                 android:textStyle="bold"
-                android:layout_marginStart="8dp"/>
+                android:layout_marginStart="8dp"
+                />
+            <GridLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="66"
+                android:layout_marginEnd="8dp"
+                android:columnCount="2">
+
+            <RadioGroup xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_widthPercent="100%"
+                android:layout_columnSpan="2"
+                android:id="@+id/clientPrefix"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:layout_marginBottom="16dp">
+                <RadioButton android:id="@+id/prefix_mr"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="36dp"
+                    android:text="@string/mr"
+                    />
+                <RadioButton android:id="@+id/prefix_mrs"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:text="@string/mrs"
+                    />
+                <RadioButton android:id="@+id/prefix_ms"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="36dp"
+                    android:text="@string/ms"
+                    />
+
+            </RadioGroup>
 
             <EditText
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_columnSpan="1"
                 android:layout_marginStart="8dp"
-                android:id="@+id/custEt"
+                android:id="@+id/firstEt"
                 android:textColor="@color/colorPrimaryDark"
                 android:selectAllOnFocus="true"
-/>
+                android:hint="@string/first_name" />
+
+            <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_columnSpan="1"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:id="@+id/lastEt"
+                android:textColor="@color/colorPrimaryDark"
+                android:selectAllOnFocus="true"
+                android:hint="@string/last_name" />
+
+                <EditText android:id="@+id/emailEt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_columnSpan="2"
+                    android:inputType="textEmailAddress"
+                    android:textAlignment="textStart"
+                    android:hint="@string/email"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    />
+
+                <EditText android:id="@+id/phoneEt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_columnSpan="2"
+                    android:inputType="phone"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:hint="@string/phone_number" />
+
+            </GridLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/row3"
+            android:id="@id/row4">
+
+            <TextView
+                android:text="@string/property"
+                android:layout_width="64dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/propertyLabel"
+                android:textStyle="bold"
+                android:layout_marginStart="8dp"/>
+
+            <GridLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="66"
+                android:columnCount="2">
+
+                <Spinner
+                    android:layout_columnSpan="2"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_columnWeight="2"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:id="@+id/materialSpin"
+                    android:textSize="15sp"/>
+
+                <LinearLayout
+                    android:layout_columnSpan="2"
+                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"
+                    android:orientation="horizontal"
+
+                    >
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/floors"
+                    android:layout_gravity="start"
+                    android:layout_weight="0.5"
+                    />
+
+                <biz.kasual.materialnumberpicker.MaterialNumberPicker
+                    android:layout_width="0dp"
+                    android:layout_height="48dp"
+                    android:layout_gravity="center_horizontal"
+                    android:id="@+id/floorPicker"
+                    android:layout_marginStart="56dp"
+                    android:layout_marginEnd="48dp"
+                    android:layout_weight="1"
+                    android:maxWidth="64dp"
+                    app:npMinValue="1"
+                    app:npMaxValue="25"
+                    app:npDefaultValue="2"
+                    app:npBackgroundColor="@color/ruvGreenAccent"
+                    app:npSeparatorColor="@color/ruvSelected"
+                    app:npTextColor="#000"
+                    app:npTextSize="16sp"/>
+
+                </LinearLayout>
+                <RadioGroup
+                    android:id="@+id/rdyGroup"
+                    android:layout_width="wrap_content"
+                    android:layout_height="48dp"
+                    android:layout_marginTop="16dp"
+                    android:orientation="horizontal" >
+
+                    <RadioButton
+                        android:id="@+id/noneBtn"
+                        android:layout_width="84dp"
+                        android:layout_height="36dp"
+                        android:layout_gravity="start"
+                        android:layout_margin="0dp"
+                        android:background="@drawable/mat_tab"
+                        android:text="@string/none"
+                        android:button="@null"
+                        android:checked="true"
+                        android:gravity="center" />
+
+                    <RadioButton
+                        android:id="@+id/moderateBtn"
+                        android:layout_width="84dp"
+                        android:layout_height="36dp"
+                        android:layout_margin="0dp"
+                        android:layout_gravity="center_horizontal"
+                        android:text="@string/moderate"
+                        android:background="@drawable/mat_tab"
+                        android:button="@null"
+                        android:gravity="center" />
+
+                    <RadioButton
+                        android:id="@+id/highBtn"
+                        android:layout_width="84dp"
+                        android:layout_height="36dp"
+                        android:layout_margin="0dp"
+                        android:layout_gravity="end"
+                        android:text="@string/high"
+                        android:background="@drawable/mat_tab"
+                        android:button="@null"
+                        android:gravity="center" />
+
+                </RadioGroup>
+
+
+            </GridLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/row4"
+            android:id="@id/row5">
+
+            <TextView
+                android:text="@string/slope"
+                android:layout_width="64dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/slopeLabel"
+                android:textStyle="bold"
+                android:layout_marginStart="8dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/angle_symbol"
+                android:textColor="#000"
+                android:layout_weight="0.1"
+                android:textSize="36sp"
+                android:paddingBottom="12dp" />
+            <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.4"
+                android:id="@+id/slopeEt"
+                android:hint="0.00"
+                android:inputType="numberDecimal"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.2"
+                android:text="@string/degree_symbol"
+                android:textColor="#000"
+                android:textSize="48sp"
+                android:layout_marginTop="16sp"
+                android:layout_marginStart="8dp" />
+
         </LinearLayout>
         <android.support.v7.widget.RecyclerView
             android:layout_width="wrap_content"
@@ -84,20 +351,20 @@
             android:layout_marginTop="4dp"
             android:background="@color/ruvGreen"
             android:layout_centerHorizontal="true"
-            android:layout_below="@id/row3"
+            android:layout_below="@id/row5"
             android:id="@+id/sectionView"/>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/sectionView"
             android:id="@+id/row6">
-        <TextView
-            android:text="Price"
-            android:layout_width="64dp"
-            android:layout_height="wrap_content"
-            android:id="@+id/priceLabel"
-            android:textStyle="bold"
-            android:layout_marginStart="8dp"/>
+            <TextView
+                android:text="Price"
+                android:layout_width="64dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/priceLabel"
+                android:textStyle="bold"
+                android:layout_marginStart="8dp"/>
 
         <EditText
             android:layout_width="wrap_content"
@@ -244,10 +511,11 @@
                 android:layout_height="56dp"
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
+                android:paddingTop="8dp"
                 android:id="@+id/ruvDelete"
                 android:layout_alignParentBottom="true"
                 android:layout_alignParentEnd="true"
-                android:background="@color/NumberHighlight"
+                android:background="@drawable/ruvbtn_rd"
                 android:text="@string/delete"
                 android:drawableTop="@drawable/ruv_delete_24"/>
 
