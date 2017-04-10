@@ -31,13 +31,6 @@ public class RuvFilter extends Filter {
 
     private ArrayList<filterType> chosenTypes;
 
-//    public RuvFilter (IndexAdapter adapter, ArrayList<Roof> originalList) {
-//        super();
-//        this.originalList = new ArrayList<>(originalList);
-//        this.filteredList = new ArrayList<>();
-//        this.adapter = adapter;
-//    }
-
     public RuvFilter (RuvAdapter adapter, ArrayList<Roof> originalList) {
         super();
         this.originalList = new ArrayList<>(originalList);
@@ -91,7 +84,7 @@ public class RuvFilter extends Filter {
 
     @Override
     protected void publishResults(CharSequence constraint, FilterResults results) {
-        Log.d("RuviuzINDEXADAPTER", "ruvListSize::" + adapter.ruvList.size());
+        Log.d(TAG, "ruvListSize::" + adapter.ruvList.size());
         adapter.ruvList.clear();
         if (results.values != null) {
             adapter.ruvList.addAll((ArrayList<Roof>) results.values);

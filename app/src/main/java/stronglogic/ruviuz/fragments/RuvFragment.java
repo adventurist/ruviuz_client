@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -28,6 +29,9 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.NumberPicker;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -54,6 +58,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 
+import biz.kasual.materialnumberpicker.MaterialNumberPicker;
 import stronglogic.ruviuz.CameraActivity;
 import stronglogic.ruviuz.MainActivity;
 import stronglogic.ruviuz.R;
@@ -87,12 +92,19 @@ public class RuvFragment extends DialogFragment {
     private Button imgBtn, updateBtn, photoBtn, delBtn;
     private Spinner materialSpinner;
 
+    private RadioGroup rdyGroup, prefixGroup;
+    private RadioButton reqBtn1, reqBtn2, reqBtn3, mr, ms, mrs;
+
+    private MaterialNumberPicker flrPicker;
+
     private ArrayList<RuvFileInfo> ruvFiles;
 
-    private int ruvId, position, fileCount;
+    private int ruvId, position, fileCount, cleanupFactor, numFloors;
 
     private String baseUrl, authToken;
-private String material;
+    private String material, prefix;
+
+    private String[] materials;
 
     private Handler mHandler;
 
@@ -108,10 +120,6 @@ private String material;
 
     public static RuvFragment newInstance(String param1, String param2) {
         RuvFragment fragment = new RuvFragment();
-//        Bundle args = new Bundle();
-//        args.putString(ARG_PARAM1, param1);
-//        args.putString(ARG_PARAM2, param2);
-//        fragment.setArguments(args);
         return fragment;
     }
 
@@ -203,7 +211,7 @@ private String material;
                                             cTimeTv2.setText(cJson.getString("entry_date"));
                                         }
                                     } else {
-//                                        Glide.clear(ruvPhoto2);
+                                        Glide.clear(ruvPhoto2);
                                     }
                                     if (roofFiles.length() > 2 && roofFiles.get(2) != null) {
                                         fJson = new JSONObject(roofFiles.getJSONObject(2).getString("file"));
@@ -219,17 +227,18 @@ private String material;
                                             cTimeTv3.setText(cJson.getString("entry_date"));
                                         }
                                     } else {
-//                                        Glide.clear(ruvPhoto3);
+                                        Glide.clear(ruvPhoto3);
                                     }
                                 } else {
-//                                    Glide.clear(ruvPhoto1);
-//                                    Glide.clear(ruvPhoto2);
-//                                    Glide.clear(ruvPhoto3);
+                                    Glide.clear(ruvPhoto1);
+                                    Glide.clear(ruvPhoto2);
+                                    Glide.clear(ruvPhoto3);
                                 }
                                 if (idTv != null) {
                                     idTv.setText(roofJson.getString("id"));
                                 }
                                 if (handlerJson.has("Address") && addressEt != null && cityEt != null && regionEt != null) {
+
                                     JSONArray address = new JSONArray(handlerJson.getString("Address"));
                                     if (address.length() > 1) { Log.d(TAG, "Multiple Addresses to be handled"); }
                                         //TODO Multiple addresses not handled
@@ -245,24 +254,27 @@ private String material;
                                     String ruvPrice = "$" + roofJson.getString("price");
                                     priceEt.setText(ruvPrice);
                                 }
-                                if (handlerJson.has("rstate") && handlerJson.has("floors") && materialSpinner != null) {
-                                    String[] materials = mActivity.getResources().getStringArray(R.array.roofMaterials);
-                                    ArrayAdapter materialAdapter = new ArrayAdapter<>(mActivity, android.R.layout.simple_spinner_dropdown_item, materials);
-                                    materialAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                                    materialSpinner.setAdapter(materialAdapter);
+                                if (roofJson.has("rstate") && roofJson.has("floors") && handlerJson.has("Rooftype") && materialSpinner != null) {
+                                    JSONObject rtypeJson = new JSONObject(handlerJson.getString("Rooftype"));
+                                    RuvFragment.this.cleanupFactor = Integer.valueOf(roofJson.getString("rstate"));
+                                    RuvFragment.this.numFloors = Integer.valueOf(roofJson.getString("floors"));
+                                    RuvFragment.this.material = rtypeJson.getString("name");
 
-                                    materialSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                                        @Override
-                                        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                                            RuvFragment.this.material = materialSpinner.getItemAtPosition(position).toString();
-                                            Log.d(TAG, "Material chosen: " + RuvFragment.this.material);
+                                    for (int i = 0; i < RuvFragment.this.materials.length; i++) {
+                                        if (materialSpinner.getItemAtPosition(i).equals(RuvFragment.this.material)) {
+                                            materialSpinner.setSelection(i);
+                                            materialSpinner.jumpDrawablesToCurrentState();
                                         }
+                                    }
 
-                                        @Override
-                                        public void onNothingSelected(AdapterView<?> parent) {
+                                    if (RuvFragment.this.cleanupFactor == 0) reqBtn1.setChecked(true);
+                                    if (RuvFragment.this.cleanupFactor == 1) reqBtn2.setChecked(true);
+                                    if (RuvFragment.this.cleanupFactor == 2) reqBtn3.setChecked(true);
 
-                                        }
-                                    });
+                                    if (RuvFragment.this.flrPicker != null) {
+                                        RuvFragment.this.flrPicker.setValue(RuvFragment.this.numFloors);
+                                        RuvFragment.this.flrPicker.jumpDrawablesToCurrentState();
+                                    }
 
                                 }
                                 if (handlerJson.has("Customers") && firstEt != null && lastEt != null &&
@@ -271,11 +283,20 @@ private String material;
                                     if (custArray.length() > 1) { Log.d(TAG, "Multiple Customers to be handled"); }
                                     //TODO Multiple customers not handled
                                     JSONObject custJson = new JSONObject(custArray.getJSONObject(0).getString("customer"));
-//                                    String custString = custJson.getString("first") + " " + custJson.getString("last") + "\n" + custJson.getString("email") + "\n" + custJson.getString("phone");
                                     firstEt.setText(custJson.getString("first"));
                                     lastEt.setText(custJson.getString("last"));
                                     phoneEt.setText(custJson.getString("phone"));
                                     emailEt.setText(custJson.getString("email"));
+
+                                    RuvFragment.this.prefix = custJson.getString("prefix");
+
+                                    if (RuvFragment.this.prefix != null && RuvFragment.this.prefix.equals("Mr."))
+                                        mr.setChecked(true);
+                                    if (RuvFragment.this.prefix != null && RuvFragment.this.prefix.equals("Ms."))
+                                        ms.setChecked(true);
+                                    if (RuvFragment.this.prefix != null && RuvFragment.this.prefix.equals("Mrs."))
+                                        mrs.setChecked(true);
+
                                 }
                                 if (handlerJson.has("Sections")) {
                                     JSONArray sections = new JSONArray(handlerJson.getString("Sections"));
@@ -383,7 +404,7 @@ private String material;
     public View onCreateView(LayoutInflater inflater, ViewGroup parent,
                              Bundle savedInstanceState) {
 
-        View mView = inflater.inflate(R.layout.ruvfragment, parent, false);
+        final View mView = inflater.inflate(R.layout.ruvfragment, parent, false);
 
         idTv = (TextView) mView.findViewById(R.id.idTv);
         priceEt = (EditText) mView.findViewById(R.id.priceEt);
@@ -410,6 +431,63 @@ private String material;
         updateBtn = (Button) mView.findViewById(R.id.ruvUpdate);
         delBtn = (Button) mView.findViewById(R.id.ruvDelete);
         materialSpinner = (Spinner) mView.findViewById(R.id.materialSpin);
+        flrPicker = (MaterialNumberPicker) mView.findViewById(R.id.floorPicker);
+        flrPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
+            @Override
+            public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
+                RuvFragment.this.numFloors = newVal;
+                View childView = flrPicker.getChildAt(0);
+                if (childView != null) childView.setBackgroundColor(Color.RED);
+            }
+        });
+
+        rdyGroup = (RadioGroup) mView.findViewById(R.id.rdyGroup);
+
+        reqBtn1 = (RadioButton) mView.findViewById(R.id.noneBtn);
+        reqBtn2 = (RadioButton) mView.findViewById(R.id.moderateBtn);
+        reqBtn3 = (RadioButton) mView.findViewById(R.id.highBtn);
+
+        rdyGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                RadioButton radioBtn = (RadioButton) mView.findViewById(checkedId);
+                RuvFragment.this.cleanupFactor = radioBtn.getText().toString().equals("None") ? 0 : radioBtn.getText().toString().equals("Moderate") ? 1 : 2;
+            }
+        });
+
+        prefixGroup = (RadioGroup) mView.findViewById(R.id.clientPrefix);
+
+        mr = (RadioButton) mView.findViewById(R.id.prefix_mr);
+        ms = (RadioButton) mView.findViewById(R.id.prefix_ms);
+        mrs = (RadioButton) mView.findViewById(R.id.prefix_mrs);
+
+        prefixGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                RadioButton radioBtn = (RadioButton) mView.findViewById(checkedId);
+                RuvFragment.this.prefix = radioBtn.getText().toString();
+            }
+        });
+
+        RuvFragment.this.materials = mActivity.getResources().getStringArray(R.array.roofMaterials);
+        ArrayAdapter materialAdapter = new ArrayAdapter<>(mActivity, android.R.layout.simple_spinner_dropdown_item, materials);
+        materialAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        materialSpinner.setAdapter(materialAdapter);
+
+        materialSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                RuvFragment.this.material = materialSpinner.getItemAtPosition(position).toString();
+                Log.d(TAG, "Material chosen: " + RuvFragment.this.material);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+
 
         imgBtn.setOnClickListener(new View.OnClickListener() {
             @Override
