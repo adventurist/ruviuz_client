@@ -1406,6 +1406,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
             Log.d(TAG, response);
             if (response != null && response.equals("Error")) {
                 Snackbar.make(MainActivity.this.findViewById(R.id.MainParentView), "Error submitting quote", Snackbar.LENGTH_SHORT).show();
+                Log.e(TAG, "handleMessage: Error submitting quote");
             } else {
                 try {
                     JSONObject returnedJson = new JSONObject(response);
@@ -2290,7 +2291,6 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         return context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA);
     }
 
-
     /**
      * Dismiss all DialogFragments added to given FragmentManager and child fragments
      */
@@ -2360,7 +2360,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
             if (mBundle != null) {
 
                 try {
-//                    String mAddress = mBundle.getString("address") + "\n" + mBundle.getString("postal");
+
                     ruuvJson.put("address", mBundle.getString("address"));
                     ruuvJson.put("postal", mBundle.getString("postal"));
                     ruuvJson.put("city", mBundle.getString("city"));

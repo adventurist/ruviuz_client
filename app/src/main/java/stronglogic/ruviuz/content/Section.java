@@ -15,6 +15,14 @@ import java.lang.annotation.RetentionPolicy;
  */
 public class Section extends LauncherActivity.ListItem implements Parcelable {
 
+    public boolean isChanged() {
+        return changed;
+    }
+
+    public void setChanged(boolean changed) {
+        this.changed = changed;
+    }
+
     @StringDef({EmptyType.CHIMNEY, EmptyType.SKY_LIGHT, EmptyType.OTHER})
     @Retention(RetentionPolicy.SOURCE)
     public @interface EmptyType {
@@ -43,7 +51,7 @@ public class Section extends LauncherActivity.ListItem implements Parcelable {
     }
 
     private float slope, width, tWidth, length, missing;
-    private boolean full;
+    private boolean full, changed;
     private int id;
 
     @EmptyType

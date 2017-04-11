@@ -13,12 +13,13 @@ import java.util.ArrayList;
  */
 public class Roof extends LauncherActivity.ListItem implements Serializable  {
 
-    private String address;
+    private String address, city, region, postal;
     private BigDecimal price;
     private int floors;
     private int cleanUpFactor;
     private int id;
     private String customerName;
+    private Customer customer;
     //TODO find solution for searching first and last name separately
     private boolean justUpdated;
 
@@ -131,5 +132,29 @@ public class Roof extends LauncherActivity.ListItem implements Serializable  {
 
     public boolean isUpdated() {
         return this.justUpdated;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public String getPostal() {
+        return postal;
+    }
+
+    public void setPostal(String postal) {
+        this.postal = postal;
+    }
+
+    public String getRegion() {
+        return region;
+    }
+
+    public void setRegion(String region) {
+        this.region = region;
     }
 }

@@ -63,10 +63,14 @@ import stronglogic.ruviuz.CameraActivity;
 import stronglogic.ruviuz.MainActivity;
 import stronglogic.ruviuz.R;
 import stronglogic.ruviuz.RviewActivity;
+import stronglogic.ruviuz.content.Customer;
+import stronglogic.ruviuz.content.Roof;
 import stronglogic.ruviuz.content.RuvFileInfo;
 import stronglogic.ruviuz.content.Section;
 import stronglogic.ruviuz.util.RuuvDelete;
 import stronglogic.ruviuz.util.RuuvFile;
+import stronglogic.ruviuz.util.RuuvPrice;
+import stronglogic.ruviuz.util.RuuvSection;
 import stronglogic.ruviuz.views.SectionAdapter;
 
 import static android.app.Activity.RESULT_OK;
@@ -99,6 +103,8 @@ public class RuvFragment extends DialogFragment {
 
     private ArrayList<RuvFileInfo> ruvFiles;
 
+    private Customer mCustomer;
+
     private int ruvId, position, fileCount, cleanupFactor, numFloors;
 
     private String baseUrl, authToken;
@@ -116,6 +122,8 @@ public class RuvFragment extends DialogFragment {
 
     public RecyclerView rv;
     private SectionAdapter secAdapter;
+
+    private Roof ruv;
     private ArrayList<Section> sectionList;
 
     public static RuvFragment newInstance(String param1, String param2) {
@@ -161,6 +169,43 @@ public class RuvFragment extends DialogFragment {
                                 ruvFragListener.ruvFragInteraction("Update", handlerJson.toString());
 
                                 if (handlerJson.getString("Update").equals("Success")) {
+
+                                    int i = 1;
+                                    for (Section section : sectionList) {
+                                        if (section.isChanged()) {
+                                            Bundle sBundle = new Bundle();
+                                            sBundle.putInt("id", i);
+                                            boolean full = section.getMissing() == 0;
+                                            section.setFull(full);
+                                            sBundle.putInt("ruvId", ruvId);
+                                            sBundle.putString("type", section.getSectionType());
+                                            sBundle.putFloat("length", section.getLength());
+                                            sBundle.putFloat("width", section.getWidth());
+                                            sBundle.putFloat("topwidth", section.getTopWidth());
+                                            sBundle.putFloat("slope", section.getSlope());
+                                            sBundle.putBoolean("full", section.isFull());
+                                            if (!section.isFull()) {
+                                                sBundle.putFloat("missing", section.getMissing());
+                                                sBundle.putString("etype", section.getEmptyType());
+                                            }
+                                            RuuvSection ruvSection = new RuuvSection(mActivity, mHandler, MainActivity.baseUrl, authToken, sBundle, new RuuvSection.sectionListener() {
+                                                @Override
+                                                public void sectionThreadComplete(int result) {
+                                                    if (result == sectionList.size()) {
+                                                        Bundle pBundle = new Bundle();
+                                                        pBundle.putInt("rid", RuvFragment.this.ruvId);
+                                                        RuuvPrice ruuvPrice = new RuuvPrice(mActivity, mHandler, authToken, pBundle);
+                                                        Thread priceThread = new Thread(ruuvPrice);
+                                                        priceThread.start();
+                                                    }
+                                                }
+                                            });
+                                            Thread sectionThread = new Thread(ruvSection);
+                                            sectionThread.start();
+                                            i++;
+                                        }
+                                    }
+
                                     dismiss();
                                 }
 
@@ -183,60 +228,95 @@ public class RuvFragment extends DialogFragment {
                                 ruvFragListener.ruvFragInteraction("GetRoof", handlerJson.getString("Roof"));
                                 JSONObject roofJson = new JSONObject(handlerJson.getString("Roof"));
                                 JSONArray roofFiles = new JSONArray(handlerJson.getString("Files"));
+                                ruv = new Roof();
+
+                                ruv.setId(Integer.valueOf(roofJson.getString("id")));
+                                idTv.setText(roofJson.getString("id"));
 
                                 if (roofFiles.length() > 0)  {
+
                                     JSONObject fJson = new JSONObject(roofFiles.getJSONObject(0).getString("file"));
+                                    RuvFileInfo rFile = new RuvFileInfo();
+                                    String fileUrl = MainActivity.baseUrl + "/files/" + fJson.getString("filename");
+                                    rFile.setUrl(fileUrl);
+                                    rFile.setFilename(fJson.getString("filename"));
                                     Glide.with(mActivity)
                                             .load(MainActivity.baseUrl + "/files/" + fJson.getString("filename"))
                                             .fitCenter()
                                             .diskCacheStrategy(DiskCacheStrategy.RESULT)
                                             .into(ruvPhoto1);
                                     RuvFragment.this.fileUrls[0] = fJson.getString("filename");
+
                                     if (roofFiles.getJSONObject(0).has("comment")) {
+
                                         JSONObject cJson = new JSONObject(roofFiles.getJSONObject(0).getString("comment"));
                                         ruvComment1.setText(cJson.getString("body"));
+                                        rFile.setComment(cJson.getString("body"));
                                         cTimeTv1.setText(cJson.getString("entry_date"));
                                     }
+
                                     if (roofFiles.length() > 1 && roofFiles.get(1) != null) {
+
                                         fJson = new JSONObject(roofFiles.getJSONObject(1).getString("file"));
+                                        RuvFileInfo rFile2 = new RuvFileInfo();
+                                        String fileUrl2 = MainActivity.baseUrl + "/files/" + fJson.getString("filename");
+                                        rFile2.setUrl(fileUrl2);
+                                        rFile2.setFilename(fJson.getString("filename"));
                                         Glide.with(mActivity)
                                                 .load(MainActivity.baseUrl + "/files/" + fJson.getString("filename"))
                                                 .fitCenter()
                                                 .diskCacheStrategy(DiskCacheStrategy.RESULT)
                                                 .into(ruvPhoto2);
                                         RuvFragment.this.fileUrls[1] = fJson.getString("filename");
+
                                         if (roofFiles.getJSONObject(1).has("comment")) {
                                             JSONObject cJson = new JSONObject(roofFiles.getJSONObject(1).getString("comment"));
+                                            rFile2.setComment(roofFiles.getJSONObject(1).getString("comment"));
                                             ruvComment2.setText(cJson.getString("body"));
                                             cTimeTv2.setText(cJson.getString("entry_date"));
                                         }
+
                                     } else {
+
                                         Glide.clear(ruvPhoto2);
+
                                     }
+
                                     if (roofFiles.length() > 2 && roofFiles.get(2) != null) {
+
                                         fJson = new JSONObject(roofFiles.getJSONObject(2).getString("file"));
+                                        RuvFileInfo rFile3 = new RuvFileInfo();
+                                        String fileUrl3 = MainActivity.baseUrl + "/files/" + fJson.getString("filename");
+                                        rFile3.setUrl(fileUrl3);
+                                        rFile3.setFilename(fJson.getString("filename"));
                                         Glide.with(mActivity)
                                                 .load(MainActivity.baseUrl + "/files/" + fJson.getString("filename"))
                                                 .fitCenter()
                                                 .diskCacheStrategy(DiskCacheStrategy.RESULT)
                                                 .into(ruvPhoto3);
                                         RuvFragment.this.fileUrls[2] = fJson.getString("filename");
+
                                         if (roofFiles.getJSONObject(2).has("comment")) {
+
                                             JSONObject cJson = new JSONObject(roofFiles.getJSONObject(2).getString("comment"));
+                                            rFile3.setComment(roofFiles.getJSONObject(2).getString("comment"));
                                             ruvComment3.setText(cJson.getString("body"));
                                             cTimeTv3.setText(cJson.getString("entry_date"));
                                         }
+
                                     } else {
+
                                         Glide.clear(ruvPhoto3);
+
                                     }
+
                                 } else {
+
                                     Glide.clear(ruvPhoto1);
                                     Glide.clear(ruvPhoto2);
                                     Glide.clear(ruvPhoto3);
                                 }
-                                if (idTv != null) {
-                                    idTv.setText(roofJson.getString("id"));
-                                }
+
                                 if (handlerJson.has("Address") && addressEt != null && cityEt != null && regionEt != null) {
 
                                     JSONArray address = new JSONArray(handlerJson.getString("Address"));
@@ -250,11 +330,16 @@ public class RuvFragment extends DialogFragment {
                                     postalEt.setText(addressJson.getString("postal"));
 
                                 }
+
                                 if (priceEt != null) {
+
                                     String ruvPrice = "$" + roofJson.getString("price");
                                     priceEt.setText(ruvPrice);
+
                                 }
+
                                 if (roofJson.has("rstate") && roofJson.has("floors") && handlerJson.has("Rooftype") && materialSpinner != null) {
+
                                     JSONObject rtypeJson = new JSONObject(handlerJson.getString("Rooftype"));
                                     RuvFragment.this.cleanupFactor = Integer.valueOf(roofJson.getString("rstate"));
                                     RuvFragment.this.numFloors = Integer.valueOf(roofJson.getString("floors"));
@@ -277,18 +362,26 @@ public class RuvFragment extends DialogFragment {
                                     }
 
                                 }
+
                                 if (handlerJson.has("Customers") && firstEt != null && lastEt != null &&
                                         phoneEt != null && emailEt != null) {
+
+                                    mCustomer = new Customer();
                                     JSONArray custArray = new JSONArray(handlerJson.getString("Customers"));
                                     if (custArray.length() > 1) { Log.d(TAG, "Multiple Customers to be handled"); }
                                     //TODO Multiple customers not handled
                                     JSONObject custJson = new JSONObject(custArray.getJSONObject(0).getString("customer"));
-                                    firstEt.setText(custJson.getString("first"));
-                                    lastEt.setText(custJson.getString("last"));
-                                    phoneEt.setText(custJson.getString("phone"));
-                                    emailEt.setText(custJson.getString("email"));
 
+                                    mCustomer.setPrefix(custJson.getString("prefix"));
                                     RuvFragment.this.prefix = custJson.getString("prefix");
+                                    mCustomer.setFirstname(custJson.getString("first"));
+                                    firstEt.setText(custJson.getString("first"));
+                                    mCustomer.setLastname(custJson.getString("last"));
+                                    lastEt.setText(custJson.getString("last"));
+                                    mCustomer.setPhone(custJson.getString("phone"));
+                                    phoneEt.setText(custJson.getString("phone"));
+                                    mCustomer.setEmail(custJson.getString("email"));
+                                    emailEt.setText(custJson.getString("email"));
 
                                     if (RuvFragment.this.prefix != null && RuvFragment.this.prefix.equals("Mr."))
                                         mr.setChecked(true);
@@ -298,17 +391,26 @@ public class RuvFragment extends DialogFragment {
                                         mrs.setChecked(true);
 
                                 }
+
                                 if (handlerJson.has("Sections")) {
+
                                     JSONArray sections = new JSONArray(handlerJson.getString("Sections"));
                                     int secNum = sections.length();
+
                                     if (RuvFragment.this.sectionList == null) RuvFragment.this.sectionList = new ArrayList<Section>();
+
                                     for (int sNum = 0; sNum < secNum; sNum++) {
+
                                         JSONObject sectionObject = new JSONObject(sections.getJSONObject(sNum).getString("section"));
                                         String sectionType = sections.getJSONObject(sNum).getString("type");
-//                        }
                                         Section section = new Section();
+
+                                        section.setId(Integer.valueOf(sectionObject.getString("id")));
+
                                         if (sectionType != null) {
+
                                             switch (sectionType) {
+
                                                 case Section.SectionType.MANSARD:
                                                     section.setSectionType(Section.SectionType.MANSARD);
                                                     break;
@@ -322,29 +424,41 @@ public class RuvFragment extends DialogFragment {
                                                     section.setSectionType(Section.SectionType.GABLE);
                                                     break;
                                             }
-//                            else if (sectionObject.getString("type").equals(Section.SectionType.LEAN-TO-ROOF))
                                         }
+
                                         section.setSlope(Float.valueOf(sectionObject.getString("slope")));
                                         slopeEt.setText(sectionObject.getString("slope"));
                                         section.setLength(Float.valueOf(sectionObject.getString("length")));
                                         section.setWidth(Float.valueOf(sectionObject.getString("width")));
                                         section.setTopWidth(Float.valueOf(sectionObject.getString("twidth")));
+
                                         if (!Boolean.valueOf(sectionObject.getString("full"))) {
+
                                             section.toggleFull();
                                             JSONObject emptyJson = new JSONObject(sections.getJSONObject(sNum).getString("empty"));
                                                 section.setMissing(Float.valueOf(emptyJson.getString("area")));
+
                                                 if (emptyJson.getString("name").equals(Section.EmptyType.CHIMNEY)) {
+
                                                     section.setEmptyType(Section.EmptyType.CHIMNEY);
+
                                                 } else if (emptyJson.getString("name").equals(Section.EmptyType.SKY_LIGHT)) {
+
                                                     section.setEmptyType(Section.EmptyType.SKY_LIGHT);
+
                                                 } else if (emptyJson.getString("name").equals(Section.EmptyType.OTHER)) {
+
                                                     section.setEmptyType(Section.EmptyType.OTHER);
+
                                                 }
                                         }
                                         sectionList.add(section);
                                     }
+
                                     if (rv != null) {
+
                                         setupRecycler(sectionList, rv);
+
                                     }
                                 }
                             }
@@ -357,8 +471,11 @@ public class RuvFragment extends DialogFragment {
                 }
 
                 if (inputMessage.getData().getString("RuuvResponse") != null) {
+
                     Log.d(TAG, inputMessage.getData().getString("RuuvResponse"));
+
                     try {
+
                         JSONObject returnedJson = new JSONObject(inputMessage.getData().getString("RuuvResponse"));
 
                         if (returnedJson.has("File")) {
@@ -367,13 +484,13 @@ public class RuvFragment extends DialogFragment {
 
                         ruvFragListener.ruvFragInteraction("FileUpdate", returnedJson.toString());
 
-
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
                 }
 
                 if (inputMessage.getData().getString("RuuvDeleteMsg") != null) {
+
                     Log.d(TAG, inputMessage.getData().getString("RuuvDeleteMsg"));
                     String response = inputMessage.getData().getString("RuvDelete");
                     Toast.makeText(mActivity, response, Toast.LENGTH_SHORT).show();
@@ -486,7 +603,6 @@ public class RuvFragment extends DialogFragment {
 
             }
         });
-
 
 
         imgBtn.setOnClickListener(new View.OnClickListener() {
@@ -651,25 +767,39 @@ public class RuvFragment extends DialogFragment {
 
     public void updateRuv()    {
 
-        mBundle = new Bundle();
-        mBundle.putString("address", addressEt.getText().toString());
-        mBundle.putString("price", priceEt.getText().toString().substring(1));
-//        mBundle.putFloat("width", Float.valueOf((widthEt.getText().toString())));
-//        mBundle.putFloat("length", Float.valueOf(lengthEt.getText().toString()));
-//        mBundle.putFloat("slope", Float.valueOf(slopeEt.getText().toString()));
-//        mBundle.putInt("ruvId", ruvId);
-        mBundle.putInt("position", position);
+        if (ruv != null) {
+            mBundle = new Bundle();
+            mBundle.putString("address", addressEt.getText().toString());
+            mBundle.putString("price", priceEt.getText().toString().substring(1));
+            mBundle.putInt("position", position);
 
-        if (ruvFiles != null && ruvFiles.size() > 0) {
-            ArrayList<String> rFilesArray = new ArrayList<>();
-            for (int i = 0; i < ruvFiles.size(); i++) {
-                rFilesArray.add(ruvFiles.get(i).getFilename());
+            mBundle.putString("address", ruv.getAddress());
+            mBundle.putString("postal", ruv.getPostal());
+            mBundle.putString("city", ruv.getCity());
+            mBundle.putString("region", ruv.getRegion());
+            mBundle.putString("material", material);
+            mBundle.putString("numFloors", String.valueOf(numFloors));
+            mBundle.putString("cleanupFactor", String.valueOf(cleanupFactor));
+            mBundle.putString("firstName", mCustomer.getFirstname());
+            mBundle.putString("lastName", mCustomer.getLastname());
+            mBundle.putString("email", mCustomer.getEmail());
+            mBundle.putString("phone", mCustomer.getPhone());
+            mBundle.putString("prefix", mCustomer.getPrefix());
+
+
+            if (ruvFiles != null && ruvFiles.size() > 0) {
+                ArrayList<String> rFilesArray = new ArrayList<>();
+                for (int i = 0; i < ruvFiles.size(); i++) {
+                    rFilesArray.add(ruvFiles.get(i).getFilename());
+                }
+                mBundle.putStringArrayList("ruvFiles", rFilesArray);
             }
-            mBundle.putStringArrayList("ruvFiles", rFilesArray);
+            RuvUpThread ruvUpThread = new RuvUpThread(this, mHandler, baseUrl, authToken, mBundle);
+            Thread updateThread = new Thread(ruvUpThread);
+            updateThread.start();
+        } else {
+            Log.d(TAG, "updateRuv: ruv is null");
         }
-        RuvUpThread ruvUpThread = new RuvUpThread(this, mHandler, baseUrl, authToken, mBundle);
-        Thread updateThread = new Thread(ruvUpThread);
-        updateThread.start();
     }
 
     public void deleteRuv() {
@@ -787,10 +917,17 @@ public class RuvFragment extends DialogFragment {
 
             try {
                 ruuvJson.put("address", mBundle.getString("address"));
-                ruuvJson.put("width", mBundle.getFloat("width"));
-                ruuvJson.put("length", mBundle.getFloat("length"));
-                ruuvJson.put("slope", mBundle.getFloat("slope"));
-                ruuvJson.put("price", mBundle.getString("price"));
+                ruuvJson.put("postal", mBundle.getString("postal"));
+                ruuvJson.put("city", mBundle.getString("city"));
+                ruuvJson.put("region", mBundle.getString("region"));
+                ruuvJson.put("material", mBundle.getString("material"));
+                ruuvJson.put("cleanupFactor", mBundle.getString("cleanupFactor"));
+                ruuvJson.put("numFloors", mBundle.getString("numFloors"));
+                ruuvJson.put("firstName", mBundle.getString("firstName"));
+                ruuvJson.put("lastName", mBundle.getString("lastName"));
+                ruuvJson.put("email", mBundle.getString("email"));
+                ruuvJson.put("phone", mBundle.getString("phone"));
+                ruuvJson.put("prefix", mBundle.getString("prefix"));
 
                 if (mBundle.getStringArrayList("ruvFiles") != null) {
                     JSONArray ruuvFileJsonArr = new JSONArray();
