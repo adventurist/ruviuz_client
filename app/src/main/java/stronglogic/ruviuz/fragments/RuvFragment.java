@@ -524,31 +524,33 @@ public class RuvFragment extends DialogFragment {
         final View mView = inflater.inflate(R.layout.ruvfragment, parent, false);
 
         idTv = (TextView) mView.findViewById(R.id.idTv);
-        priceEt = (EditText) mView.findViewById(R.id.priceEt);
-        addressEt = (EditText) mView.findViewById(R.id.addressEt);
+        imgBtn = (Button) mView.findViewById(R.id.imgBtn);
+        delBtn = (Button) mView.findViewById(R.id.ruvDelete);
         cityEt = (EditText) mView.findViewById(R.id.cityEt);
-        regionEt = (EditText) mView.findViewById(R.id.regionEt);
-        postalEt = (EditText) mView.findViewById(R.id.postalEt);
+        lastEt = (EditText) mView.findViewById(R.id.lastEt);
         slopeEt = (EditText) mView.findViewById(R.id.slopeEt);
         firstEt = (EditText) mView.findViewById(R.id.firstEt);
-        lastEt = (EditText) mView.findViewById(R.id.lastEt);
+        priceEt = (EditText) mView.findViewById(R.id.priceEt);
         phoneEt = (EditText) mView.findViewById(R.id.phoneEt);
         emailEt = (EditText) mView.findViewById(R.id.emailEt);
+        cTimeTv1 = (TextView) mView.findViewById(R.id.cmtTime1);
+        cTimeTv2 = (TextView) mView.findViewById(R.id.cmtTime2);
+        cTimeTv3 = (TextView) mView.findViewById(R.id.cmtTime3);
+        updateBtn = (Button) mView.findViewById(R.id.ruvUpdate);
+        regionEt = (EditText) mView.findViewById(R.id.regionEt);
+        postalEt = (EditText) mView.findViewById(R.id.postalEt);
         rv = (RecyclerView) mView.findViewById(R.id.sectionView);
+        addressEt = (EditText) mView.findViewById(R.id.addressEt);
         ruvPhoto1 = (ImageView) mView.findViewById(R.id.ruvPhoto1);
         ruvPhoto2  = (ImageView) mView.findViewById(R.id.ruvPhoto2);
         ruvPhoto3  = (ImageView) mView.findViewById(R.id.ruvPhoto3);
         ruvComment1 = (TextView) mView.findViewById(R.id.ruvComment1);
         ruvComment2 = (TextView) mView.findViewById(R.id.ruvComment2);
         ruvComment3 = (TextView) mView.findViewById(R.id.ruvComment3);
-        cTimeTv1 = (TextView) mView.findViewById(R.id.cmtTime1);
-        cTimeTv2 = (TextView) mView.findViewById(R.id.cmtTime2);
-        cTimeTv3 = (TextView) mView.findViewById(R.id.cmtTime3);
-        imgBtn = (Button) mView.findViewById(R.id.imgBtn);
-        updateBtn = (Button) mView.findViewById(R.id.ruvUpdate);
-        delBtn = (Button) mView.findViewById(R.id.ruvDelete);
         materialSpinner = (Spinner) mView.findViewById(R.id.materialSpin);
+
         flrPicker = (MaterialNumberPicker) mView.findViewById(R.id.floorPicker);
+
         flrPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
             @Override
             public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
@@ -773,27 +775,29 @@ public class RuvFragment extends DialogFragment {
             mBundle.putString("price", priceEt.getText().toString().substring(1));
             mBundle.putInt("position", position);
 
-            mBundle.putString("address", ruv.getAddress());
-            mBundle.putString("postal", ruv.getPostal());
-            mBundle.putString("city", ruv.getCity());
-            mBundle.putString("region", ruv.getRegion());
+            mBundle.putString("address", addressEt.getText().toString());
+            mBundle.putString("postal", postalEt.getText().toString());
+            mBundle.putString("city", cityEt.getText().toString());
+            mBundle.putString("region", regionEt.getText().toString());
             mBundle.putString("material", material);
-            mBundle.putString("numFloors", String.valueOf(numFloors));
+            mBundle.putString("numFloors", String.valueOf(flrPicker.getValue()));
             mBundle.putString("cleanupFactor", String.valueOf(cleanupFactor));
-            mBundle.putString("firstName", mCustomer.getFirstname());
-            mBundle.putString("lastName", mCustomer.getLastname());
-            mBundle.putString("email", mCustomer.getEmail());
-            mBundle.putString("phone", mCustomer.getPhone());
-            mBundle.putString("prefix", mCustomer.getPrefix());
-
+            mBundle.putString("firstName", firstEt.getText().toString());
+            mBundle.putString("lastName", lastEt.getText().toString());
+            mBundle.putString("email", emailEt.getText().toString());
+            mBundle.putString("phone", phoneEt.getText().toString());
+            mBundle.putString("prefix", prefix);
 
             if (ruvFiles != null && ruvFiles.size() > 0) {
                 ArrayList<String> rFilesArray = new ArrayList<>();
+
                 for (int i = 0; i < ruvFiles.size(); i++) {
                     rFilesArray.add(ruvFiles.get(i).getFilename());
                 }
+
                 mBundle.putStringArrayList("ruvFiles", rFilesArray);
             }
+
             RuvUpThread ruvUpThread = new RuvUpThread(this, mHandler, baseUrl, authToken, mBundle);
             Thread updateThread = new Thread(ruvUpThread);
             updateThread.start();
