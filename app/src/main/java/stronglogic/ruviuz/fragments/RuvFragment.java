@@ -69,8 +69,7 @@ import stronglogic.ruviuz.content.RuvFileInfo;
 import stronglogic.ruviuz.content.Section;
 import stronglogic.ruviuz.util.RuuvDelete;
 import stronglogic.ruviuz.util.RuuvFile;
-import stronglogic.ruviuz.util.RuuvPrice;
-import stronglogic.ruviuz.util.RuuvSection;
+import stronglogic.ruviuz.util.SectionUpdate;
 import stronglogic.ruviuz.views.SectionAdapter;
 
 import static android.app.Activity.RESULT_OK;
@@ -188,19 +187,8 @@ public class RuvFragment extends DialogFragment {
                                                 sBundle.putFloat("missing", section.getMissing());
                                                 sBundle.putString("etype", section.getEmptyType());
                                             }
-                                            RuuvSection ruvSection = new RuuvSection(mActivity, mHandler, MainActivity.baseUrl, authToken, sBundle, new RuuvSection.sectionListener() {
-                                                @Override
-                                                public void sectionThreadComplete(int result) {
-                                                    if (result == sectionList.size()) {
-                                                        Bundle pBundle = new Bundle();
-                                                        pBundle.putInt("rid", RuvFragment.this.ruvId);
-                                                        RuuvPrice ruuvPrice = new RuuvPrice(mActivity, mHandler, authToken, pBundle);
-                                                        Thread priceThread = new Thread(ruuvPrice);
-                                                        priceThread.start();
-                                                    }
-                                                }
-                                            });
-                                            Thread sectionThread = new Thread(ruvSection);
+                                            SectionUpdate ruvSectionUpdater = new SectionUpdate(mHandler, "application/json", "POST", authToken);
+                                            Thread sectionThread = new Thread(ruvSectionUpdater);
                                             sectionThread.start();
                                             i++;
                                         }
