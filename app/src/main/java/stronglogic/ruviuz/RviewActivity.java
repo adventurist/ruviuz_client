@@ -3,12 +3,10 @@ package stronglogic.ruviuz;
 import android.annotation.TargetApi;
 import android.app.Dialog;
 import android.app.FragmentManager;
-import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteQueryBuilder;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -57,7 +55,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -71,6 +68,7 @@ import stronglogic.ruviuz.content.RuvFileInfo;
 import stronglogic.ruviuz.content.Section;
 import stronglogic.ruviuz.fragments.ImageEditFragment;
 import stronglogic.ruviuz.fragments.RuvFragment;
+import stronglogic.ruviuz.fragments.SectionEditFragment;
 import stronglogic.ruviuz.tasks.RviewTask;
 import stronglogic.ruviuz.util.RuvFilter;
 import stronglogic.ruviuz.util.db.RuvDBContract;
@@ -81,7 +79,7 @@ import static stronglogic.ruviuz.MainActivity.baseUrl;
 import static stronglogic.ruviuz.MainActivity.getStatusBarHeight;
 import static stronglogic.ruviuz.MainActivity.sendViewToBack;
 
-public class RviewActivity extends AppCompatActivity implements RuvFragment.RuvFragListener, ImageEditFragment.ImageFragListener {
+public class RviewActivity extends AppCompatActivity implements RuvFragment.RuvFragListener, ImageEditFragment.ImageFragListener, SectionEditFragment.SectionEditListener {
 
     private static final String TAG = "RuviuzRVIEWACTIVITY";
     private static final int RUVIUZ_CAMERA = 15;
@@ -98,6 +96,8 @@ public class RviewActivity extends AppCompatActivity implements RuvFragment.RuvF
 
     private android.support.v7.widget.Toolbar mToolbar;
 
+    private RuvFragment rFrag;
+    private SectionEditFragment secEditFrag;
     private ImageEditFragment imgEditFrag;
 
     private String authToken;
@@ -865,7 +865,7 @@ public class RviewActivity extends AppCompatActivity implements RuvFragment.RuvF
                     rv.getAdapter().notifyItemChanged(ruvPosition);
                     Toast.makeText(this, "RuuvUpdate successful.", Toast.LENGTH_SHORT).show();
                     if (getFragmentManager().findFragmentByTag("ruvFrag") != null) {
-                        RuvFragment rFrag = (RuvFragment)getFragmentManager().findFragmentByTag("ruvFrag");
+                        rFrag = (RuvFragment)getFragmentManager().findFragmentByTag("ruvFrag");
                         rFrag.dismiss();
                     }
                 } else {
@@ -1064,5 +1064,28 @@ public class RviewActivity extends AppCompatActivity implements RuvFragment.RuvF
     @Override
     public void imageFragInteraction(Bundle bundle, int request) {
         Log.d(TAG, String.valueOf(request));
+    }
+
+
+    public void editSection(Section section) {
+        if (secEditFrag == null) {
+            secEditFrag = new SectionEditFragment();
+        }
+
+        Bundle sectionBundle = new Bundle();
+        sectionBundle.putParcelable("section", section);
+
+        secEditFrag.setArguments(sectionBundle);
+
+        if (!secEditFrag.isAdded()) {
+            FragmentManager fm = getFragmentManager();
+            secEditFrag.show(fm, "secEditFrag");
+        }
+
+    }
+
+    @Override
+    public void sectionEditInteraction(int data) {
+
     }
 }

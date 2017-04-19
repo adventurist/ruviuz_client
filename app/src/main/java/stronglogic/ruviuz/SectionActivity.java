@@ -60,9 +60,9 @@ public class SectionActivity extends AppCompatActivity implements SectionFragmen
 
     private static final String TAG = "RuviuzSECTIONACTIVITY";
 
-    private final static int LENGTH_SELECTED = 300;
-    private final static int WIDTH_SELECTED = 301;
-    private final static int TOP_WIDTH_SELECTED = 302;
+    public final static int LENGTH_SELECTED = 300;
+    public final static int WIDTH_SELECTED = 301;
+    public final static int TOP_WIDTH_SELECTED = 302;
 
     private int activePicker;
     private int activeEmptyPicker;

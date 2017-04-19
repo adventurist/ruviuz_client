@@ -78,12 +78,14 @@ import static android.app.Activity.RESULT_OK;
  * Created by logicp on 12/6/16.
  * Anoop's Birthday
  */
-public class RuvFragment extends DialogFragment {
+public class RuvFragment extends DialogFragment implements SectionEditFragment.SectionEditListener {
 
-    final private static String TAG = "RuviuzRUVFRAGMENT";
+    private static final String TAG = "RuviuzRUVFRAGMENT";
     private static final int RUVIUZ_CAMERA = 15;
-    final private static int RESULT_LOAD_IMAGE = 17;
+    private static final int RESULT_LOAD_IMAGE = 17;
     private static final int CAMERA_PERMISSION = 6;
+
+    private static boolean SEC_EDIT_MODE = true;
 
     private String[] fileUrls, fileComments;
 
@@ -722,7 +724,7 @@ public class RuvFragment extends DialogFragment {
 
     public void setupRecycler(ArrayList<Section> sectionList, RecyclerView rv) {
         if (sectionList != null && sectionList.size() > -1) {
-            this.secAdapter = new SectionAdapter(mActivity, sectionList);
+            this.secAdapter = new SectionAdapter(mActivity, sectionList, SEC_EDIT_MODE);
             LinearLayoutManager layoutManager = new LinearLayoutManager(mActivity, LinearLayoutManager.VERTICAL, false);
             layoutManager.setAutoMeasureEnabled(true);
             layoutManager.setRecycleChildrenOnDetach(true);
@@ -814,6 +816,11 @@ public class RuvFragment extends DialogFragment {
                 }
                 break;
         }
+    }
+
+    @Override
+    public void sectionEditInteraction(int data) {
+
     }
 
 
