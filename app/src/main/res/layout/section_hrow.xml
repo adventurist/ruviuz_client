@@ -216,6 +216,62 @@
         android:layout_width="48dp"
         android:layout_height="20dp"
         android:layout_margin="4dp"
+        android:id="@+id/emptyLengthLabel"
+        android:text="@string/empty_length"
+        android:visibility="gone"
+        android:layout_below="@id/emptyLabel"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="20dp"
+        android:layout_margin="4dp"
+        android:layout_toEndOf="@id/emptyLengthLabel"
+        android:layout_below="@id/emptyLabel"
+        android:visibility="gone"
+        android:id="@+id/sectionEmptyLength"/>
+
+    <TextView
+        android:layout_width="24dp"
+        android:layout_height="20dp"
+        android:layout_margin="4dp"
+        android:layout_below="@id/emptyLabel"
+        android:layout_toEndOf="@id/sectionEmptyLength"
+        android:visibility="gone"
+        android:text="@string/ft"
+        />
+    <TextView
+        android:layout_width="48dp"
+        android:layout_height="20dp"
+        android:layout_margin="4dp"
+        android:text="@string/empty_width"
+        android:layout_below="@id/sectionEmptyLength"
+        android:visibility="gone"
+        android:id="@+id/widthEmptyLabel"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="20dp"
+        android:layout_margin="4dp"
+        android:layout_toEndOf="@id/widthEmptyLabel"
+        android:layout_below="@id/sectionEmptyLength"
+        android:visibility="gone"
+        android:id="@+id/sectionEmptyWidth"/>
+
+    <TextView
+        android:layout_width="24dp"
+        android:layout_height="20dp"
+        android:layout_margin="4dp"
+        android:layout_below="@id/sectionEmptyLength"
+        android:layout_toEndOf="@id/sectionEmptyWidth"
+        android:visibility="gone"
+        android:text="@string/ft"
+        />
+
+    <TextView
+        android:layout_width="48dp"
+        android:layout_height="20dp"
+        android:layout_margin="4dp"
         android:layout_below="@id/emptyLabel"
         android:id="@+id/emptyTypeLabel"
         android:text="@string/type"

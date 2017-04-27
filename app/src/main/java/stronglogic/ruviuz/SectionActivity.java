@@ -233,6 +233,8 @@ public class SectionActivity extends AppCompatActivity implements SectionFragmen
                                 section.toggleFull();
                                 section.setEmptyType(SectionActivity.this.emptyType);
                                 section.setMissing(emptyArea);
+                                section.setEmptyLength(emLen);
+                                section.setEmptyWidth(emWid);
 
 //                                if (SectionActivity.this.sectionTypeTv != null)
 //                                SectionActivity.this.sectionTypeTv.setText("");

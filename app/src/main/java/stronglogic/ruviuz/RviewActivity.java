@@ -542,6 +542,12 @@ public class RviewActivity extends AppCompatActivity implements RuvFragment.RuvF
                                         section.setEmptyType(Section.EmptyType.OTHER);
                                     }
                                 }
+                                if (sectionObject.has("elength")) {
+                                    section.setEmptyLength(Float.valueOf(sectionObject.getString("elength")));
+                                }
+                                if (sectionObject.has("ewidth")) {
+                                    section.setEmptyWidth(Float.valueOf(sectionObject.getString("ewidth")));
+                                }
                             }
                             sectionsArray.add(section);
                         }

@@ -26,12 +26,9 @@ import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
 
-import java.util.ArrayList;
-
 import me.angrybyte.numberpicker.listener.OnValueChangeListener;
 import me.angrybyte.numberpicker.view.ActualNumberPicker;
 import stronglogic.ruviuz.R;
-import stronglogic.ruviuz.content.Customer;
 import stronglogic.ruviuz.content.Section;
 import stronglogic.ruviuz.views.SectionAdapter;
 
@@ -92,13 +89,7 @@ public class SectionEditFragment extends DialogFragment {
     private String authToken, emptyType, sectionType;
 
     private int fileCount, currentRid, numFloors, cleanupFactor;
-    private float topwidth, width, length, slope;
-    private String material, address, postal, city, region;
-    private String[] fileUrls = new String[3];
-    private String[] fileComments = new String[3];
-    private ArrayList<Section> sectionList = new ArrayList<>();
-    private Customer mCustomer;
-    private boolean premium, ready, editing;
+    private int lengthFt, widthFt, topWidthFt, lengthIn, widthIn, topWidthIn, emptyLengthFt, emptyWidthFt, emptyLengthIn, emptyWidthIn;
 
     private Toolbar mToolbar;
 
@@ -134,7 +125,6 @@ public class SectionEditFragment extends DialogFragment {
 
             this.section = getArguments().getParcelable("section");
         }
-
 
     }
 
@@ -403,24 +393,47 @@ public class SectionEditFragment extends DialogFragment {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
 
-                SectionEditFragment.this.ftPicker.setValue(0);
-                SectionEditFragment.this.inPicker.setValue(0);
-                SectionEditFragment.this.ftPicker.jumpDrawablesToCurrentState();
-                SectionEditFragment.this.inPicker.jumpDrawablesToCurrentState();
+//                SectionEditFragment.this.ftPicker.setValue(0);
+//                SectionEditFragment.this.inPicker.setValue(0);
+//                SectionEditFragment.this.ftPicker.jumpDrawablesToCurrentState();
+//                SectionEditFragment.this.inPicker.jumpDrawablesToCurrentState();
 
                 switch (checkedId) {
 
                     case R.id.lgtPickBtn:
+
                         SectionEditFragment.this.activePicker = LENGTH_SELECTED;
                         SectionEditFragment.this.selectedTv.setText(R.string.length);
+
+                        SectionEditFragment.this.ftPicker.setValue(SectionEditFragment.this.lengthFt);
+                        SectionEditFragment.this.inPicker.setValue(SectionEditFragment.this.lengthIn);
+                        SectionEditFragment.this.ftPicker.jumpDrawablesToCurrentState();
+                        SectionEditFragment.this.inPicker.jumpDrawablesToCurrentState();
+
                         break;
+
                     case R.id.wdtPickBtn:
+
                         SectionEditFragment.this.activePicker = WIDTH_SELECTED;
                         SectionEditFragment.this.selectedTv.setText(R.string.width);
+
+                        SectionEditFragment.this.ftPicker.setValue(SectionEditFragment.this.widthFt);
+                        SectionEditFragment.this.inPicker.setValue(SectionEditFragment.this.widthIn);
+                        SectionEditFragment.this.ftPicker.jumpDrawablesToCurrentState();
+                        SectionEditFragment.this.inPicker.jumpDrawablesToCurrentState();
+
                         break;
+
                     case R.id.tWdthPickBtn:
+
                         SectionEditFragment.this.activePicker = TOP_WIDTH_SELECTED;
                         SectionEditFragment.this.selectedTv.setText(R.string.top_width);
+
+                        SectionEditFragment.this.ftPicker.setValue(SectionEditFragment.this.topWidthFt);
+                        SectionEditFragment.this.inPicker.setValue(SectionEditFragment.this.topWidthIn);
+                        SectionEditFragment.this.ftPicker.jumpDrawablesToCurrentState();
+                        SectionEditFragment.this.inPicker.jumpDrawablesToCurrentState();
+
                         break;
 
                 }
@@ -432,22 +445,41 @@ public class SectionEditFragment extends DialogFragment {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
 
-                SectionEditFragment.this.emptFtPicker.setValue(0);
-                SectionEditFragment.this.emptInPicker.setValue(0);
-                SectionEditFragment.this.emptFtPicker.jumpDrawablesToCurrentState();
-                SectionEditFragment.this.emptInPicker.jumpDrawablesToCurrentState();
+//                SectionEditFragment.this.emptFtPicker.setValue(0);
+//                SectionEditFragment.this.emptInPicker.setValue(0);
+//                SectionEditFragment.this.emptFtPicker.jumpDrawablesToCurrentState();
+//                SectionEditFragment.this.emptInPicker.jumpDrawablesToCurrentState();
 
                 switch (checkedId) {
 
                     case R.id.emptyLgtPickBtn:
                         SectionEditFragment.this.activeEmptyPicker = LENGTH_SELECTED;
-                        if (SectionEditFragment.this.emptSelTv != null)
+
+                        if (SectionEditFragment.this.emptSelTv != null) {
+
                             SectionEditFragment.this.emptSelTv.setText(R.string.length);
+                            SectionEditFragment.this.emptFtPicker.setValue(emptyLengthFt);
+                            SectionEditFragment.this.emptInPicker.setValue(emptyLengthIn);
+                            emptFtPicker.jumpDrawablesToCurrentState();
+                            emptInPicker.jumpDrawablesToCurrentState();
+
+                        }
+
                         break;
+
                     case R.id.emptyWdtPickBtn:
                         SectionEditFragment.this.activeEmptyPicker = WIDTH_SELECTED;
-                        if (SectionEditFragment.this.emptSelTv != null)
+
+                        if (SectionEditFragment.this.emptSelTv != null) {
+
                             SectionEditFragment.this.emptSelTv.setText(R.string.width);
+                            SectionEditFragment.this.emptFtPicker.setValue(emptyWidthFt);
+                            SectionEditFragment.this.emptInPicker.setValue(emptyWidthIn);
+                            emptFtPicker.jumpDrawablesToCurrentState();
+                            emptInPicker.jumpDrawablesToCurrentState();
+
+                        }
+
                         break;
 
                 }
@@ -468,16 +500,19 @@ public class SectionEditFragment extends DialogFragment {
                             TextView sectionLengthTv = (TextView) view.findViewById(R.id.sectionLength);
                             newMeasurement = String.valueOf((float) newValue);
                             sectionLengthTv.setText(newMeasurement);
+                            SectionEditFragment.this.lengthFt = newValue;
                             break;
                         case WIDTH_SELECTED:
                             TextView sectionWidthTv = (TextView) view.findViewById(R.id.sectionWidth);
                             newMeasurement = String.valueOf((float) newValue);
                             sectionWidthTv.setText(newMeasurement);
+                            SectionEditFragment.this.widthFt = newValue;
                             break;
                         case TOP_WIDTH_SELECTED:
                             TextView sectionTwidthTv = (TextView) view.findViewById(R.id.sectionTopWidth);
                             newMeasurement = String.valueOf((float) newValue);
                             sectionTwidthTv.setText(newMeasurement);
+                            SectionEditFragment.this.topWidthFt = newValue;
                             break;
                     }
                 }
@@ -498,16 +533,19 @@ public class SectionEditFragment extends DialogFragment {
                             TextView sectionLengthTvIn = (TextView) view.findViewById(R.id.sectionLengthIn);
                             newMeasurement = String.valueOf((float) newValue);
                             sectionLengthTvIn.setText(newMeasurement);
+                            SectionEditFragment.this.lengthIn = newValue;
                             break;
                         case WIDTH_SELECTED:
                             TextView sectionWidthTvIn = (TextView) view.findViewById(R.id.sectionWidthIn);
                             newMeasurement = String.valueOf((float) newValue);
                             sectionWidthTvIn.setText(newMeasurement);
+                            SectionEditFragment.this.widthIn = newValue;
                             break;
                         case TOP_WIDTH_SELECTED:
                             TextView sectionTwidthTvIn = (TextView) view.findViewById(R.id.sectionTopWidth);
                             newMeasurement = String.valueOf((float) newValue);
                             sectionTwidthTvIn.setText(newMeasurement);
+                            SectionEditFragment.this.topWidthIn = newValue;
                             break;
                     }
                 }
@@ -525,12 +563,14 @@ public class SectionEditFragment extends DialogFragment {
                         TextView sEmptyLengthTv = (TextView) view.findViewById(R.id.emptyLength);
                         if (sEmptyLengthTv != null) {
                             sEmptyLengthTv.setText(newMeasurement);
+                            SectionEditFragment.this.emptyLengthFt = newValue;
                         }
                         break;
                     case WIDTH_SELECTED:
                         TextView emptyWidthTv = (TextView) view.findViewById(R.id.emptyWidth);
                         newMeasurement = String.valueOf((float) newValue);
                         emptyWidthTv.setText(newMeasurement);
+                        SectionEditFragment.this.emptyWidthFt = newValue;
                         break;
                 }
             }
@@ -547,12 +587,14 @@ public class SectionEditFragment extends DialogFragment {
                         TextView sEmptyLengthTv = (TextView) view.findViewById(R.id.emptyLengthIn);
                         if (sEmptyLengthTv != null) {
                             sEmptyLengthTv.setText(newMeasurement);
+                            SectionEditFragment.this.emptyLengthIn = newValue;
                         }
                         break;
                     case WIDTH_SELECTED:
                         TextView emptyWidthTv = (TextView) view.findViewById(R.id.emptyWidthIn);
                         newMeasurement = String.valueOf((float) newValue);
                         emptyWidthTv.setText(newMeasurement);
+                        SectionEditFragment.this.emptyWidthIn = newValue;
                         break;
                 }
             }
@@ -560,21 +602,68 @@ public class SectionEditFragment extends DialogFragment {
 
 
         if (section != null) {
+
             sectionTypeTv.setText(section.getSectionType());
-            sectionLengthTv.setText(String.valueOf(section.getLength()));
-            sectionWidthTv.setText(String.valueOf(section.getWidth()));
-//            sectionLengthInTv.setText();
-//            sectionWidthInTv.setText();
-            sectionTwidthTv.setText(String.valueOf(section.getTopWidth()));
-//            sectionWidthInTv.setText();
+
+            int lengthFt = Integer.valueOf(String.valueOf(section.getLength()).substring(0, String.valueOf(section.getLength()).indexOf(".")));
+            int lengthIn = (int) (12 * Float.valueOf(String.valueOf(section.getLength()).substring(String.valueOf(section.getLength()).indexOf("."))));
+            this.lengthFt = lengthFt;
+            this.lengthIn = lengthIn;
+
+            int widthFt = Integer.valueOf(String.valueOf(section.getWidth()).substring(0, String.valueOf(section.getWidth()).indexOf(".")));
+            int widthIn = (int) (12 * Float.valueOf(String.valueOf(section.getWidth()).substring(String.valueOf(section.getWidth()).indexOf("."))));
+            this.widthFt = widthFt;
+            this.widthIn = widthIn;
+
+            sectionLengthTv.setText(String.valueOf(lengthFt));
+            sectionLengthInTv.setText(String.valueOf(lengthIn));
+
+            ftPicker.setValue(lengthFt);
+            ftPicker.jumpDrawablesToCurrentState();
+            inPicker.setValue(lengthIn);
+            inPicker.jumpDrawablesToCurrentState();
+
+            sectionWidthTv.setText(String.valueOf(widthFt));
+            sectionWidthInTv.setText(String.valueOf(widthIn));
+
+            if (section.getTopWidth() > 0) {
+
+                int topWidthFt = Integer.valueOf(String.valueOf(section.getTopWidth()).substring(0, String.valueOf(section.getTopWidth()).indexOf(".")));
+                int topWidthIn = (int) (12 * Float.valueOf(String.valueOf(section.getTopWidth()).substring(String.valueOf(section.getTopWidth()).indexOf("."))));
+                this.topWidthFt = topWidthFt;
+                this.topWidthIn = topWidthIn;
+
+                sectionTwidthTv.setText(String.valueOf(topWidthFt));
+                sectionTwidthInTv.setText(String.valueOf(topWidthIn));
+
+            }
 
             for (int i = sectionTypes.length; i > 0; i--) {
                 if (sectionSpinner.getItemAtPosition(i - 1).equals(section.getSectionType())) sectionSpinner.setSelection(i - 1);
             }
 
-            if (!section.isFull()) fullToggle.setChecked(false);
+            if (!section.isFull()) {
 
-            selectedTv.setText(section.getSectionType());
+                fullToggle.setChecked(false);
+
+//                int emptyFeet = Integer.valueOf(String.valueOf(section.getMissing()).substring(0, String.valueOf(section.getMissing()).indexOf(".")));
+//                int emptyInches = (int) (12 * Float.valueOf(String.valueOf(section.getMissing()).substring(String.valueOf(section.getMissing()).indexOf("."))));
+////TODO this is confusing and will remain so until the server side application and its schema are amended
+//                this.emptyWidthFt = emptyFeet;
+//                this.emptyWidthIn = emptyInches;
+//
+//                //TODO change implementation to keep exact dimensions
+//
+//                emptFtPicker.setValue(emptyFeet);
+//                emptInPicker.setValue(emptyInches);
+//                emptFtPicker.jumpDrawablesToCurrentState();
+//                emptInPicker.jumpDrawablesToCurrentState();
+                this.emptyLengthFt = Integer.valueOf(String.valueOf(section.getEmptyLength()).substring(0, String.valueOf(section.getEmptyLength()).indexOf(".")));
+                this.emptyLengthIn = Integer.valueOf(String.valueOf(section.getEmptyLength()).substring( String.valueOf(section.getEmptyLength()).indexOf(".")));
+
+                this.emptyWidthFt = Integer.valueOf(String.valueOf(section.getEmptyWidth()).substring(0, String.valueOf(section.getEmptyWidth()).indexOf(".")));
+                this.emptyWidthIn = Integer.valueOf(String.valueOf(section.getEmptyWidth()).substring( String.valueOf(section.getEmptyWidth()).indexOf(".")));
+            }
 
         }
 

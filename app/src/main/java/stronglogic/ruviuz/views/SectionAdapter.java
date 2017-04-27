@@ -51,7 +51,7 @@ public class SectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
 
     public static class SectionHolder extends RecyclerView.ViewHolder  {
-        TextView sectionId, sectionType, sectionLength, sectionWidth, sectionTopWidth, sectionArea, sectionSlope, emptyArea, emptyLabel, emptyFt2, emptyTypeLabel, emptyType;
+        TextView sectionId, sectionType, sectionLength, sectionWidth, sectionTopWidth, sectionArea, sectionSlope, emptyArea, emptyLabel, emptyFt2, emptyWidth, emptyLength, emptyTypeLabel, emptyType;
 
         Button secEditBtn;
 
@@ -68,6 +68,8 @@ public class SectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             emptyLabel = (TextView) mView.findViewById(R.id.emptyLabel);
             emptyArea = (TextView) mView.findViewById(R.id.emptyArea);
             emptyFt2 = (TextView) mView.findViewById(R.id.emptFt2);
+            emptyLength = (TextView) mView.findViewById(R.id.sectionEmptyLength);
+            emptyWidth = (TextView) mView.findViewById(R.id.sectionEmptyWidth);
             emptyTypeLabel = (TextView) mView.findViewById(R.id.emptyTypeLabel);
             emptyType = (TextView) mView.findViewById(R.id.emptyType);
             secEditBtn = (Button) mView.findViewById(R.id.sectionEditBtn);
@@ -139,6 +141,13 @@ public class SectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             sectionHolder.emptyTypeLabel.setVisibility(View.VISIBLE);
             sectionHolder.emptyType.setVisibility(View.VISIBLE);
             sectionHolder.emptyType.setText((section.getEmptyType()));
+
+            if (section.getEmptyLength() > 0 && section.getEmptyWidth() > 0) {
+                sectionHolder.emptyLength.setVisibility(View.VISIBLE);
+                sectionHolder.emptyWidth.setVisibility(View.VISIBLE);
+                sectionHolder.emptyLength.setText(String.valueOf(section.getEmptyLength()));
+                sectionHolder.emptyWidth.setText(String.valueOf(section.getEmptyWidth()));
+            }
         }
 
         if (SectionAdapter.this.editMode) {

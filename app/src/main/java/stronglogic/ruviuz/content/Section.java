@@ -15,14 +15,6 @@ import java.lang.annotation.RetentionPolicy;
  */
 public class Section extends LauncherActivity.ListItem implements Parcelable {
 
-    public boolean isChanged() {
-        return changed;
-    }
-
-    public void setChanged(boolean changed) {
-        this.changed = changed;
-    }
-
     @StringDef({EmptyType.CHIMNEY, EmptyType.SKY_LIGHT, EmptyType.OTHER})
     @Retention(RetentionPolicy.SOURCE)
     public @interface EmptyType {
@@ -44,13 +36,16 @@ public class Section extends LauncherActivity.ListItem implements Parcelable {
     public Section() {
         this.slope = 0;
         this.width = 0;
+        this.tWidth = 0;
         this.length = 0;
         this.missing = 0;
+        this.ewidth = 0;
+        this.elength = 0;
         this.id = -1;
         this.full = true;
     }
 
-    private float slope, width, tWidth, length, missing;
+    private float slope, width, tWidth, length, missing, elength, ewidth;
     private boolean full, changed;
     private int id;
 
@@ -127,6 +122,31 @@ public class Section extends LauncherActivity.ListItem implements Parcelable {
     public void setFull(boolean full) { this.full = full;}
 
 
+    public boolean isChanged() {
+        return changed;
+    }
+
+    public void setChanged(boolean changed) {
+        this.changed = changed;
+    }
+
+    public float getEmptyLength() {
+        return elength;
+    }
+
+    public void setEmptyLength(float elength) {
+        this.elength = elength;
+    }
+
+    public float getEmptyWidth() {
+        return ewidth;
+    }
+
+    public void setEmptyWidth(float ewidth) {
+        this.ewidth = ewidth;
+    }
+
+
     public void setId(int id) { this.id = id;}
 
     public int getId()  { return this.id;}
@@ -145,6 +165,8 @@ public class Section extends LauncherActivity.ListItem implements Parcelable {
         this.width = in.readFloat();
         this.tWidth = in.readFloat();
         this.missing = in.readFloat();
+        this.elength = in.readFloat();
+        this.ewidth = in.readFloat();
         //noinspection WrongConstant
         this.emptyType = in.readString();
         //noinspection WrongConstant
@@ -170,6 +192,8 @@ public class Section extends LauncherActivity.ListItem implements Parcelable {
         out.writeFloat(width);
         out.writeFloat(tWidth);
         out.writeFloat(missing);
+        out.writeFloat(elength);
+        out.writeFloat(ewidth);
         out.writeString(emptyType);
         out.writeString(sectionType);
     }

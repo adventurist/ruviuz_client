@@ -188,6 +188,10 @@ public class RuvFragment extends DialogFragment implements SectionEditFragment.S
                                             if (!section.isFull()) {
                                                 sBundle.putFloat("missing", section.getMissing());
                                                 sBundle.putString("etype", section.getEmptyType());
+                                                if (section.getEmptyLength() > 0 && section.getEmptyWidth() > 0) {
+                                                    sBundle.putFloat("elength", section.getEmptyLength());
+                                                    sBundle.putFloat("ewidth", section.getEmptyWidth());
+                                                }
                                             }
                                             SectionUpdate ruvSectionUpdater = new SectionUpdate(mHandler, "application/json", "POST", authToken);
                                             Thread sectionThread = new Thread(ruvSectionUpdater);
@@ -426,21 +430,29 @@ public class RuvFragment extends DialogFragment implements SectionEditFragment.S
 
                                             section.toggleFull();
                                             JSONObject emptyJson = new JSONObject(sections.getJSONObject(sNum).getString("empty"));
-                                                section.setMissing(Float.valueOf(emptyJson.getString("area")));
+                                            section.setMissing(Float.valueOf(emptyJson.getString("area")));
 
-                                                if (emptyJson.getString("name").equals(Section.EmptyType.CHIMNEY)) {
+                                            if (emptyJson.has("elength")) {
+                                                section.setEmptyLength(Float.valueOf(emptyJson.getString("elength")));
+                                            }
 
-                                                    section.setEmptyType(Section.EmptyType.CHIMNEY);
+                                            if (emptyJson.has("ewidth")) {
+                                                section.setEmptyWidth(Float.valueOf(emptyJson.getString("ewidth")));
+                                            }
 
-                                                } else if (emptyJson.getString("name").equals(Section.EmptyType.SKY_LIGHT)) {
+                                            if (emptyJson.getString("name").equals(Section.EmptyType.CHIMNEY)) {
 
-                                                    section.setEmptyType(Section.EmptyType.SKY_LIGHT);
+                                                section.setEmptyType(Section.EmptyType.CHIMNEY);
 
-                                                } else if (emptyJson.getString("name").equals(Section.EmptyType.OTHER)) {
+                                            } else if (emptyJson.getString("name").equals(Section.EmptyType.SKY_LIGHT)) {
 
-                                                    section.setEmptyType(Section.EmptyType.OTHER);
+                                                section.setEmptyType(Section.EmptyType.SKY_LIGHT);
 
-                                                }
+                                            } else if (emptyJson.getString("name").equals(Section.EmptyType.OTHER)) {
+
+                                                section.setEmptyType(Section.EmptyType.OTHER);
+
+                                            }
                                         }
                                         sectionList.add(section);
                                     }

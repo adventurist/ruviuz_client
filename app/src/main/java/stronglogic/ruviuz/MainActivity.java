@@ -1430,6 +1430,8 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
                                 if (!section.isFull()) {
                                     sBundle.putFloat("missing", section.getMissing());
                                     sBundle.putString("etype", section.getEmptyType());
+                                    sBundle.putFloat("elength", section.getEmptyLength());
+                                    sBundle.putFloat("ewidth", section.getEmptyWidth());
                                 }
                                 RuuvSection ruvSection = new RuuvSection(MainActivity.this, mHandler, MainActivity.baseUrl, authToken, sBundle, new RuuvSection.sectionListener() {
                                     @Override
@@ -1658,6 +1660,8 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
                     sectionJson.put("width", s.getWidth());
                     sectionJson.put("topWidth", s.getTopWidth());
                     sectionJson.put("length", s.getLength());
+                    sectionJson.put("ewidth", s.getEmptyWidth());
+                    sectionJson.put("elength", s.getEmptyLength());
                     sectionJson.put("sectionType", s.getSectionType());
                     sectionJsonArray.put(sectionJson);
                 }
@@ -1745,10 +1749,17 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
                                         : null
                         );
                     section.setMissing(Float.valueOf(sectionJson.getString("missing")));
+                    if (Integer.valueOf(sectionJson.getString("missing")) == 0) {
+                        section.toggleFull();
+                        section.setEmptyWidth(Float.parseFloat(sectionJson.getString("ewidth")));
+                        section.setEmptyLength(Float.parseFloat(sectionJson.getString("elength")));
+                    }
+
                     section.setSlope(Float.valueOf(sectionJson.getString("slope")));
                     section.setWidth(Float.valueOf(sectionJson.getString("width")));
                     section.setTopWidth(Float.valueOf(sectionJson.getString("topWidth")));
                     section.setLength(Float.parseFloat(sectionJson.getString("length")));
+
                     section.setSectionType(sectionJson.getString("sectionType").equals(Section.SectionType.HIP_SQUARE) ?
                             Section.SectionType.HIP_SQUARE
                             : sectionJson.getString("SectionType").equals(Section.SectionType.HIP_RECTANGLE) ?
