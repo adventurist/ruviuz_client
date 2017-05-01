@@ -71,6 +71,7 @@ import stronglogic.ruviuz.fragments.RuvFragment;
 import stronglogic.ruviuz.fragments.SectionEditFragment;
 import stronglogic.ruviuz.tasks.RviewTask;
 import stronglogic.ruviuz.util.RuvFilter;
+import stronglogic.ruviuz.util.RuvSessionManager;
 import stronglogic.ruviuz.util.db.RuvDBContract;
 import stronglogic.ruviuz.util.db.RuvDBHelper;
 import stronglogic.ruviuz.views.RuvAdapter;
@@ -99,6 +100,8 @@ public class RviewActivity extends AppCompatActivity implements RuvFragment.RuvF
     private RuvFragment rFrag;
     private SectionEditFragment secEditFrag;
     private ImageEditFragment imgEditFrag;
+
+    private RuvSessionManager ruvSessionManager;
 
     private String authToken;
 
@@ -844,6 +847,7 @@ public class RviewActivity extends AppCompatActivity implements RuvFragment.RuvF
 
         if (key.equals("Delete")) {
             ruvAdapter.deletePosition(position);
+            ruvFilter.updateList(this.roofArrayList);
         }
     }
 

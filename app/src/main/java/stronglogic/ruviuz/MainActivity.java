@@ -224,28 +224,28 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         MainActivity.this.progressBar = (ProgressBar) findViewById(R.id.tokenProgress);
         MainActivity.this.progressBar.setMax(175);
         MainActivity.this.progressBar.setProgress(0);
-
-        ruvSessionManager = new RuvSessionManager(MainActivity.this, new RuvSessionManager.SessionListener() {
-            @Override
-            public void returnData(String token, int result) {
-                if (result == RUV_SESSION_SUCCESS) {
-                    MainActivity.this.authToken = token;
-                    ruvSessionManager.startTimer();
-                    Toast.makeText(MainActivity.this, "Login Successful", Toast.LENGTH_SHORT).show();
-                    if (MainActivity.this.isActive)
-                    mainDialog();
-                } else if (result == RUV_SESSION_UPDATE) {
-                    MainActivity.this.authToken = token;
-                    Toast.makeText(MainActivity.this, "Setting new Token", Toast.LENGTH_SHORT).show();
-                    ruvSessionManager.startTimer();
-                } else {
+        if (ruvSessionManager == null) {
+            ruvSessionManager = new RuvSessionManager(MainActivity.this, new RuvSessionManager.SessionListener() {
+                @Override
+                public void returnData(String token, int result) {
+                    if (result == RUV_SESSION_SUCCESS) {
+                        MainActivity.this.authToken = token;
+                        ruvSessionManager.startTimer();
+                        Toast.makeText(MainActivity.this, "Login Successful", Toast.LENGTH_SHORT).show();
+                        if (MainActivity.this.isActive)
+                            mainDialog();
+                    } else if (result == RUV_SESSION_UPDATE) {
+                        MainActivity.this.authToken = token;
+                        Toast.makeText(MainActivity.this, "Setting new Token", Toast.LENGTH_SHORT).show();
+                        ruvSessionManager.startTimer();
+                    } else {
                         Toast.makeText(MainActivity.this, "Login FAILURE", Toast.LENGTH_SHORT).show();
-                    if (MainActivity.this.isActive)
-                    loginDialog();
+                        if (MainActivity.this.isActive)
+                            loginDialog();
+                    }
                 }
-            }
-        });
-
+            });
+        }
         mToolbar = (Toolbar) findViewById(R.id.app_bar);
 
         MainActivity.this.findViewById(R.id.MainParentView).setPadding(0, getStatusBarHeight(MainActivity.this), 0, 0);
@@ -264,12 +264,8 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         }
 
         setupRecycler();
-//        roofLength = (TextView) findViewById(R.id.roofLength);
-//        roofWidth = (TextView) findViewById(R.id.roofWidth);
-        roofSlope = (TextView) findViewById(R.id.roofSlope);
 
-//        roofLength.setText(String.valueOf(length));
-//        roofWidth.setText(String.valueOf(width));
+        roofSlope = (TextView) findViewById(R.id.roofSlope);
         roofSlope.setText(String.valueOf(MainActivity.this.slope));
 
         addressTv = (TextView) findViewById(R.id.addressTv);

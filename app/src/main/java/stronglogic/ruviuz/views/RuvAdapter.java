@@ -22,13 +22,11 @@ import com.yqritc.recyclerviewflexibledivider.VerticalDividerItemDecoration;
 import java.util.ArrayList;
 
 import stronglogic.ruviuz.R;
-import stronglogic.ruviuz.RviewActivity;
 import stronglogic.ruviuz.content.Roof;
 import stronglogic.ruviuz.content.RuvFileInfo;
 import stronglogic.ruviuz.content.Section;
 import stronglogic.ruviuz.fragments.RuvFragment;
 import stronglogic.ruviuz.fragments.UpdateFragment;
-import stronglogic.ruviuz.util.RuvFilter;
 
 
 /**
@@ -279,8 +277,14 @@ public class RuvAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     public void swapData(ArrayList<Roof> list) {
-        this.ruvList.clear();
-        this.ruvList.addAll(list);
+        this.ruvList = list;
+    }
+
+    public ArrayList<Roof> getRuvList() {
+        if (this.ruvList != null && this.ruvList.size() > 0 ) {
+            return this.ruvList;
+        }
+        return null;
     }
 
     /**

@@ -125,9 +125,12 @@ public class RuvFilter extends Filter {
     }
 
     public void resetList() {
-        adapter.ruvList.clear();
-        adapter.ruvList.addAll(originalList);
+        adapter.swapData(this.originalList);
         adapter.notifyDataSetChanged();
+    }
+
+    public void updateList(ArrayList<Roof> ruvList) {
+        this.originalList = ruvList;
     }
 }
 

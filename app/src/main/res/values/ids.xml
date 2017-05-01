@@ -3,4 +3,8 @@
     <integer name="fileComment1">101</integer>
     <integer name="fileComment2">102</integer>
     <integer name="fileComment3">103</integer>
+
+    <item name="visible" type="id"/>
+    <item name="masked" type="id"/>
+
 </resources>
