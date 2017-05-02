@@ -108,7 +108,7 @@ public class WelcomeFragment extends DialogFragment {
         newAccountBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mListener.welcomeInteraction(REQUEST_LOGIN);
+                mListener.welcomeInteraction(CREATE_ACCOUNT);
             }
         });
 

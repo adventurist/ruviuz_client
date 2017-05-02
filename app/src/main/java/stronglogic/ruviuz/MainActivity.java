@@ -1165,7 +1165,8 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         }
 
         if (action == CREATE_ACCOUNT) {
-            //TODO Create Account workflow
+            Intent accountIntent = new Intent(MainActivity.this, AccountActivity.class);
+            startActivity(accountIntent);
         }
     }
 
