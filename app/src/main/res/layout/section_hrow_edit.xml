@@ -218,7 +218,7 @@
         android:layout_height="20dp"
         android:layout_margin="4dp"
         android:id="@+id/emptyLengthLabel"
-        android:text="@string/empty_length"
+        android:text="@string/e_len"
         android:visibility="gone"
         android:layout_below="@id/emptyLabel"
         />
@@ -245,7 +245,7 @@
         android:layout_width="48dp"
         android:layout_height="20dp"
         android:layout_margin="4dp"
-        android:text="@string/empty_width"
+        android:text="@string/e_wid"
         android:layout_below="@id/sectionEmptyLength"
         android:visibility="gone"
         android:id="@+id/widthEmptyLabel"/>
@@ -273,7 +273,7 @@
         android:layout_width="48dp"
         android:layout_height="20dp"
         android:layout_margin="4dp"
-        android:layout_below="@id/emptyLabel"
+        android:layout_below="@id/widthEmptyLabel"
         android:id="@+id/emptyTypeLabel"
         android:text="@string/type"
         android:visibility="gone"
@@ -284,7 +284,7 @@
         android:layout_height="20dp"
         android:layout_margin="4dp"
         android:layout_toEndOf="@id/emptyTypeLabel"
-        android:layout_below="@id/emptyLabel"
+        android:layout_below="@id/widthEmptyLabel"
         android:visibility="gone"
         android:id="@+id/emptyType"/>
 

@@ -139,8 +139,6 @@ public class SectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             sectionHolder.emptyFt2.setVisibility(View.VISIBLE);
             sectionHolder.emptyArea.setText(String.valueOf(section.getMissing()));
             sectionHolder.emptyTypeLabel.setVisibility(View.VISIBLE);
-            sectionHolder.emptyType.setVisibility(View.VISIBLE);
-            sectionHolder.emptyType.setText((section.getEmptyType()));
 
             if (section.getEmptyLength() > 0 && section.getEmptyWidth() > 0) {
                 sectionHolder.emptyLength.setVisibility(View.VISIBLE);
@@ -148,6 +146,9 @@ public class SectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 sectionHolder.emptyLength.setText(String.valueOf(section.getEmptyLength()));
                 sectionHolder.emptyWidth.setText(String.valueOf(section.getEmptyWidth()));
             }
+
+            sectionHolder.emptyType.setVisibility(View.VISIBLE);
+            sectionHolder.emptyType.setText((section.getEmptyType()));
         }
 
         if (SectionAdapter.this.editMode) {

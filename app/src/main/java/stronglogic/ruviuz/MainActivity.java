@@ -323,6 +323,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
                         mBundle.putString("email", mCustomer.getEmail());
                         mBundle.putString("phone", mCustomer.getPhone());
                         mBundle.putString("prefix", mCustomer.getPrefix());
+                        mBundle.putBoolean("married", mCustomer.getMarried());
 
                         String finalPrice = MainActivity.this.price.toString();
                         MainActivity.this.currentPrice.setText(finalPrice);
@@ -2378,6 +2379,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
                     ruuvJson.put("numFloors", mBundle.getString("numFloors"));
                     ruuvJson.put("firstName", mBundle.getString("firstName"));
                     ruuvJson.put("lastName", mBundle.getString("lastName"));
+                    ruuvJson.put("married", mBundle.getBoolean("married") ? 1 : 0);
                     ruuvJson.put("email", mBundle.getString("email"));
                     ruuvJson.put("phone", mBundle.getString("phone"));
                     ruuvJson.put("prefix", mBundle.getString("prefix"));
