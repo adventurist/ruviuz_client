@@ -51,7 +51,7 @@ public class SectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
 
     public static class SectionHolder extends RecyclerView.ViewHolder  {
-        TextView sectionId, sectionType, sectionLength, sectionWidth, sectionTopWidth, sectionArea, sectionSlope, emptyArea, emptyLabel, emptyFt2, emptyWidth, emptyLength, emptyTypeLabel, emptyType;
+        TextView sectionId, sectionType, sectionLength, sectionWidth, sectionTopWidth, sectionArea, sectionSlope, emptyAreaLabel, emptyArea, emptyLabel, emptyFt2, emptyWidth, emptyWidthLabel, emptyWidthFt, emptyLength, emptyLengthLabel, emptyTypeLabel, emptyLengthFt, emptyType;
 
         Button secEditBtn;
 
@@ -69,9 +69,14 @@ public class SectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             emptyArea = (TextView) mView.findViewById(R.id.emptyArea);
             emptyFt2 = (TextView) mView.findViewById(R.id.emptFt2);
             emptyLength = (TextView) mView.findViewById(R.id.sectionEmptyLength);
+            emptyLengthLabel = (TextView) mView.findViewById(R.id.emptyLengthLabel);
+            emptyLengthFt = (TextView) mView.findViewById(R.id.emptyLengthFt);
             emptyWidth = (TextView) mView.findViewById(R.id.sectionEmptyWidth);
+            emptyWidthLabel = (TextView) mView.findViewById(R.id.emptyWidthLabel);
+            emptyWidthFt = (TextView) mView.findViewById(R.id.emptyWidthFt);
             emptyTypeLabel = (TextView) mView.findViewById(R.id.emptyTypeLabel);
             emptyType = (TextView) mView.findViewById(R.id.emptyType);
+            emptyAreaLabel = (TextView) mView.findViewById(R.id.areaLabel);
             secEditBtn = (Button) mView.findViewById(R.id.sectionEditBtn);
 
         }
@@ -134,20 +139,22 @@ public class SectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
         if (section.getMissing() > 0) {
 
-            sectionHolder.emptyArea.setVisibility(View.VISIBLE);
             sectionHolder.emptyLabel.setVisibility(View.VISIBLE);
+            sectionHolder.emptyArea.setVisibility(View.VISIBLE);
             sectionHolder.emptyFt2.setVisibility(View.VISIBLE);
-            sectionHolder.emptyArea.setText(String.valueOf(section.getMissing()));
+            sectionHolder.emptyLengthLabel.setVisibility(View.VISIBLE);
+            sectionHolder.emptyLength.setVisibility(View.VISIBLE);
+            sectionHolder.emptyLengthFt.setVisibility(View.VISIBLE);
+            sectionHolder.emptyWidthLabel.setVisibility(View.VISIBLE);
+            sectionHolder.emptyWidth.setVisibility(View.VISIBLE);
+            sectionHolder.emptyWidthFt.setVisibility(View.VISIBLE);
             sectionHolder.emptyTypeLabel.setVisibility(View.VISIBLE);
-
-            if (section.getEmptyLength() > 0 && section.getEmptyWidth() > 0) {
-                sectionHolder.emptyLength.setVisibility(View.VISIBLE);
-                sectionHolder.emptyWidth.setVisibility(View.VISIBLE);
-                sectionHolder.emptyLength.setText(String.valueOf(section.getEmptyLength()));
-                sectionHolder.emptyWidth.setText(String.valueOf(section.getEmptyWidth()));
-            }
-
+            sectionHolder.emptyAreaLabel.setVisibility(View.VISIBLE);
             sectionHolder.emptyType.setVisibility(View.VISIBLE);
+
+            sectionHolder.emptyArea.setText(String.valueOf(section.getMissing()));
+            sectionHolder.emptyLength.setText(String.valueOf(section.getEmptyLength()));
+            sectionHolder.emptyWidth.setText(String.valueOf(section.getEmptyWidth()));
             sectionHolder.emptyType.setText((section.getEmptyType()));
         }
 

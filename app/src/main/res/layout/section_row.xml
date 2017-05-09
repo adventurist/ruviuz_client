@@ -237,6 +237,7 @@
         android:layout_width="24dp"
         android:layout_height="20dp"
         android:layout_margin="4dp"
+        android:id="@+id/emptyLengthFt"
         android:layout_below="@id/emptyLabel"
         android:layout_toEndOf="@id/sectionEmptyLength"
         android:visibility="gone"
@@ -249,7 +250,7 @@
         android:text="@string/e_wid"
         android:layout_below="@id/sectionEmptyLength"
         android:visibility="gone"
-        android:id="@+id/widthEmptyLabel"/>
+        android:id="@+id/emptyWidthLabel"/>
 
     <TextView
         android:layout_width="wrap_content"
@@ -264,6 +265,7 @@
         android:layout_width="24dp"
         android:layout_height="20dp"
         android:layout_margin="4dp"
+        android:id="@+id/emptyWidthFt"
         android:layout_below="@id/sectionEmptyLength"
         android:layout_toEndOf="@id/sectionEmptyWidth"
         android:visibility="gone"
@@ -274,7 +276,7 @@
         android:layout_width="48dp"
         android:layout_height="20dp"
         android:layout_margin="4dp"
-        android:layout_below="@id/widthEmptyLabel"
+        android:layout_below="@id/emptyWidthLabel"
         android:id="@+id/emptyTypeLabel"
         android:text="@string/type"
         android:visibility="gone"
@@ -285,7 +287,7 @@
         android:layout_height="20dp"
         android:layout_margin="4dp"
         android:layout_toEndOf="@id/emptyTypeLabel"
-        android:layout_below="@id/widthEmptyLabel"
+        android:layout_below="@id/emptyWidthLabel"
         android:visibility="gone"
         android:id="@+id/emptyType"/>
 

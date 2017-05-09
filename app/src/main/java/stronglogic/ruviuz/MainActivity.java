@@ -1747,7 +1747,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
                                         : null
                         );
                     section.setMissing(Float.valueOf(sectionJson.getString("missing")));
-                    if (Integer.valueOf(sectionJson.getString("missing")) == 0) {
+                    if (Float.valueOf(sectionJson.getString("missing")) == 0) {
                         section.toggleFull();
                         section.setEmptyWidth(Float.parseFloat(sectionJson.getString("ewidth")));
                         section.setEmptyLength(Float.parseFloat(sectionJson.getString("elength")));

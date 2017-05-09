@@ -264,6 +264,7 @@
         android:layout_width="24dp"
         android:layout_height="20dp"
         android:layout_margin="4dp"
+        android:id="@+id/emptyWidthFt"
         android:layout_below="@id/sectionEmptyLength"
         android:layout_toEndOf="@id/sectionEmptyWidth"
         android:visibility="gone"
@@ -288,5 +289,18 @@
         android:layout_below="@id/emptyLabel"
         android:visibility="gone"
         android:id="@+id/emptyType"/>
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_below="@id/emptyTypeLabel"
+        android:id="@+id/sectionEditBtn"
+        android:layout_margin="8dp"
+        android:text="@string/edit"
+        android:padding="4dp"
+        android:layout_alignParentStart="true"
+        android:drawableEnd="@drawable/edit32"
+        android:background="@drawable/ruvbtn_wt"
+        />
 
 </RelativeLayout>
